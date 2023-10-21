@@ -7,6 +7,6 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths()],
   server: {
     host: 'editor.ezpics.vn',
-    port: 3000 
+    port: 80 
   }
 })

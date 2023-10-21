@@ -13,6 +13,8 @@ import { loadVideoEditorAssets } from "~/utils/video";
 import axios from "axios";
 
 export default function () {
+    const { currentDesign, setCurrentDesign } = useDesignEditorContext()
+
   const [data, setData] = useState<any>(null);
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -36,46 +38,73 @@ export default function () {
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const { setCurrentScene, currentScene } = useDesignEditorContext();
 
-  const loadTemplate = React.useCallback(
-    async (template: any) => {
+  // const loadTemplate = React.useCallback(
+  //   async (template: any) => {
+  //     if (editor) {
+  //       const fonts: any[] = [];
+  //       template.layers.forEach((object: any) => {
+  //         if (object.type === "StaticText" || object.type === "DynamicText") {
+  //           fonts.push({
+  //             name: object.fontFamily,
+  //             url: object.fontURL,
+  //             options: { style: "normal", weight: 400 },
+  //           });
+  //         } else if (object.type === "StaticImage") {
+  //           const image = new Image();
+  //           image.src = object.src;
+  //           const brightnessValue = object.brightness;
+  //           image.onload = () => {
+  //                           image.style.filter = `-moz-filter: brightness(50%);`;
+
+  //             image.style.filter = `brightness(${200}%)`;
+
+
+  //             image.style.filter = `-webkit-filter: brightness(200%);`;
+
+  //             console.log(image);
+  //                                 image.style.borderRadius = '50%';
+
+  //           };
+
+  //         }
+  //       });
+  //       const filteredFonts = fonts.filter((f) => !!f.url);
+  //       if (filteredFonts.length > 0) {
+  //         await loadFonts(filteredFonts);
+  //       }
+
+  //       setCurrentScene({ ...template, id: currentScene?.id });
+  //     }
+  //   },
+  //   [editor, currentScene]
+  // );
+   const addObject = React.useCallback(
+    (url: string,width: string,height: string) => {
+      
       if (editor) {
-        const fonts: any[] = [];
-        template.layers.forEach((object: any) => {
-          if (object.type === "StaticText" || object.type === "DynamicText") {
-            fonts.push({
-              name: object.fontFamily,
-              url: object.fontURL,
-              options: { style: "normal", weight: 400 },
-            });
-          } else if (object.type === "StaticImage") {
-            const image = new Image();
-            image.src = object.src;
-            const brightnessValue = object.brightness;
-            image.onload = () => {
-                            image.style.filter = `-moz-filter: brightness(50%);`;
-
-              image.style.filter = `brightness(${200}%)`;
-
-
-              image.style.filter = `-webkit-filter: brightness(200%);`;
-
-              console.log(image);
-                                  image.style.borderRadius = '50%';
-
-            };
-
-          }
-        });
-        const filteredFonts = fonts.filter((f) => !!f.url);
-        if (filteredFonts.length > 0) {
-          await loadFonts(filteredFonts);
+        const options = {
+          type: "StaticImage",
+          src: url,
+          width: width,
+          height: height,
+          lock:true
         }
-
-        setCurrentScene({ ...template, id: currentScene?.id });
+        editor.objects.add(options)
+        editor.frame.resize({
+        width: parseInt(width),
+        height: parseInt(height),
+      })
+      setCurrentDesign({
+        ...currentDesign,
+        frame: {
+          width: parseInt(width),
+          height: parseInt(height),
+        },
+      })
       }
     },
-    [editor, currentScene]
-  );
+    [editor]
+  )
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -88,7 +117,7 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Mẫu thiết kế của bạn</Block>
+        <Block>Background thiết kế có sẵn</Block>
 
         <Block
           onClick={() => setIsSidebarOpen(false)}
@@ -118,7 +147,7 @@ export default function () {
             {templates.map((item, index) => {
               return (
                 <ImageItem
-                  onClick={() => loadTemplate(item)}
+                  onClick={() => addObject(item.image, item.width,item.height)}
                   key={index}
                   preview={`${item.thumn}`}
                 />

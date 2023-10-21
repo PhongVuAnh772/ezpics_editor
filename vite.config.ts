@@ -17,12 +17,12 @@ import mkcert from 'vite-plugin-mkcert'
 export default defineConfig({
   
   plugins: [react(), tsconfigPaths(),mkcert()],
+  // server: {
+  //   host: 'editor.ezpics.vn',
+  //   port:  80,
+  //   https: true
+  // },
   server: {
-    host: 'editor.ezpics.vn',
-    port:  80,
-    https: true
-  },
-  preview: {
     host: 'editor.ezpics.vn',
     port:  5173,
     https: true

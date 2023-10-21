@@ -35,7 +35,8 @@
     "styletron-engine-atomic": "^1.6.2",
     "styletron-react": "^6.1.1",
     "use-latest": "^1.2.1",
-    "uuidv4": "^6.2.13"
+    "uuidv4": "^6.2.13",
+    "vite-plugin-mkcert": "^1.16.0"
   },
   "devDependencies": {
     "@layerhub-io/types": "^0.2.0",

@@ -147,7 +147,7 @@ export default function () {
             {templates.map((item, index) => {
               return (
                 <ImageItem
-                  onClick={() => addObject(item.image, item.width,item.height)}
+                  onClick={() => addObject(item.thumn, item.width,item.height)}
                   key={index}
                   preview={`${item.thumn}`}
                 />

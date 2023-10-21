@@ -9,7 +9,8 @@ export default defineConfig({
   plugins: [react(), tsconfigPaths(),mkcert()],
   server: {
     host: 'editor.ezpics.vn',
-    port: 80 || 5173,
+    port:  5173,
+    // 80 ||
     https: true
   }
 })

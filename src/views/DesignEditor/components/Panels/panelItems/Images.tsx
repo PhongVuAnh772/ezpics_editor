@@ -17,8 +17,7 @@ export default function () {
         const options = {
           type: "StaticImage",
           src: url,
-          width: 1280,
-          height: 720,
+          
         }
         editor.objects.add(options)
       }

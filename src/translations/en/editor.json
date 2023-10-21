@@ -1,0 +1,16 @@
+{
+    "panels": {
+        "panelsList": {
+            "templates": "Mẫu thiết kế",
+            "customize": "Chỉnh sửa",
+            "elements": "Hình dạng",
+            "images": "Ảnh có sẵn",
+            "videos": "Videos",
+            "uploads": "Đẩy ảnh lên",
+            "text": "Kiểu chữ",
+            "graphics": "Graphics",
+            "pixabay": "Pixabay",
+            "layers": "Layers"
+        }
+    }
+}

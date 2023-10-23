@@ -18,7 +18,6 @@ export default function () {
     zoomRatio: 20,
   });
   const zoomRatio: number = useZoomRatio();
-
   const handleChange = (type: string, value: any) => {
     if (value < 0) {
       editor.zoom.zoomToRatio(zoomMin / 100);
@@ -153,7 +152,7 @@ export default function () {
         <Button kind={KIND.tertiary} size={SIZE.compact}>
           <Icons.Refresh size={16} />
         </Button>
-        <Button
+        {/* <Button
           kind={KIND.tertiary}
           size={SIZE.compact}
           // handleUndo
@@ -163,7 +162,7 @@ export default function () {
         </Button>
         <Button kind={KIND.tertiary} size={SIZE.compact}>
           <Icons.Redo size={22} />
-        </Button>
+        </Button> */}
         {/* <Button kind={KIND.tertiary} size={SIZE.compact}>
           <Icons.TimePast size={16} />
         </Button> */}

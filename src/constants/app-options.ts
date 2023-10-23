@@ -23,10 +23,10 @@ export const BASE_ITEMS = [
     id: "text",
     name: "Text",
   },
-  // {
-  //   id: "layers",
-  //   name: "Layers",
-  // },
+  {
+    id: "layers",
+    name: "Layers",
+  },
   
 
 ]

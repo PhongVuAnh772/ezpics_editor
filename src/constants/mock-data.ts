@@ -12,7 +12,7 @@ export const graphics = [
     path: [["M", 60, 0], ["L", 0, 0], ["L", 0, 60], ["L", 60, 60], ["L", 60, 0], ["Z"]],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://www.iconsdb.com/icons/preview/dark-gray/square-xxl.png",
+    preview: "../../../../../../assets/square.png",
     id: "E2mcHFkwGA-MTJcfl3Abs",
   },
   {
@@ -29,7 +29,7 @@ export const graphics = [
     fill: "#CBCBCB",
     metadata: {},
     id: "SY15tkntkk8S1PudoMfRI",
-    preview: "https://www.iconsdb.com/icons/preview/dark-gray/triangle-xxl.png",
+    preview: "../../assets/triangle.png",
   },
   {
     left: 0,
@@ -67,7 +67,7 @@ export const graphics = [
     ],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://ik.imagekit.io/scenify/1635014101144_519480.png",
+    preview: "../../assets/polygon.png",
     id: "9VWsxoB_O8LSAkCIRjNFY",
   },
   {
@@ -134,7 +134,7 @@ export const graphics = [
     ],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://www.iconsdb.com/icons/preview/dark-gray/star-xxl.png",
+    preview: "../../assets/star.png",
     id: "fRmRlanl-hydswssHKhn6",
   },
   {
@@ -217,7 +217,7 @@ export const graphics = [
     ],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://ik.imagekit.io/scenify/1635014150489_628269.png",
+    preview: "../../assets/flower.jpg",
     id: "A8WLbfJFV1D58X1RUZADd",
   },
   {
@@ -304,7 +304,7 @@ export const graphics = [
     ],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://ik.imagekit.io/scenify/1635014314495_390592.png",
+    preview: "../../assets/twitter.png",
     id: "0dwJMLuw8DK9jddPSapOV",
   },
   {
@@ -348,7 +348,7 @@ export const graphics = [
     ],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://ik.imagekit.io/scenify/1635014323800_275038.png",
+    preview: "../../assets/heart.png",
     id: "3w9KPQbyeUe3kgtwpMZx4",
   },
   {
@@ -481,7 +481,7 @@ export const graphics = [
     ],
     fill: "#CBCBCB",
     metadata: {},
-    preview: "https://ik.imagekit.io/scenify/1635014340531_452464.png",
+    preview: "../../assets/thumb.png",
     id: "vAE3f8-4M0-2j5PF04cVY",
   },
 ]

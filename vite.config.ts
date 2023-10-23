@@ -13,7 +13,7 @@ import mkcert from 'vite-plugin-mkcert'
 //   // If the preferred port is available, use it; otherwise, use the fallback port
 //   return isPreferredPortAvailable ? configPort : fallbackPort;
 // }
-// https://vitejs.dev/config/
+
 export default defineConfig({
   
   plugins: [react(), tsconfigPaths(),mkcert()],

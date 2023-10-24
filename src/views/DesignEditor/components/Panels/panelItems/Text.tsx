@@ -26,7 +26,7 @@ export default function () {
         id: nanoid(),
         type: "StaticText",
         width: 420,
-        text: "Add some text",
+        text: "Thêm chữ",
         fontSize: 92,
         fontFamily: font.name,
         textAlign: "center",

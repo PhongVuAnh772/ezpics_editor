@@ -15,6 +15,7 @@ import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import axios from "axios";
 import { toast } from "react-toastify";
+import { useFont } from "@react-hooks-library/core";
 
 export default function () {
   const [query, setQuery] = React.useState("");
@@ -22,6 +23,7 @@ export default function () {
   const setIsSidebarOpen = useSetIsSidebarOpen();
 
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
+  const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
   const [css] = useStyletron();
   const editor = useEditor();
 
@@ -29,25 +31,29 @@ export default function () {
     const fetchFonts = async () => {
       try {
         const response = await axios.post(
-          "https://apis.ezpics.vn/apis/listFont",
+          "http://apis.ezpics.vn/apis/listFont",
           {
             token: "379599",
           }
         );
-        console.log(response.data);
-        const grouped = groupBy(response.data, "name");
-        const standardFonts = Object.keys(grouped).map((key) => {
-          const familyFonts = grouped[key];
-          const standardFont = familyFonts.find((familyFont) =>
-            familyFont.postscript_name.includes("-Regular")
-          );
-          if (standardFont) {
-            return standardFont;
-          }
-          return familyFonts[familyFonts.length - 1];
-        });
+        const data = response.data.data;
 
-        setCommonFonts(standardFonts);
+        // const grouped = groupBy(response.data, "name");
+        // const standardFonts = Object.keys(grouped).map((key) => {
+        //   const familyFonts = grouped[key];
+        //   const standardFont = familyFonts.find((familyFont) =>
+        //     familyFont.postscript_name.includes("-Regular")
+        //   );
+        //   if (standardFont) {
+        //     return standardFont;
+        //   }
+        //   return familyFonts[familyFonts.length - 1];
+        // });
+        // console.log(grouped)
+        console.log(data);
+        setCommonFonts(data);
+
+        
       } catch (error) {
         console.error("Error fetching fonts:", error);
         toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
@@ -65,6 +71,11 @@ export default function () {
 
     fetchFonts();
   }, []);
+  useEffect(() => {
+    commonFonts.map(async (font) => {
+          handleFontFamilyChange(font)
+        });
+  },[commonFonts]);
 
   const handleFontFamilyChange = async (x: any) => {
     if (editor) {
@@ -136,13 +147,25 @@ export default function () {
                   alignItems: "center",
                   cursor: "pointer",
                   fontSize: "14px",
+                  paddingBottom: "10px",
                   ":hover": {
                     backgroundColor: "rgb(245,246,247)",
                   },
                 })}
                 id={font.id}
               >
-                <img src={font.name} />
+                <h3
+                  // className={css({
+
+                  // })}
+                  style={{
+                    fontFamily: font.name, // Use useFont here
+                    fontWeight: font.weight,
+                  }}
+                >
+                  {font.name} - Dùng là thích
+                </h3>
+                {/* {font.} */}
               </div>
             );
           })}

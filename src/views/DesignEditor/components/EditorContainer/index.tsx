@@ -48,10 +48,10 @@ const getValueOnline = async () => {
   let dataCookie = getCookie("data-ezpics");
   toast("Có mạng !! 🦄", {
     position: "top-left",
-    autoClose: 5000,
+    autoClose: 2000,
     hideProgressBar: false,
     closeOnClick: true,
-    pauseOnHover: true,
+    pauseOnHover: false,
     draggable: true,
     progress: undefined,
     theme: "dark",
@@ -61,10 +61,10 @@ const getValueOnline = async () => {
   if (dataCookie === null) {
     toast("Dữ liệu trống", {
       position: "top-left",
-      autoClose: 5000,
+      autoClose: 2000,
       hideProgressBar: false,
       closeOnClick: true,
-      pauseOnHover: true,
+      pauseOnHover: false,
       draggable: true,
       progress: undefined,
       theme: "dark",
@@ -72,8 +72,6 @@ const getValueOnline = async () => {
   } else {
     const dataParsed = JSON.parse(dataCookie);
     console.log("Có dữ liệu" + dataParsed);
-    const queryString = window.location.search;
-    console.log(queryString);
     confirmAlert(options);
 
     // const response = await axios.post()
@@ -82,10 +80,10 @@ const getValueOnline = async () => {
 const handleOffline = () => {
   toast.error("Mất mạng, tự động lưu lịch sử chỉnh sửa vào bộ nhớ tạm", {
     position: "top-left",
-    autoClose: 5000,
+    autoClose: 2000,
     hideProgressBar: false,
     closeOnClick: true,
-    pauseOnHover: true,
+    pauseOnHover: false,
     draggable: true,
     progress: undefined,
     theme: "dark",

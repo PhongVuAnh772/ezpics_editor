@@ -5,12 +5,21 @@ import { useZoomRatio, useEditor } from "@layerhub-io/react";
 import { Block } from "baseui/block";
 import { Slider } from "baseui/slider";
 import { Input } from "baseui/input";
+import useAppContext from "~/hooks/useAppContext"
+import panelItems from "../../Panels/panelItems";
+import useIsSidebarOpen from "~/hooks/useIsSidebarOpen"
 
 interface Options {
   zoomRatio: number;
 }
 
+interface State {
+  panel: string
+}
 export default function () {
+  const [state, setState] = React.useState<State>({ panel: "Text" })
+  const isSidebarOpen = useIsSidebarOpen()
+  const { activePanel, activeSubMenu } = useAppContext()
   const zoomMin = 10;
   const zoomMax = 240;
   const editor = useEditor();
@@ -38,7 +47,6 @@ export default function () {
       
     });
     if (event.ctrlKey) {
-        // Thực hiện chức năng Undo ở đây && event.key === "z" 
         console.log("Ctrl + Z pressed");
       }
 
@@ -61,7 +69,7 @@ export default function () {
       }}
     >
       <div>
-        <Button kind={KIND.tertiary} size={SIZE.compact}>
+        <Button kind={KIND.tertiary} size={SIZE.compact} >
           <Icons.Layers size={20} />
         </Button>
       </div>

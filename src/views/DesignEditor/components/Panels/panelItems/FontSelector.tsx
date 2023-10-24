@@ -1,40 +1,46 @@
-import React,{useEffect} from "react"
-import ArrowBackOutline from "~/components/Icons/ArrowBackOutline"
-import Search from "~/components/Icons/Search"
-import { Input, SIZE } from "baseui/input"
-import useAppContext from "~/hooks/useAppContext"
-import { useStyletron } from "baseui"
-import { IStaticText } from "@layerhub-io/types"
-import { useEditor } from "@layerhub-io/react"
-import { loadFonts } from "~/utils/fonts"
-import { SAMPLE_FONTS } from "~/constants/editor"
-import { groupBy } from "lodash"
-import Scrollable from "~/components/Scrollable"
-import { Block } from "baseui/block"
-import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft"
-import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
-import axios from "axios"
+import React, { useEffect } from "react";
+import ArrowBackOutline from "~/components/Icons/ArrowBackOutline";
+import Search from "~/components/Icons/Search";
+import { Input, SIZE } from "baseui/input";
+import useAppContext from "~/hooks/useAppContext";
+import { useStyletron } from "baseui";
+import { IStaticText } from "@layerhub-io/types";
+import { useEditor } from "@layerhub-io/react";
+import { loadFonts } from "~/utils/fonts";
+import { SAMPLE_FONTS } from "~/constants/editor";
+import { groupBy } from "lodash";
+import Scrollable from "~/components/Scrollable";
+import { Block } from "baseui/block";
+import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
+import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
+import axios from "axios";
+import { toast } from "react-toastify";
 
 export default function () {
-  const [query, setQuery] = React.useState("")
-  const { setActiveSubMenu } = useAppContext()
-  const setIsSidebarOpen = useSetIsSidebarOpen()
+  const [query, setQuery] = React.useState("");
+  const { setActiveSubMenu } = useAppContext();
+  const setIsSidebarOpen = useSetIsSidebarOpen();
 
-  const [commonFonts, setCommonFonts] = React.useState<any[]>([])
-  const [css] = useStyletron()
-  const editor = useEditor()
+  const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
+  const [css] = useStyletron();
+  const editor = useEditor();
 
- useEffect(() => {
+  useEffect(() => {
     const fetchFonts = async () => {
       try {
-        const response = await axios.post("https://apis.ezpics.vn/apis/listFont", {
-          token: "379599"
-        });
+        const response = await axios.post(
+          "https://apis.ezpics.vn/apis/listFont",
+          {
+            token: "379599",
+          }
+        );
         console.log(response.data);
         const grouped = groupBy(response.data, "name");
         const standardFonts = Object.keys(grouped).map((key) => {
           const familyFonts = grouped[key];
-          const standardFont = familyFonts.find((familyFont) => familyFont.postscript_name.includes("-Regular"));
+          const standardFont = familyFonts.find((familyFont) =>
+            familyFont.postscript_name.includes("-Regular")
+          );
           if (standardFont) {
             return standardFont;
           }
@@ -44,6 +50,16 @@ export default function () {
         setCommonFonts(standardFonts);
       } catch (error) {
         console.error("Error fetching fonts:", error);
+        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     };
 
@@ -55,15 +71,15 @@ export default function () {
       const font = {
         name: x.name,
         url: x.font_ttf,
-      }
-      await loadFonts([font])
+      };
+      await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({
         fontFamily: x.name,
         fontURL: font.url,
-      })
+      });
     }
-  }
+  };
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -76,11 +92,16 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block $style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+        <Block
+          $style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+        >
           <ArrowBackOutline size={24} />
           <Block>Chọn kiểu chữ</Block>
         </Block>
-        <Block onClick={() => setIsSidebarOpen(false)} $style={{ cursor: "pointer", display: "flex" }}>
+        <Block
+          onClick={() => setIsSidebarOpen(false)}
+          $style={{ cursor: "pointer", display: "flex" }}
+        >
           <AngleDoubleLeft size={18} />
         </Block>
       </Block>
@@ -123,10 +144,10 @@ export default function () {
               >
                 <img src={font.name} />
               </div>
-            )
+            );
           })}
         </div>
       </Scrollable>
     </Block>
-  )
+  );
 }

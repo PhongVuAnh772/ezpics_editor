@@ -24,9 +24,9 @@ export default defineConfig({
   // },
   server: {
     // 
-        host: 'editor.ezpics.vn',
+        // host: 'editor.ezpics.vn',
 
-    // host: 'localhost',
+    host: 'localhost',
     port:  5173,
     https: false
   },

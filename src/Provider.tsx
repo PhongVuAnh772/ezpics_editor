@@ -11,12 +11,25 @@ import { I18nextProvider } from "react-i18next"
 import { TimerProvider } from "@layerhub-io/use-timer"
 import i18next from "i18next"
 import "./translations"
+import { ToastContainer, toast } from 'react-toastify';
 
 const engine = new Styletron()
 
 export default function ({ children }: { children: React.ReactNode }) {
   return (
     <Provider store={store}>
+      <ToastContainer
+position="top-right"
+autoClose={5000}
+hideProgressBar={false}
+newestOnTop={false}
+closeOnClick
+rtl={false}
+pauseOnFocusLoss
+draggable
+pauseOnHover
+theme="light"
+/>
       <DesignEditorProvider>
         <TimerProvider>
           <AppProvider>

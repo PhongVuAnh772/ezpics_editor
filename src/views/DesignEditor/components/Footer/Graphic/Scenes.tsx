@@ -8,6 +8,8 @@ import { getDefaultTemplate } from "~/constants/design-editor"
 import { useEditor } from "@layerhub-io/react"
 import { IScene } from "@layerhub-io/types"
 import { Block } from "baseui/block"
+import { ToastContainer, toast } from 'react-toastify';
+
 
 export default function () {
   const scenes = useDesignEditorPages()
@@ -103,7 +105,17 @@ export default function () {
     setScenes(newPages)
     setCurrentScene(newPage)
   }, [scenes, currentDesign])
-
+  const handleAdd = () => {
+toast('Tính năng này đang được cập nhật, hãy chờ nhé !! 🦄', {
+position: "top-left",
+autoClose: 5000,
+hideProgressBar: false,
+closeOnClick: true,
+pauseOnHover: true,
+draggable: true,
+progress: undefined,
+theme: "dark",
+});  }
   const changePage = React.useCallback(
     async (page: any) => {
       setCurrentPreview("")
@@ -126,6 +138,7 @@ export default function () {
   )
 
   return (
+    <>
     <Block
       $style={{
         padding: "0.25rem 0.75rem",
@@ -181,7 +194,8 @@ export default function () {
           }}
         >
           <div
-            onClick={addScene}
+            // onClick={addScene}
+            onClick={handleAdd}
             className={css({
               width: "100px",
               height: "56px",
@@ -197,5 +211,7 @@ export default function () {
         </div>
       </Block>
     </Block>
+    </>
+
   )
 }

@@ -9,12 +9,12 @@ interface CanvasRef {
 
 export default function CanvasComponent() {
   const { displayPlayback } = useDesignEditorContext();
-  const canvasRef = useRef<CanvasRef | null>(null); // Sử dụng kiểu CanvasRef cho canvasRef
+  const canvasRef = useRef<CanvasRef | null>(null); 
 
   const handleDownloadClick = () => {
     if (canvasRef.current) {
-      const canvasElement = canvasRef.current.getCanvas(); // Lấy tham chiếu đến đối tượng canvas
-      const dataURL = canvasElement.toDataURL("image/png"); // Chuyển canvas thành URL dữ liệu ảnh
+      const canvasElement = canvasRef.current.getCanvas(); 
+      const dataURL = canvasElement.toDataURL("image/png"); 
       const a = document.createElement("a");
       a.href = dataURL;
       a.download = "my_image.png"; // Tên tệp tải xuống
@@ -26,7 +26,6 @@ export default function CanvasComponent() {
     <div style={{ flex: 1, display: "flex", position: "relative" }}>
       {displayPlayback && <Playback />}
       <Canvas
-        // ref={c anvasRef}
         config={{
           background: "#f1f2f6",
           controlsPosition: {
@@ -40,7 +39,6 @@ export default function CanvasComponent() {
           },
         }}
       />
-      <button onClick={handleDownloadClick}>Tải ảnh</button>
     </div>
   );
 }

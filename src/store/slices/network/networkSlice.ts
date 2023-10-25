@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import type {RootState} from '../../store/store';
+import type { RootState } from '~/store/rootReducer';
 import { Reducer } from 'redux';
 
 interface NetworkState {

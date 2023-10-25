@@ -52,8 +52,6 @@ export default function () {
         // console.log(grouped)
         console.log(data);
         setCommonFonts(data);
-
-        
       } catch (error) {
         console.error("Error fetching fonts:", error);
         toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
@@ -72,10 +70,15 @@ export default function () {
     fetchFonts();
   }, []);
   useEffect(() => {
-    commonFonts.map(async (font) => {
-          handleFontFamilyChange(font)
-        });
-  },[commonFonts]);
+    if (commonFonts.length > 0) {
+      commonFonts.map(async (font) => {
+        handleFontFamilyChange(font);
+      });
+    }
+    else {
+
+    }
+  }, [commonFonts]);
 
   const handleFontFamilyChange = async (x: any) => {
     if (editor) {

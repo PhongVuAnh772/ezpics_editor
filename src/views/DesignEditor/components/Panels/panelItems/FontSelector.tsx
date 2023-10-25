@@ -29,7 +29,6 @@ export default function () {
   const editor = useEditor();
   const networkAPI = useAppSelector(state => state.network.ipv4Address);
   useEffect(() => {
-    console.log(networkAPI)
     const fetchFonts = async () => {
       try {
         const response = await axios.post(
@@ -39,7 +38,6 @@ export default function () {
           }
         );
         const data = response.data.data;
-        console.log(data);
         // const grouped = groupBy(response.data, "name");
         // const standardFonts = Object.keys(grouped).map((key) => {
         //   const familyFonts = grouped[key];
@@ -52,7 +50,6 @@ export default function () {
         //   return familyFonts[familyFonts.length - 1];
         // });
         // console.log(grouped)
-        console.log(data);
         setCommonFonts(data);
         if (commonFonts.length > 0) {
       commonFonts.map(async (font) => {
@@ -90,7 +87,7 @@ export default function () {
       await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({
-        fontFamily: x.name,
+        fontFamily: font.name,
         fontURL: font.url,
       });
     }

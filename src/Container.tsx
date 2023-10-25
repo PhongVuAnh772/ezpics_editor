@@ -57,7 +57,9 @@ function Container({ children }: { children: React.ReactNode }) {
     Promise.all(promisesList)
       .then((res) => {
         res.forEach((uniqueFont) => {
-          if (uniqueFont && uniqueFont.family) {
+          //  && uniqueFont.name
+          console.log(uniqueFont)
+          if (uniqueFont) {
             document.fonts.add(uniqueFont)
           }
         })

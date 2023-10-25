@@ -106,6 +106,7 @@ export default function () {
     const currentScene = editor.scene.exportToJSON()
     const updatedScenes = scenes.map((scn) => {
       if (scn.id === currentScene.id) {
+        
         return {
           id: scn.id,
           duration: scn.duration,

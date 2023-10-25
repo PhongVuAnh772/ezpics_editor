@@ -60,29 +60,29 @@ export default function () {
   const { setActiveSubMenu } = useAppContext()
   const editor = useEditor()
 
-  React.useEffect(() => {
-    if (activeObject && activeObject.type === "StaticText") {
-      const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
-      setState({ ...state, ...textProperties })
-    }
-  }, [activeObject])
+  // React.useEffect(() => {
+  //   if (activeObject && activeObject.type === "StaticText") {
+  //     const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
+  //     setState({ ...state, ...textProperties })
+  //   }
+  // }, [activeObject])
 
-  React.useEffect(() => {
-    let watcher = async () => {
-      if (activeObject && activeObject.type === "StaticText") {
-        const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
-        setState({ ...state, ...textProperties })
-      }
-    }
-    if (editor) {
-      editor.on("history:changed", watcher)
-    }
-    return () => {
-      if (editor) {
-        editor.off("history:changed", watcher)
-      }
-    }
-  }, [editor, activeObject])
+  // React.useEffect(() => {
+  //   let watcher = async () => {
+  //     if (activeObject && activeObject.type === "StaticText") {
+  //       const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
+  //       setState({ ...state, ...textProperties })
+  //     }
+  //   }
+  //   if (editor) {
+  //     editor.on("history:changed", watcher)
+  //   }
+  //   return () => {
+  //     if (editor) {
+  //       editor.off("history:changed", watcher)
+  //     }
+  //   }
+  // }, [editor, activeObject])
 
   const makeBold = React.useCallback(async () => {
     if (state.bold) {

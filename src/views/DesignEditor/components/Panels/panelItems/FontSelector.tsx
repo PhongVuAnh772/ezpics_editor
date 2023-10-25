@@ -54,6 +54,11 @@ export default function () {
         // console.log(grouped)
         console.log(data);
         setCommonFonts(data);
+        if (commonFonts.length > 0) {
+      commonFonts.map(async (font) => {
+        handleLoadFont(font);
+      });
+    }
       } catch (error) {
         console.error("Error fetching fonts:", error);
         toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
@@ -70,15 +75,11 @@ export default function () {
     };
 
     fetchFonts();
-  }, []);
-  useEffect(() => {
-    if (commonFonts.length > 0) {
-      commonFonts.map(async (font) => {
-        handleFontFamilyChange(font);
-      });
-    }
-    
   }, [commonFonts]);
+  // useEffect(() => {
+    
+    
+  // }, [commonFonts]);
 
   const handleFontFamilyChange = async (x: any) => {
     if (editor) {
@@ -92,6 +93,20 @@ export default function () {
         fontFamily: x.name,
         fontURL: font.url,
       });
+    }
+  };
+  const handleLoadFont = async (x: any) => {
+    if (editor) {
+      const font = {
+        name: x.name,
+        url: x.font_ttf,
+      };
+      await loadFonts([font]);
+      // @ts-ignore
+      // editor.objects.update<IStaticText>({
+      //   fontFamily: x.name,
+      //   fontURL: font.url,
+      // });
     }
   };
 

@@ -29,22 +29,25 @@ export default function () {
     setState({ ...state, flipX: !state.flipX });
   }, [editor, state]);
   const removeBackground = async () => {
-    console.log(activeObject);
-    // const srcAttributeValue = activeObject._element.getAttribute("src");
-    // console.log(srcAttributeValue);
-    // const response = await axios.post<any>(
-    //   "https://apis.ezpics.vn/apis/removeBackgroundImageAPI",
-    //   {
-    //     token: "379599",
-    //     // image: srcAttributeValue,
-    //   }
-    // );
-    // if (response.data.code === 1) {
-    //   console.log("ngu");
-    // } else {
-    //   console.log("khôn");
-    // }
-    // console.log(response.data)
+    // console.log(activeObject);
+    const srcAttributeValue = activeObject._element.getAttribute("src");
+    console.log(srcAttributeValue);
+    const response = await axios.post<any>(
+      "http://apis.ezpics.vn/apis/removeBackgroundImageAPI",
+      {
+        token: "nKdAS2QRmJVZgk5UoyDXqaFbN1698211167",
+        image: srcAttributeValue,
+      }
+    );
+    if (response.data.code === 1) {
+      console.log("ngu");
+      console.log(response.data)
+    } else {
+      console.log("khôn");
+            console.log(response.data)
+
+    }
+    console.log(response.data)
   };
   const flipVertically = React.useCallback(() => {
     editor.objects.update({ flipY: !state.flipY });

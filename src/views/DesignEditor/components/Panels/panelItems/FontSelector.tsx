@@ -33,11 +33,11 @@ export default function () {
         const response = await axios.post(
           "http://apis.ezpics.vn/apis/listFont",
           {
-            token: "379599",
+            token: "nKdAS2QRmJVZgk5UoyDXqaFbN1698211167",
           }
         );
         const data = response.data.data;
-
+        console.log(data);
         // const grouped = groupBy(response.data, "name");
         // const standardFonts = Object.keys(grouped).map((key) => {
         //   const familyFonts = grouped[key];
@@ -75,9 +75,7 @@ export default function () {
         handleFontFamilyChange(font);
       });
     }
-    else {
-
-    }
+    
   }, [commonFonts]);
 
   const handleFontFamilyChange = async (x: any) => {

@@ -16,6 +16,7 @@ import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useFont } from "@react-hooks-library/core";
+import { useAppSelector } from "~/hooks/hook";
 
 export default function () {
   const [query, setQuery] = React.useState("");
@@ -26,12 +27,13 @@ export default function () {
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
   const [css] = useStyletron();
   const editor = useEditor();
-
+  const networkAPI = useAppSelector(state => state.network.ipv4Address);
   useEffect(() => {
+    console.log(networkAPI)
     const fetchFonts = async () => {
       try {
         const response = await axios.post(
-          "http://apis.ezpics.vn/apis/listFont",
+          `${networkAPI}/listFont`,
           {
             token: "nKdAS2QRmJVZgk5UoyDXqaFbN1698211167",
           }

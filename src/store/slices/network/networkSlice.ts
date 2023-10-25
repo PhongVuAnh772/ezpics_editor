@@ -7,7 +7,7 @@ interface NetworkState {
   }
 
 const NetworkInitialState: NetworkState = {
-    ipv4Address: 'http://192.168.10.149:5000',
+    ipv4Address: 'http://apis.ezpics.vn/apis',
   };
 
   export const networkSlice =  createSlice({

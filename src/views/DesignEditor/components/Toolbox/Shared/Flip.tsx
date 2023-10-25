@@ -9,12 +9,14 @@ import { StatefulTooltip } from "baseui/tooltip";
 import FlipHorizontal from "~/components/Icons/FlipHorizontal";
 import FlipVertical from "~/components/Icons/FlipVertical";
 import axios from "axios";
+import { useAppSelector } from "~/hooks/hook";
 
 export default function () {
   const editor = useEditor();
   const activeObject = useActiveObject() as any;
   const [state, setState] = React.useState({ flipX: false, flipY: false });
  const [stated, setStated] = React.useState({ opacity: 1 })
+ const networkAPI = useAppSelector(state => state.network.ipv4Address)
   React.useEffect(() => {
     if (activeObject) {
       setState({
@@ -33,7 +35,7 @@ export default function () {
     const srcAttributeValue = activeObject._element.getAttribute("src");
     console.log(srcAttributeValue);
     const response = await axios.post<any>(
-      "http://apis.ezpics.vn/apis/removeBackgroundImageAPI",
+      `${networkAPI}/removeBackgroundImageAPI`,
       {
         token: "nKdAS2QRmJVZgk5UoyDXqaFbN1698211167",
         image: srcAttributeValue,

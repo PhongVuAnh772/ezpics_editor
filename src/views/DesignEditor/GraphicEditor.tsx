@@ -17,11 +17,101 @@ import { loadTemplateFonts } from "~/utils/fonts";
 import { v4 as uuidv4 } from "uuid";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import { loadFonts } from "~/utils/fonts";
-
+import { toast } from "react-toastify";
 function GraphicEditor() {
+  const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
+  const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
+  const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
+
   const { setCurrentScene, currentScene } = useDesignEditorContext();
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const handleLoadFont = async (x: any) => {
+    if (editor) {
+      const font = {
+        name: x.name,
+        url: x.font_ttf,
+      };
+      await loadFonts([font]);
+      // @ts-ignore
+      // editor.objects.update<IStaticText>({
+      //   fontFamily: x.name,
+      //   fontURL: font.url,
+      // });
+    }
+  };
+  useEffect(() => {
+    const fetchFonts = async () => {
+      console.log(networkAPI);
+      try {
+        const response = await axios.post(`${networkAPI}/listFont`, {
+          token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
+        });
+        const data = response.data.data;
+        setCommonFonts(data);
+        if (commonFonts.length > 0) {
+          commonFonts.map(async (font) => {
+            handleLoadFont(font);
+          });
+          console.log(data);
+        }
+      } catch (error) {
+        console.error("Error fetching fonts:", error);
+        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    };
+
+    fetchFonts();
+  }, [currentScene]);
+  const getDataFontTextInitial = async (fontInitial: any) => {
+    //
+    console.log(fontInitial);
+
+    try {
+      const response = await axios.post(`${networkAPI}/listFont`, {
+        token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
+      });
+      const data = response.data.data;
+      setCommonFonts(data);
+      if (commonFonts.length > 0) {
+        // commonFonts.filter(function (font) {
+        //   return font.name.includes(fontInitial);
+        // });
+        commonFonts.map(function (font) {
+          if (font.name.includes(fontInitial)) {
+            // return fontURLInitial[0].font_ttf
+            setFontURLInitial(font.font_ttf);
+            console.log(fontURLInitial);
+            return fontURLInitial;
+          } else {
+          }
+          // console.log(font.name === fontInitial)
+          // console.log(data);
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching fonts:", error);
+      toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
   const generateText = (id: string, detail: any) => {
     return {
       id: id,
@@ -47,13 +137,12 @@ function GraphicEditor() {
       shadow: null,
       charSpacing: 0,
       fill: "#333333",
-      fontFamily: "OpenSans-Regular",
+      fontFamily: "COPPERPLATE",
       fontSize: 92,
-      lineHeight: 1.16,
+      lineHeight: 1.16, 
       text: detail.content.text,
       textAlign: "center",
-      fontURL:
-        "https://fonts.gstatic.com/s/opensans/v27/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0C4nY1M2xLER.ttf",
+      fontURL: getDataFontTextInitial(detail.content.font),
       metadata: {},
     };
   };
@@ -385,9 +474,8 @@ function GraphicEditor() {
     },
     [editor, currentScene]
   );
-  let convertData
+  let convertData;
   useEffect(() => {
-    
     const fetchDataBanks = async () => {
       try {
         const data = {
@@ -425,8 +513,6 @@ function GraphicEditor() {
           // setScenes(template.scenes);
           // //   @ts-ignore
           // setCurrentDesign(template.design);
-
-          
         }
       } catch (error) {
         console.log(error);
@@ -437,43 +523,40 @@ function GraphicEditor() {
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
-          console.log(dataRes)
+        console.log(dataRes);
 
-          const convertData = dataFunction(dataRes);
-          await loadTemplate(convertData)
-          // console.log(response.data);
-          // console.log(typeof convertData);
-          // console.log(convertData);
-          // console.log(convertData)
-          // React.useCallback(
-          //   async (data: any) => {
-          //     let template;
-          //     if (data.type === "GRAPHIC") {
+        const convertData = dataFunction(dataRes);
+        await loadTemplate(convertData);
+        // console.log(response.data);
+        // console.log(typeof convertData);
+        // console.log(convertData);
+        // console.log(convertData)
+        // React.useCallback(
+        //   async (data: any) => {
+        //     let template;
+        //     if (data.type === "GRAPHIC") {
 
-          //       template = await loadGraphicTemplate(convertData);
-          //     }
-          //     //   @ts-ignore
-          //     setScenes(template.scenes);
-          //     //   @ts-ignore
-          //     setCurrentDesign(template.design);
-          //   },
-          //   [editor]
-          // );
-          // console.log(convertData);
-          // let template = await loadGraphicTemplate(convertData);
-          // setScenes(template.scenes);
-          // //   @ts-ignore
-          // setCurrentDesign(template.design);
-
-          
-        
+        //       template = await loadGraphicTemplate(convertData);
+        //     }
+        //     //   @ts-ignore
+        //     setScenes(template.scenes);
+        //     //   @ts-ignore
+        //     setCurrentDesign(template.design);
+        //   },
+        //   [editor]
+        // );
+        // console.log(convertData);
+        // let template = await loadGraphicTemplate(convertData);
+        // setScenes(template.scenes);
+        // //   @ts-ignore
+        // setCurrentDesign(template.design);
       } catch (error) {
         console.log(error);
       }
     };
     fetchDataBanks();
-  }, [dataRes])
-  
+  }, [dataRes]);
+
   return (
     <>
       <EditorContainer>

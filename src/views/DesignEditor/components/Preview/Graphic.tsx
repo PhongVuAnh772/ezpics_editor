@@ -36,6 +36,27 @@ export default function () {
   });
     }
   }, [editor]);
+  const makePreviewNotDown = React.useCallback(async () => {
+    if (editor) {
+      const template = editor.scene.exportToJSON();
+      const image = (await editor.renderer.render(template)) as string;
+      setState({ image });
+      setLoading(false);
+      if (image) {
+        downloadImage(image, "preview.png");
+      }
+      toast("Tải thành công !! 🦄", {
+    position: "top-left",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+  });
+    }
+  }, [editor]);
 
   React.useEffect(() => {
     makePreview();

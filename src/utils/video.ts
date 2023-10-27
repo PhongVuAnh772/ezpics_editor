@@ -49,6 +49,7 @@ export const captureDuration = (video: HTMLVideoElement) => {
 export const loadVideoEditorAssets = async (payload: IScene) => {
   const layers: Partial<ILayer>[] = []
   for (const layer of payload.layers) {
+    console.log(payload.layers)
     if (layer.type === "StaticVideo") {
       // @ts-ignore
       const video = await loadVideoResource(layer.src)
@@ -62,6 +63,10 @@ export const loadVideoEditorAssets = async (payload: IScene) => {
       layers.push(layer)
     }
   }
+  console.log({
+    ...payload,
+    layers: layers,
+  })
   return {
     ...payload,
     layers: layers,

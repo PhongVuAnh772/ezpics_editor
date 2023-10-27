@@ -160,7 +160,7 @@ export default function () {
   const loadGraphicTemplate = async (payload: IDesign) => {
     const scenes = []
     const { scenes: scns, ...design } = payload
-
+    console.log('payload' + payload)
     for (const scn of scns) {
       const scene: IScene = {
         name: scn.name,
@@ -169,6 +169,8 @@ export default function () {
         layers: scn.layers,
         metadata: {},
       }
+      console.log('scns' + scene)
+
       const loadedScene = await loadVideoEditorAssets(scene)
       await loadTemplateFonts(loadedScene)
 
@@ -203,7 +205,7 @@ export default function () {
   const loadVideoTemplate = async (payload: IDesign) => {
     const scenes = []
     const { scenes: scns, ...design } = payload
-
+    
     for (const scn of scns) {
       const design: IScene = {
         name: "Awesome template",
@@ -251,6 +253,8 @@ export default function () {
       reader.onload = (res) => {
         const result = res.target!.result as string
         const design = JSON.parse(result)
+        console.log(typeof(design))
+
         handleImportTemplate(design)
       }
       reader.onerror = (err) => {
@@ -319,6 +323,7 @@ export default function () {
           >
             Xem ảnh
           </Button> */}
+          
           <Button
             size="compact"
             onClick={() => setDisplayPreview(true)}
@@ -331,21 +336,7 @@ export default function () {
               },
             }}
           >
-            Xem ảnh
-          </Button>
-          <Button
-            size="compact"
-            onClick={() => setDisplayPreview(true)}
-            kind={KIND.tertiary}
-            overrides={{
-              StartEnhancer: {
-                style: {
-                  marginRight: "4px",
-                },
-              },
-            }}
-          >
-            Tải và lưu ảnh
+            Xem và lưu ảnh
           </Button>
         </Block>
       </Container>

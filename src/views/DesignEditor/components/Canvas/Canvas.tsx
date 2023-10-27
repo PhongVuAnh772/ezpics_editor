@@ -3,24 +3,10 @@ import { Canvas } from "@layerhub-io/react";
 import Playback from "../Playback";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 
-interface CanvasRef {
-  getCanvas: () => HTMLCanvasElement; // Định nghĩa kiểu cho tham chiếu canvasRef
-}
 
 export default function CanvasComponent() {
   const { displayPlayback } = useDesignEditorContext();
-  const canvasRef = useRef<CanvasRef | null>(null); 
-
-  const handleDownloadClick = () => {
-    if (canvasRef.current) {
-      const canvasElement = canvasRef.current.getCanvas(); 
-      const dataURL = canvasElement.toDataURL("image/png"); 
-      const a = document.createElement("a");
-      a.href = dataURL;
-      a.download = "my_image.png"; // Tên tệp tải xuống
-      a.click();
-    }
-  };
+  
 
   return (
     <div style={{ flex: 1, display: "flex", position: "relative" }}>
@@ -32,7 +18,7 @@ export default function CanvasComponent() {
             rotation: "BOTTOM",
           },
           shadow: {
-            blur: 4,
+            blur: 0.5,
             color: "#fcfcfc",
             offsetX: 0,
             offsetY: 0,

@@ -30,31 +30,21 @@ export default function () {
   const networkAPI = useAppSelector(state => state.network.ipv4Address);
   useEffect(() => {
     const fetchFonts = async () => {
+      console.log(networkAPI)
       try {
         const response = await axios.post(
           `${networkAPI}/listFont`,
           {
-            token: "nKdAS2QRmJVZgk5UoyDXqaFbN1698211167",
+            token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
           }
         );
         const data = response.data.data;
-        // const grouped = groupBy(response.data, "name");
-        // const standardFonts = Object.keys(grouped).map((key) => {
-        //   const familyFonts = grouped[key];
-        //   const standardFont = familyFonts.find((familyFont) =>
-        //     familyFont.postscript_name.includes("-Regular")
-        //   );
-        //   if (standardFont) {
-        //     return standardFont;
-        //   }
-        //   return familyFonts[familyFonts.length - 1];
-        // });
-        // console.log(grouped)
         setCommonFonts(data);
         if (commonFonts.length > 0) {
       commonFonts.map(async (font) => {
         handleLoadFont(font);
       });
+      console.log(data);
     }
       } catch (error) {
         console.error("Error fetching fonts:", error);

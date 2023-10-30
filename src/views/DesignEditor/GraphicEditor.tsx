@@ -285,7 +285,8 @@ function GraphicEditor() {
           if (detail.content.type == "text") {
             // getDataFontTextInitial()
             // console.log(detail);
-
+            let stringMerged;
+            stringMerged  = detail.content.text.replace(/<br\s*\/>/g, '\n');
             dataString.layers.push({
               id: uuidv4(),
               name: "StaticText",
@@ -325,7 +326,7 @@ function GraphicEditor() {
                 100,
               // (parseInt(detail.content.width, 10) / data.width) * 10000
               lineHeight: parseInt(detail.content.gianchu),
-              text: detail.content.text,
+              text: stringMerged,
               textAlign: detail.content.text_align,
               // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
               // fontURLInitial

@@ -18,12 +18,24 @@ import { v4 as uuidv4 } from "uuid";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import { loadFonts } from "~/utils/fonts";
 import { toast } from "react-toastify";
+import { useAppDispatch } from "~/hooks/hook";
+import { REPLACE_TOKEN, REPLACE_ID_USER } from "~/store/slices/token/reducers";
+// import
 function GraphicEditor() {
+  const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
+  const [widthSrc, setWidthSrc] = useState<number>(0);
+  const [heightSrc, setHeightSrc] = useState<number>(0);
   const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
 
-  const { setCurrentScene, currentScene } = useDesignEditorContext();
+  const {
+    setCurrentScene,
+    currentScene,
+    scenes,
+    currentDesign,
+    setCurrentDesign,
+  } = useDesignEditorContext();
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const handleLoadFont = async (x: any) => {
@@ -40,62 +52,25 @@ function GraphicEditor() {
       // });
     }
   };
-  useEffect(() => {
-    const fetchFonts = async () => {
-      console.log(networkAPI);
-      try {
-        const response = await axios.post(`${networkAPI}/listFont`, {
-          token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
-        });
-        const data = response.data.data;
-        setCommonFonts(data);
-        if (commonFonts.length > 0) {
-          commonFonts.map(async (font) => {
-            handleLoadFont(font);
-          });
-          console.log(data);
-        }
-      } catch (error) {
-        console.error("Error fetching fonts:", error);
-        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      }
-    };
 
-    fetchFonts();
-  }, [currentScene]);
   const getDataFontTextInitial = async (fontInitial: any) => {
     //
-    console.log(fontInitial);
+    // console.log(fontInitial);
 
     try {
       const response = await axios.post(`${networkAPI}/listFont`, {
-        token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
+        token: token,
       });
       const data = response.data.data;
       setCommonFonts(data);
       if (commonFonts.length > 0) {
-        // commonFonts.filter(function (font) {
-        //   return font.name.includes(fontInitial);
-        // });
         commonFonts.map(function (font) {
           if (font.name.includes(fontInitial)) {
             // return fontURLInitial[0].font_ttf
             setFontURLInitial(font.font_ttf);
-            console.log(fontURLInitial);
+            console.log(fontURLInitial, font.font_ttf);
             return fontURLInitial;
-          } else {
           }
-          // console.log(font.name === fontInitial)
-          // console.log(data);
         });
       }
     } catch (error) {
@@ -113,16 +88,17 @@ function GraphicEditor() {
     }
   };
   const generateText = (id: string, detail: any) => {
+    console.log(detail.content.color);
+    getDataFontTextInitial(detail.content.font);
     return {
-      id: id,
+      id: uuidv4(),
       name: "StaticText",
       angle: 0,
       stroke: null,
       strokeWidth: 0,
-      left: 390,
-      top: 287.72,
-      width: 420,
-      height: 224.55,
+      left: detail.content.postion_left,
+      top: detail.content.postion_top,
+
       opacity: 1,
       originX: "left",
       originY: "top",
@@ -136,29 +112,29 @@ function GraphicEditor() {
       visible: true,
       shadow: null,
       charSpacing: 0,
-      fill: "#333333",
-      fontFamily: "COPPERPLATE",
-      fontSize: 92,
-      lineHeight: 1.16, 
+      fill: detail.content.color,
+      fontFamily: detail.content.font,
+      fontSize: 80,
+      lineHeight: 1.16,
       text: detail.content.text,
       textAlign: "center",
-      fontURL: getDataFontTextInitial(detail.content.font),
+      fontURL: fontURLInitial,
       metadata: {},
     };
   };
 
   const generateImage = (id: string, detail: any) => {
-    console.log(detail);
+    console.log(detail.content.postion_left);
     return {
-      id: "5789a374-43d3-4c18-9263-e37b5cbb1993",
+      id: uuidv4(),
       name: "StaticImage",
       angle: 0,
       stroke: null,
       strokeWidth: 0,
-      left: 110.60000000000002,
-      top: 353.90999999999997,
-      width: 926,
-      height: 1003,
+      left: detail.content.postion_left,
+      top: detail.content.postion_top,
+      // width: 926,
+      // height: 1003,
       opacity: 1,
       originX: "left",
       originY: "top",
@@ -171,21 +147,13 @@ function GraphicEditor() {
       skewY: 0,
       visible: true,
       shadow: null,
-      src: "https://apis.ezpics.vn/upload/admin/images/50/50_2023_04_07_07_44_25_4457_rb.png",
+      src: detail.content.banner,
       cropX: 0,
       cropY: 0,
       metadata: {},
     };
   };
 
-  const generateLayer = (id: string, type: string, detail: any) => {
-    switch (type) {
-      case "text":
-        return generateText(id, detail);
-      case "image":
-        return generateImage(id, detail);
-    }
-  };
   const editor = useEditor();
   const [dataRes, setDataRes] = useState(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
@@ -217,116 +185,7 @@ function GraphicEditor() {
 
     return { scenes };
   };
-  const dataExample = {
-    id: "hFlkEBdKmMV4wcxWZJUFa",
-    name: "Untitled design",
-    frame: {
-      width: 1280,
-      height: 720,
-    },
-    metadata: {
-      animated: false,
-    },
-    preview: "https://ik.imagekit.io/scenify/2ZdeFFC6gdlw_LkzDN2J5cHs.png",
-    layers: [
-      {
-        id: "background",
-        name: "Initial Frame",
-        angle: 0,
-        stroke: null,
-        strokeWidth: 0,
-        left: 0,
-        top: 0,
-        width: 1280,
-        height: 720,
-        opacity: 1,
-        originX: "left",
-        originY: "top",
-        scaleX: 1,
-        scaleY: 1,
-        type: "Background",
-        flipX: false,
-        flipY: false,
-        skewX: 0,
-        skewY: 0,
-        visible: true,
-        shadow: {
-          color: "#fcfcfc",
-          blur: 4,
-          offsetX: 0,
-          offsetY: 0,
-          affectStroke: false,
-          nonScaling: false,
-        },
-        fill: "#F8E71D",
-        metadata: {},
-      },
-      {
-        id: "YgXmiNK_RuATY-xMyNf93",
-        name: "StaticImage",
-        angle: 0,
-        stroke: null,
-        strokeWidth: 0,
-        left: 0,
-        top: 0,
-        width: 1280,
-        height: 720,
-        opacity: 1,
-        originX: "left",
-        originY: "top",
-        scaleX: 1,
-        scaleY: 1,
-        type: "StaticImage",
-        flipX: false,
-        flipY: false,
-        brightness: 0,
-        borderRadius: 0,
-        skewX: 0,
-        skewY: 0,
-        visible: true,
-        shadow: null,
-        src: "https://images.pexels.com/photos/3493777/pexels-photo-3493777.jpeg?auto=compress&cs=tinysrgb&h=650&w=940",
-        cropX: 0,
-        cropY: 0,
-        metadata: {
-          brightness: 20,
-        },
-      },
-      {
-        id: "ZFuu3wPmsF-Dp_XF2HE1W",
-        name: "StaticText",
-        angle: 0,
-        stroke: null,
-        strokeWidth: 0,
-        left: 0,
-        top: 0,
-        width: 618,
-        height: 67.8,
-        opacity: 1,
-        originX: "left",
-        originY: "top",
-        scaleX: 1,
-        scaleY: 1,
-        type: "StaticText",
-        flipX: false,
-        flipY: false,
-        skewX: 0,
-        skewY: 0,
-        visible: true,
-        shadow: null,
-        charSpacing: 0,
-        fill: "#333333",
-        fontFamily: "ComicNeue-Regular",
-        fontSize: 60,
-        lineHeight: 1.16,
-        text: "My awesome template",
-        textAlign: "center",
-        fontURL:
-          "https://fonts.gstatic.com/s/comicneue/v3/4UaHrEJDsxBrF37olUeDx63j5pN1MwI.ttf",
-        metadata: {},
-      },
-    ],
-  };
+
   const dataFunction = (data: any) => {
     // console.log(data);
     const dataString = {
@@ -343,10 +202,10 @@ function GraphicEditor() {
           angle: 0,
           stroke: null,
           strokeWidth: 0,
-          left: 0,
-          top: 0,
-          width: data.width,
-          height: data.height,
+          // left: 0,
+          // top: 0,
+          // width: data.width,
+          // height: data.height,
           opacity: 1,
           originX: "left",
           originY: "top",
@@ -404,10 +263,10 @@ function GraphicEditor() {
           angle: 0,
           stroke: null,
           strokeWidth: 0,
-          left: 0,
-          top: 0,
-          width: data.width,
-          height: data.height,
+          // left: 0,
+          // top: 0,
+          // width: data.width,
+          // height: data.height,
           opacity: 1,
           originX: "left",
           originY: "top",
@@ -434,13 +293,95 @@ function GraphicEditor() {
       metadata: {},
       preview: "",
     };
+
     if (data.productDetail) {
-      data.productDetail.forEach((detail: any, index: number) => {
-        const layerId = uuidv4();
-        dataString.layers.push(
-          generateLayer(layerId, detail.content.type, detail)
-        );
-      });
+      data.productDetail.forEach(
+        async (detail: any, index: number) => {
+          const layerId = uuidv4();
+          console.log(detail.content.type);
+          if (detail.content.type == "text") {
+            // dataString.layers.push({
+            //   id: uuidv4(),
+            //   name: "StaticText",
+            //   angle: 0,
+            //   stroke: null,
+            //   strokeWidth: 0,
+            //   left: (detail.content.postion_left / 100) * data.width,
+            //   top:  (detail.content.postion_top / 100) * data.height,
+            //   opacity: 1,
+            //   originX: "left",
+            //   originY: "top",
+            //   // scaleX: (parseInt(detail.content.width, 10) / data.width) * 100,
+            //   // scaleY: (parseInt(detail.content.width, 10) / data.width) * 100,
+            //   type: "StaticText",
+            //   flipX: false,
+            //   flipY: false,
+            //   skewX: 0,
+            //   skewY: 0,
+            //   visible: true,
+            //   shadow: null,
+            //   charSpacing: 0,
+            //   fill: detail.content.color,
+            //   fontFamily: detail.content.font,
+            //   fontSize: parseInt(detail.content.width, 10),
+            //   // (parseInt(detail.content.width, 10) / data.width) * 10000
+            //   lineHeight: (parseInt(detail.content.size, 10) / data.width) * 10000,
+            //   text: detail.content.text,
+            //   textAlign: detail.content.text_align,
+            //   fontURL: fontURLInitial,
+            //   metadata: {},
+            // });
+          } else if (detail.content.type == "image") {
+            // getMeta(detail.content.banner).then((img) => {
+            //   if (img.naturalHeight && img.naturalWidth) {
+            dataString.layers.push({
+              id: uuidv4(),
+              name: "StaticImage",
+              angle: 0,
+              stroke: null,
+              strokeWidth: 0,
+              left: (detail.content.postion_left / 100) * data.width,
+              top: (detail.content.postion_top / 100) * data.height,
+
+              opacity: 1,
+              originX: "left",
+              originY: "top",
+              scaleX:
+            ((parseInt(detail.content.width.replace(/vw/g, "")) *
+                  data.width) /
+                100) /
+                detail.content.naturalWidth,
+              // img.naturalWidth,
+              scaleY:
+                ((parseInt(detail.content.width.replace(/vw/g, "")) *
+                  data.width) /
+                100 /
+                detail.content.naturalWidth),
+              // img.naturalWidth,
+              // data.width,
+              type: "StaticImage",
+              flipX: detail.content.lat_anh,
+              flipY: false,
+              skewX: 0,
+              skewY: 0,
+              visible: true,
+              shadow: null,
+              src: detail.content.banner,
+              cropX: 0,
+              cropY: 0,
+              metadata: {},
+            });
+            // }
+            // else {
+            //   console.warn("Đợi tí")
+            // }
+            // });
+          }
+        }
+        //  (
+        //   generateLayer(layerId, detail.content.type, detail)
+        // );
+      );
     }
     console.log(dataString);
 
@@ -450,17 +391,22 @@ function GraphicEditor() {
   const urlParams = new URLSearchParams(queryString);
   const token = urlParams.get("token");
   const id = urlParams.get("id");
+  if (token && id) {
+    dispatch(REPLACE_TOKEN(token));
+    dispatch(REPLACE_ID_USER(id));
+  }
+
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const loadTemplate = React.useCallback(
     async (template: any) => {
       if (editor) {
         const fonts: any[] = [];
         template.layers.forEach((object: any) => {
-          if (object.type === "StaticText" || object.type === "DynamicText") {
+          if (object.type === "StaticText") {
             fonts.push({
               name: object.fontFamily,
               url: object.fontURL,
-              options: { style: "normal", weight: 400 },
+              // options: { style: "normal", weight: 400 },
             });
           }
         });
@@ -468,13 +414,49 @@ function GraphicEditor() {
         // if (filteredFonts.length > 0) {
         //   await loadFonts(filteredFonts);
         // }
-
+        // setCurrentScene
+        // setCurrentScene({ ...template, id: currentScene?.id });
+        // scenes.push({ ...template, id: currentScene?.id });
         setCurrentScene({ ...template, id: currentScene?.id });
+        // setCurrentDesign({...template, id: currentScene?.id });
       }
     },
-    [editor, currentScene]
+    // editor,
+    [scenes, currentScene, currentDesign]
   );
   let convertData;
+  useEffect(() => {
+    const fetchFonts = async () => {
+      console.log(networkAPI);
+      try {
+        const response = await axios.post(`${networkAPI}/listFont`, {
+          token: token,
+        });
+        const data = response.data.data;
+        setCommonFonts(data);
+        if (commonFonts.length > 0) {
+          commonFonts.map(async (font) => {
+            handleLoadFont(font);
+          });
+          console.log(data);
+        }
+      } catch (error) {
+        console.error("Error fetching fonts:", error);
+        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    };
+
+    fetchFonts();
+  }, [currentScene]);
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
@@ -523,10 +505,12 @@ function GraphicEditor() {
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
-        console.log(dataRes);
+        // await .then(async (data) => {
+        //   // await loadGraphicTemplate(data);
+        // });
+        const dataRender = await dataFunction(dataRes);
+        await loadTemplate(dataRender);
 
-        const convertData = dataFunction(dataRes);
-        await loadTemplate(convertData);
         // console.log(response.data);
         // console.log(typeof convertData);
         // console.log(convertData);
@@ -549,7 +533,6 @@ function GraphicEditor() {
         // let template = await loadGraphicTemplate(convertData);
         // setScenes(template.scenes);
         // //   @ts-ignore
-        // setCurrentDesign(template.design);
       } catch (error) {
         console.log(error);
       }

@@ -12,7 +12,7 @@ export default function () {
         justifyContent: "space-between",
       }}
     >
-      <Block>Multiple</Block>
+      <Block>Đa Layers</Block>
       <Common />
     </Block>
   )

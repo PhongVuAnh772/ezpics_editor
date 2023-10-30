@@ -46,16 +46,7 @@ const options = {
 };
 const getValueOnline = async () => {
   let dataCookie = getCookie("data-ezpics");
-  toast("Có mạng !! 🦄", {
-    position: "top-left",
-    autoClose: 2000,
-    hideProgressBar: false,
-    closeOnClick: true,
-    pauseOnHover: false,
-    draggable: true,
-    progress: undefined,
-    theme: "dark",
-  });
+  
   console.log(dataCookie == "");
 
   if (dataCookie === null) {
@@ -73,6 +64,16 @@ const getValueOnline = async () => {
     const dataParsed = JSON.parse(dataCookie);
     console.log("Có dữ liệu" + dataParsed);
     confirmAlert(options);
+    toast("Có mạng !! 🦄", {
+    position: "top-left",
+    autoClose: 2000,
+    hideProgressBar: false,
+    closeOnClick: true,
+    pauseOnHover: false,
+    draggable: true,
+    progress: undefined,
+    theme: "dark",
+  });
 
     // const response = await axios.post()
   }

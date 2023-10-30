@@ -62,6 +62,7 @@ export default function () {
     editor.objects.update({ flipY: !state.flipY });
     setState({ ...state, flipY: !state.flipY });
   }, [editor, state]);
+   
 
   const changingBrightness = React.useCallback(() => {
     editor.objects.update({ flipY: !state.flipY });
@@ -87,7 +88,20 @@ export default function () {
             kind={KIND.tertiary}
             onClick={flipVertically}
           >
-            Lật ảnh
+            Lật ảnh dọc
+          </Button>
+        </StatefulTooltip>
+        <StatefulTooltip
+          placement={PLACEMENT.bottom}
+          showArrow={true}
+          accessibilityType={"tooltip"}
+        >
+          <Button
+            size={SIZE.compact}
+            kind={KIND.tertiary}
+            onClick={flipHorizontally}
+          >
+            Lật ảnh ngang
           </Button>
         </StatefulTooltip>
         <StatefulTooltip

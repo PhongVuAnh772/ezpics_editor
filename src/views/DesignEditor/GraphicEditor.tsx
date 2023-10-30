@@ -55,7 +55,6 @@ function GraphicEditor() {
 
   const getDataFontTextInitial = async (fontInitial: any) => {
     //
-    // console.log(fontInitial);
 
     try {
       const response = await axios.post(`${networkAPI}/listFont`, {
@@ -68,7 +67,6 @@ function GraphicEditor() {
           if (font.name.includes(fontInitial)) {
             // return fontURLInitial[0].font_ttf
             setFontURLInitial(font.font_ttf);
-            console.log(fontURLInitial, font.font_ttf);
             return fontURLInitial;
           }
         });
@@ -88,7 +86,6 @@ function GraphicEditor() {
     }
   };
   const generateText = (id: string, detail: any) => {
-    console.log(detail.content.color);
     getDataFontTextInitial(detail.content.font);
     return {
       id: uuidv4(),
@@ -123,7 +120,6 @@ function GraphicEditor() {
   };
 
   const generateImage = (id: string, detail: any) => {
-    console.log(detail.content.postion_left);
     return {
       id: uuidv4(),
       name: "StaticImage",
@@ -156,13 +152,10 @@ function GraphicEditor() {
   const editor = useEditor();
   const [dataRes, setDataRes] = useState(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
-    console.log(payload);
-    //     console.log(typeof(payload));
 
     const scenes = [];
     // const { scenes: scns, ...design } = payload;
     const scns = payload.scenes;
-    console.log(scns);
 
     for (const scn of scns) {
       const scene: IScene = {
@@ -172,13 +165,10 @@ function GraphicEditor() {
         layers: scn.layers,
         metadata: {},
       };
-      console.log(scene);
       const loadedScene = await loadVideoEditorAssets(scene);
-      console.log(typeof loadedScene);
       await loadTemplateFonts(loadedScene);
 
       const preview = (await editor.renderer.render(loadedScene)) as string;
-      console.log(preview);
       scenes.push({ ...loadedScene, preview });
     }
 
@@ -186,7 +176,6 @@ function GraphicEditor() {
   };
 
   const dataFunction = (data: any) => {
-    // console.log(data);
     const dataString = {
       id: uuidv4(),
       name: "Untitled Design",
@@ -267,10 +256,10 @@ function GraphicEditor() {
     if (data.productDetail) {
       data.productDetail.forEach(
         async (detail: any, index: number) => {
-          const layerId = uuidv4();
-          console.log(detail.content.type);
           if (detail.content.type == "text") {
             // getDataFontTextInitial()
+    console.log(detail);
+
             dataString.layers.push({
               id: uuidv4(),
               name: "StaticText",
@@ -293,6 +282,8 @@ function GraphicEditor() {
               shadow: null,
               charSpacing: 0,
               fill: detail.content.color,
+              // fill: 'white',
+              
               fontFamily: detail.content.font,
               fontSize:
                 (parseInt(detail.content.size.replace(/vw/g, "")) *
@@ -357,7 +348,7 @@ function GraphicEditor() {
         // );
       );
     }
-    console.log(dataString);
+    // console.log(dataString);
 
     return dataString;
   };
@@ -414,7 +405,6 @@ function GraphicEditor() {
           commonFonts.map(async (font) => {
             handleLoadFont(font);
           });
-          console.log(data);
         }
       } catch (error) {
         console.error("Error fetching fonts:", error);
@@ -436,13 +426,9 @@ function GraphicEditor() {
 
         if (response) {
           setDataRes(response.data.data);
-          console.log(dataRes);
 
           // convertData = dataFunction(response.data.data);
-          // console.log(response.data);
-          // console.log(typeof convertData);
-          // console.log(convertData);
-          // console.log(convertData)
+        
           // React.useCallback(
           //   async (data: any) => {
           //     let template;
@@ -457,7 +443,6 @@ function GraphicEditor() {
           //   },
           //   [editor]
           // );
-          // console.log(convertData);
           // let template = await loadGraphicTemplate(convertData);
           // setScenes(template.scenes);
           // //   @ts-ignore
@@ -465,8 +450,7 @@ function GraphicEditor() {
         } else {
         }
       } catch (error) {
-        console.log(error);
-        toast.error("Không định danh được người dùng, hãy thử lại", {
+        toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
           position: "top-left",
           autoClose: 5000,
           hideProgressBar: false,
@@ -489,10 +473,6 @@ function GraphicEditor() {
         const dataRender = dataFunction(dataRes);
         await loadTemplate(dataRender);
 
-        // console.log(response.data);
-        // console.log(typeof convertData);
-        // console.log(convertData);
-        // console.log(convertData)
         // React.useCallback(
         //   async (data: any) => {
         //     let template;
@@ -507,7 +487,6 @@ function GraphicEditor() {
         //   },
         //   [editor]
         // );
-        // console.log(convertData);
         // let template = await loadGraphicTemplate(convertData);
         // setScenes(template.scenes);
         // //   @ts-ignore

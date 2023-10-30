@@ -1,44 +1,44 @@
-import React from "react"
-import { useEditor, useObjects } from "@layerhub-io/react"
-import { Block } from "baseui/block"
-import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft"
-import Scrollable from "~/components/Scrollable"
-import { ILayer } from "@layerhub-io/types"
-import Locked from "~/components/Icons/Locked"
-import Unlocked from "~/components/Icons/Unlocked"
-import Eye from "~/components/Icons/Eye"
-import EyeCrossed from "~/components/Icons/EyeCrossed"
-import Delete from "~/components/Icons/Delete"
-import { Button, KIND, SIZE } from "baseui/button"
-import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
+import React from "react";
+import { useEditor, useObjects } from "@layerhub-io/react";
+import { Block } from "baseui/block";
+import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
+import Scrollable from "~/components/Scrollable";
+import { ILayer } from "@layerhub-io/types";
+import Locked from "~/components/Icons/Locked";
+import Unlocked from "~/components/Icons/Unlocked";
+import Eye from "~/components/Icons/Eye";
+import EyeCrossed from "~/components/Icons/EyeCrossed";
+import Delete from "~/components/Icons/Delete";
+import { Button, KIND, SIZE } from "baseui/button";
+import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 
 export default function () {
-  const editor = useEditor()
-  const objects = useObjects() as ILayer[]
-  const [layerObjects, setLayerObjects] = React.useState<any[]>([])
-  const setIsSidebarOpen = useSetIsSidebarOpen()
+  const editor = useEditor();
+  const objects = useObjects() as ILayer[];
+  const [layerObjects, setLayerObjects] = React.useState<any[]>([]);
+  const setIsSidebarOpen = useSetIsSidebarOpen();
 
   React.useEffect(() => {
     if (objects) {
-      setLayerObjects(objects)
+      setLayerObjects(objects);
     }
-  }, [objects])
+  }, [objects]);
 
   React.useEffect(() => {
     let watcher = async () => {
       if (objects) {
-        setLayerObjects([...objects])
+        setLayerObjects([...objects]);
       }
-    }
+    };
     if (editor) {
-      editor.on("history:changed", watcher)
+      editor.on("history:changed", watcher);
     }
     return () => {
       if (editor) {
-        editor.off("history:changed", watcher)
+        editor.off("history:changed", watcher);
       }
-    }
-  }, [editor, objects])
+    };
+  }, [editor, objects]);
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -53,7 +53,10 @@ export default function () {
       >
         <Block>Layers</Block>
 
-        <Block onClick={() => setIsSidebarOpen(false)} $style={{ cursor: "pointer", display: "flex" }}>
+        <Block
+          onClick={() => setIsSidebarOpen(false)}
+          $style={{ cursor: "pointer", display: "flex" }}
+        >
           <AngleDoubleLeft size={18} />
         </Block>
       </Block>
@@ -72,15 +75,33 @@ export default function () {
               }}
               key={object.id}
             >
-              <Block $style={{ cursor: "pointer" }} onClick={() => editor.objects.select(object.id)}>
-                {object.name}
-              </Block>
-              <Block $style={{ display: "flex", alignItems: "center", justifyContent: "flex-end" }}>
+              
+              {object.name === "StaticText" ? (
+                <Block
+                  $style={{ cursor: "pointer" }}
+                  onClick={() => editor.objects.select(object.id)}
+                >
+                  {object.text}
+                </Block>
+              ) : (
+                <img
+                  src={object._element.currentSrc}
+                  alt="lỗi"
+                  style={{ width: 40, height: 40, resize:"both" }}
+                />
+              )}
+              <Block
+                $style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "flex-end",
+                }}
+              >
                 {object.locked ? (
                   <Button
                     kind={KIND.tertiary}
                     size={SIZE.mini}
-                    onClick={() => editor.objects.unlock(object.id)}
+                    onClick={() => console.log(object)}
                     overrides={{
                       Root: {
                         style: {
@@ -114,7 +135,9 @@ export default function () {
                   <Button
                     kind={KIND.tertiary}
                     size={SIZE.mini}
-                    onClick={() => editor.objects.update({ visible: false }, object.id)}
+                    onClick={() =>
+                      editor.objects.update({ visible: false }, object.id)
+                    }
                     overrides={{
                       Root: {
                         style: {
@@ -130,7 +153,9 @@ export default function () {
                   <Button
                     kind={KIND.tertiary}
                     size={SIZE.mini}
-                    onClick={() => editor.objects.update({ visible: true }, object.id)}
+                    onClick={() =>
+                      editor.objects.update({ visible: true }, object.id)
+                    }
                     overrides={{
                       Root: {
                         style: {
@@ -164,5 +189,5 @@ export default function () {
         </Block>
       </Scrollable>
     </Block>
-  )
+  );
 }

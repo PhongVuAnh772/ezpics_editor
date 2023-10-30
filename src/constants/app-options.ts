@@ -1,5 +1,9 @@
 export const BASE_ITEMS = [
   {
+    id: "layers",
+    name: "Layers",
+  },
+  {
     id: "templates",
     name: "Templates",
   },
@@ -23,10 +27,7 @@ export const BASE_ITEMS = [
     id: "text",
     name: "Text",
   },
-  {
-    id: "layers",
-    name: "Layers",
-  },
+  
   
 
 ]

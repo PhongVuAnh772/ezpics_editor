@@ -1,6 +1,7 @@
 {
     "panels": {
         "panelsList": {
+                        "layers": "Layers",
             "templates": "Background",
             "customize": "Chỉnh sửa",
             "elements": "Hình dạng",
@@ -9,8 +10,7 @@
             "uploads": "Đẩy ảnh lên",
             "text": "Kiểu chữ",
             "graphics": "Graphics",
-            "pixabay": "Pixabay",
-            "layers": "Layers"
+            "pixabay": "Pixabay"
         }
     }
 }

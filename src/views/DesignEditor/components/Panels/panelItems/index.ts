@@ -14,6 +14,7 @@ import TextFill from "./TextFill"
 import PathFill from "./PathFill"
 
 export default {
+    Layers: Layers,
   StaticText: TextProperties,
   Text: Text,
   Customize: Customize,
@@ -25,7 +26,6 @@ export default {
   Videos: Videos,
   Elements: Elements,
   Graphics: Graphics,
-  Layers: Layers,
   TextFill: TextFill,
   PathFill: PathFill,
 }

@@ -430,22 +430,6 @@ function GraphicEditor() {
     [scenes, currentScene, currentDesign]
   );
   let convertData;
-  const fetchFonts = async () => {
-    try {
-      const response = await axios.post(`${networkAPI}/listFont`, {
-        token: token,
-      });
-      const data = response.data.data;
-      setCommonFonts(data);
-      if (commonFonts.length > 0) {
-        commonFonts.map(async (font) => {
-          handleLoadFont(font);
-        });
-      }
-    } catch (error) {
-      console.error("Error fetching fonts:", error);
-    }
-  };
   useEffect(() => {
     const fetchFonts = async () => {
       try {
@@ -465,7 +449,7 @@ function GraphicEditor() {
     };
 
     fetchFonts();
-  }, [currentScene]);
+  }, [currentScene,commonFonts]);
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {

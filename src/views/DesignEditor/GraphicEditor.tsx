@@ -28,7 +28,7 @@ function GraphicEditor() {
   const [widthSrc, setWidthSrc] = useState<number>(0);
   const [heightSrc, setHeightSrc] = useState<number>(0);
   const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
-
+  const [errorMesage, setError] = React.useState<boolean>(false);
   const {
     setCurrentScene,
     currentScene,
@@ -98,7 +98,6 @@ function GraphicEditor() {
       strokeWidth: 0,
       left: detail.content.postion_left,
       top: detail.content.postion_top,
-
       opacity: 1,
       originX: "left",
       originY: "top",
@@ -228,35 +227,6 @@ function GraphicEditor() {
           fill: "#FFFFFF",
           metadata: {},
         },
-        // {
-        //   id: uuidv4(),
-        //   name: "StaticImage",
-        //   width: data.width,
-        //   height: data.height,
-        //   angle: 0,
-        //   stroke: null,
-        //   strokeWidth: 0,
-        //   left: 0,
-        //   top: 0,
-        //   opacity: 1,
-        //   originX: "left",
-        //   originY: "top",
-        //   scaleX: 1,
-        //   scaleY: 1,
-        //   type: "StaticImage",
-        //   flipX: false,
-        //   flipY: false,
-        //   brightness: 0,
-        //   borderRadius: 0,
-        //   skewX: 0,
-        //   skewY: 0,
-        //   visible: true,
-        //   shadow: null,
-        //   src: data.thumn,
-        //   cropX: 0,
-        //   cropY: 0,
-        //   metadata: {},
-        // },
         {
           id: "YgXmiNK_RuATY-xMyNf93",
           name: "StaticImage",
@@ -300,37 +270,41 @@ function GraphicEditor() {
           const layerId = uuidv4();
           console.log(detail.content.type);
           if (detail.content.type == "text") {
-            // dataString.layers.push({
-            //   id: uuidv4(),
-            //   name: "StaticText",
-            //   angle: 0,
-            //   stroke: null,
-            //   strokeWidth: 0,
-            //   left: (detail.content.postion_left / 100) * data.width,
-            //   top:  (detail.content.postion_top / 100) * data.height,
-            //   opacity: 1,
-            //   originX: "left",
-            //   originY: "top",
-            //   // scaleX: (parseInt(detail.content.width, 10) / data.width) * 100,
-            //   // scaleY: (parseInt(detail.content.width, 10) / data.width) * 100,
-            //   type: "StaticText",
-            //   flipX: false,
-            //   flipY: false,
-            //   skewX: 0,
-            //   skewY: 0,
-            //   visible: true,
-            //   shadow: null,
-            //   charSpacing: 0,
-            //   fill: detail.content.color,
-            //   fontFamily: detail.content.font,
-            //   fontSize: parseInt(detail.content.width, 10),
-            //   // (parseInt(detail.content.width, 10) / data.width) * 10000
-            //   lineHeight: (parseInt(detail.content.size, 10) / data.width) * 10000,
-            //   text: detail.content.text,
-            //   textAlign: detail.content.text_align,
-            //   fontURL: fontURLInitial,
-            //   metadata: {},
-            // });
+            // getDataFontTextInitial()
+            dataString.layers.push({
+              id: uuidv4(),
+              name: "StaticText",
+              angle: 0,
+              stroke: null,
+              strokeWidth: 0,
+              left: (detail.content.postion_left / 100) * data.width,
+              top: (detail.content.postion_top / 100) * data.height,
+              opacity: detail.content.opacity,
+              originX: "left",
+              originY: "top",
+              // scaleX: (parseInt(detail.content.width, 10) / data.width) * 100,
+              // scaleY: (parseInt(detail.content.width, 10) / data.width) * 100,
+              type: "StaticText",
+              flipX: false,
+              flipY: false,
+              skewX: 0,
+              skewY: 0,
+              visible: true,
+              shadow: null,
+              charSpacing: 0,
+              fill: detail.content.color,
+              fontFamily: detail.content.font,
+              fontSize:
+                (parseInt(detail.content.size.replace(/vw/g, "")) *
+                  data.width) /
+                100,
+              // (parseInt(detail.content.width, 10) / data.width) * 10000
+              lineHeight: parseInt(detail.content.gianchu),
+              text: detail.content.text,
+              textAlign: detail.content.text_align,
+              fontURL: fontURLInitial,
+              metadata: {},
+            });
           } else if (detail.content.type == "image") {
             // getMeta(detail.content.banner).then((img) => {
             //   if (img.naturalHeight && img.naturalWidth) {
@@ -347,16 +321,16 @@ function GraphicEditor() {
               originX: "left",
               originY: "top",
               scaleX:
-            ((parseInt(detail.content.width.replace(/vw/g, "")) *
+                (parseInt(detail.content.width.replace(/vw/g, "")) *
                   data.width) /
-                100) /
+                100 /
                 detail.content.naturalWidth,
               // img.naturalWidth,
               scaleY:
-                ((parseInt(detail.content.width.replace(/vw/g, "")) *
+                (parseInt(detail.content.width.replace(/vw/g, "")) *
                   data.width) /
                 100 /
-                detail.content.naturalWidth),
+                detail.content.naturalWidth,
               // img.naturalWidth,
               // data.width,
               type: "StaticImage",
@@ -395,6 +369,9 @@ function GraphicEditor() {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));
   }
+  // else {
+  //   setError(true);
+  // }
 
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const loadTemplate = React.useCallback(
@@ -427,7 +404,6 @@ function GraphicEditor() {
   let convertData;
   useEffect(() => {
     const fetchFonts = async () => {
-      console.log(networkAPI);
       try {
         const response = await axios.post(`${networkAPI}/listFont`, {
           token: token,
@@ -442,16 +418,7 @@ function GraphicEditor() {
         }
       } catch (error) {
         console.error("Error fetching fonts:", error);
-        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        
       }
     };
 
@@ -495,9 +462,20 @@ function GraphicEditor() {
           // setScenes(template.scenes);
           // //   @ts-ignore
           // setCurrentDesign(template.design);
+        } else {
         }
       } catch (error) {
         console.log(error);
+        toast.error("Không định danh được người dùng, hãy thử lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     };
     fetchDataBanks();
@@ -508,7 +486,7 @@ function GraphicEditor() {
         // await .then(async (data) => {
         //   // await loadGraphicTemplate(data);
         // });
-        const dataRender = await dataFunction(dataRes);
+        const dataRender = dataFunction(dataRes);
         await loadTemplate(dataRender);
 
         // console.log(response.data);
@@ -552,6 +530,34 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
+        {(token === null || id === null) && (
+          <div
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "white",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              flexDirection: "column",
+            }}
+          >
+            <img
+              src="../../../assets/error.jpg"
+              alt="lỗi"
+              style={{ width: 300, height: 300, alignSelf: "center" }}
+            />
+            <h2
+              style={{
+                color: "black",
+                fontFamily: "Arial, Helvetica, sans-serif",
+              }}
+            >
+              Bạn không có quyền truy cập, hãy thử lại
+            </h2>
+          </div>
+        )}
       </EditorContainer>
     </>
   );

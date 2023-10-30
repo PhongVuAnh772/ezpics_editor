@@ -72,10 +72,10 @@ export default function () {
                 ":hover": {
                   background: "rgb(245,246,247)",
                 },
+                paddingTop: "15px",
               }}
               key={object.id}
             >
-              
               {object.name === "StaticText" ? (
                 <Block
                   $style={{ cursor: "pointer" }}
@@ -87,7 +87,8 @@ export default function () {
                 <img
                   src={object._element.currentSrc}
                   alt="lỗi"
-                  style={{ width: 40, height: 40, resize:"both" }}
+                  style={{ width: "auto", height: 40, resize: "both" }}
+                  onClick={() => editor.objects.select(object.id)}
                 />
               )}
               <Block

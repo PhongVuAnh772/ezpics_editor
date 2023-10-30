@@ -40,16 +40,43 @@ function GraphicEditor() {
   const [isLoading, setIsLoading] = useState(true);
   const handleLoadFont = async (x: any) => {
     if (editor) {
-      const font = {
-        name: x.name,
-        url: x.font_ttf,
-      };
-      await loadFonts([font]);
-      // @ts-ignore
-      // editor.objects.update<IStaticText>({
-      //   fontFamily: x.name,
-      //   fontURL: font.url,
-      // });
+      let selectedFont = null;
+
+      if (x.font) {
+        selectedFont = {
+          name: x.name,
+          url: x.font,
+        };
+      } else if (x.font_woff) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_woff,
+        };
+      } else if (x.font_woff2) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_woff2,
+        };
+      } else if (x.font_otf) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_otf,
+        };
+      } else if (x.font_ttf) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_ttf,
+        };
+      }
+
+      if (selectedFont) {
+        await loadFonts([selectedFont]);
+        // @ts-ignore
+        // editor.objects.update<IStaticText>({
+        //   fontFamily: x.name,
+        //   fontURL: selectedFont.url,
+        // });
+      }
     }
   };
 
@@ -152,7 +179,6 @@ function GraphicEditor() {
   const editor = useEditor();
   const [dataRes, setDataRes] = useState(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
-
     const scenes = [];
     // const { scenes: scns, ...design } = payload;
     const scns = payload.scenes;
@@ -258,7 +284,7 @@ function GraphicEditor() {
         async (detail: any, index: number) => {
           if (detail.content.type == "text") {
             // getDataFontTextInitial()
-    console.log(detail);
+            // console.log(detail);
 
             dataString.layers.push({
               id: uuidv4(),
@@ -281,9 +307,17 @@ function GraphicEditor() {
               visible: true,
               shadow: null,
               charSpacing: 0,
-              fill: detail.content.color,
+              fill:
+                detail.content.gradient === 1
+                  ? detail.content.gradient_color[0]?.color
+                  : detail.content.color,
               // fill: 'white',
-              
+              width:
+                (parseInt(detail.content.width.replace(/vw/g, "")) *
+                  data.width) /
+                100,
+              // height: null,
+              // fontFamily: detail.content.font,
               fontFamily: detail.content.font,
               fontSize:
                 (parseInt(detail.content.size.replace(/vw/g, "")) *
@@ -293,12 +327,15 @@ function GraphicEditor() {
               lineHeight: parseInt(detail.content.gianchu),
               text: detail.content.text,
               textAlign: detail.content.text_align,
-              fontURL: fontURLInitial,
+              // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
+              // fontURLInitial
               metadata: {},
             });
           } else if (detail.content.type == "image") {
             // getMeta(detail.content.banner).then((img) => {
             //   if (img.naturalHeight && img.naturalWidth) {
+            // console.log(detail);
+
             dataString.layers.push({
               id: uuidv4(),
               name: "StaticImage",
@@ -348,7 +385,7 @@ function GraphicEditor() {
         // );
       );
     }
-    // console.log(dataString);
+    console.log(dataString);
 
     return dataString;
   };
@@ -393,6 +430,22 @@ function GraphicEditor() {
     [scenes, currentScene, currentDesign]
   );
   let convertData;
+  const fetchFonts = async () => {
+    try {
+      const response = await axios.post(`${networkAPI}/listFont`, {
+        token: token,
+      });
+      const data = response.data.data;
+      setCommonFonts(data);
+      if (commonFonts.length > 0) {
+        commonFonts.map(async (font) => {
+          handleLoadFont(font);
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching fonts:", error);
+    }
+  };
   useEffect(() => {
     const fetchFonts = async () => {
       try {
@@ -408,7 +461,6 @@ function GraphicEditor() {
         }
       } catch (error) {
         console.error("Error fetching fonts:", error);
-        
       }
     };
 
@@ -428,7 +480,7 @@ function GraphicEditor() {
           setDataRes(response.data.data);
 
           // convertData = dataFunction(response.data.data);
-        
+
           // React.useCallback(
           //   async (data: any) => {
           //     let template;
@@ -471,6 +523,7 @@ function GraphicEditor() {
         //   // await loadGraphicTemplate(data);
         // });
         const dataRender = dataFunction(dataRes);
+        // console.log(dataRender)
         await loadTemplate(dataRender);
 
         // React.useCallback(

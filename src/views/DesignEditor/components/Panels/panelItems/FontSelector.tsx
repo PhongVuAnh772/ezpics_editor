@@ -27,25 +27,22 @@ export default function () {
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
   const [css] = useStyletron();
   const editor = useEditor();
-  const networkAPI = useAppSelector(state => state.network.ipv4Address);
+  const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   useEffect(() => {
     const fetchFonts = async () => {
-      console.log(networkAPI)
+      console.log(networkAPI);
       try {
-        const response = await axios.post(
-          `${networkAPI}/listFont`,
-          {
-            token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
-          }
-        );
+        const response = await axios.post(`${networkAPI}/listFont`, {
+          token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
+        });
         const data = response.data.data;
         setCommonFonts(data);
         if (commonFonts.length > 0) {
-      commonFonts.map(async (font) => {
-        handleLoadFont(font);
-      });
-      console.log(data);
-    }
+          commonFonts.map(async (font) => {
+            handleLoadFont(font);
+          });
+          console.log(data);
+        }
       } catch (error) {
         console.error("Error fetching fonts:", error);
         toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
@@ -64,15 +61,23 @@ export default function () {
     fetchFonts();
   }, [commonFonts]);
   // useEffect(() => {
-    
-    
+
   // }, [commonFonts]);
 
   const handleFontFamilyChange = async (x: any) => {
     if (editor) {
+      let selectedFont = null;
+
+      if (x.font_ttf) {
+        selectedFont = x.font_ttf;
+      } else if (x.font_woff) {
+        selectedFont = x.font_woff;
+      } else if (x.font_woff2) {
+        selectedFont = x.font_woff2;
+      }
       const font = {
         name: x.name,
-        url: x.font_ttf,
+        url: selectedFont,
       };
       await loadFonts([font]);
       // @ts-ignore

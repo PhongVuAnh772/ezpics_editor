@@ -21,7 +21,7 @@ export const tokenSlice = createSlice({
       state.token = action.payload;
     },
     REPLACE_ID_USER: (state, action: PayloadAction<string>) => {
-      state.token = action.payload;
+      state.id = action.payload;
     },
   },
 })

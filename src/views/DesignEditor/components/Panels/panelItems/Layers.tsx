@@ -87,7 +87,7 @@ export default function () {
                 <img
                   src={object._element.currentSrc}
                   alt="lỗi"
-                  style={{ width: "auto", height: 40, resize: "both" }}
+                  style={{ width: "auto", height: 40, maxWidth: '100px',resize: "both" }}
                   onClick={() => editor.objects.select(object.id)}
                 />
               )}

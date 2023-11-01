@@ -28,7 +28,7 @@ function GraphicEditor() {
   const [widthSrc, setWidthSrc] = useState<number>(0);
   const [heightSrc, setHeightSrc] = useState<number>(0);
   const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
-  const [errorMesage, setError] = React.useState<boolean>(false);
+  const [errorMessage, setError] = React.useState<boolean>(false);
   const {
     setCurrentScene,
     currentScene,
@@ -110,6 +110,7 @@ function GraphicEditor() {
         progress: undefined,
         theme: "dark",
       });
+      // setError(true) 
     }
   };
   const generateText = (id: string, detail: any) => {
@@ -398,9 +399,7 @@ function GraphicEditor() {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));
   }
-  // else {
-  //   setError(true);
-  // }
+  
 
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const loadTemplate = React.useCallback(
@@ -444,13 +443,19 @@ function GraphicEditor() {
             handleLoadFont(font);
           });
         }
+        // else {
+        //                   setError(true)
+
+        // }
       } catch (error) {
+                setError(true)
+
         console.error("Error fetching fonts:", error);
       }
     };
 
     fetchFonts();
-  }, [currentScene,commonFonts]);
+  }, [currentScene]);
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
@@ -464,26 +469,6 @@ function GraphicEditor() {
         if (response) {
           setDataRes(response.data.data);
 
-          // convertData = dataFunction(response.data.data);
-
-          // React.useCallback(
-          //   async (data: any) => {
-          //     let template;
-          //     if (data.type === "GRAPHIC") {
-
-          //       template = await loadGraphicTemplate(convertData);
-          //     }
-          //     //   @ts-ignore
-          //     setScenes(template.scenes);
-          //     //   @ts-ignore
-          //     setCurrentDesign(template.design);
-          //   },
-          //   [editor]
-          // );
-          // let template = await loadGraphicTemplate(convertData);
-          // setScenes(template.scenes);
-          // //   @ts-ignore
-          // setCurrentDesign(template.design);
         } else {
         }
       } catch (error) {
@@ -497,6 +482,7 @@ function GraphicEditor() {
           progress: undefined,
           theme: "dark",
         });
+        setError(true)
       }
     };
     fetchDataBanks();
@@ -547,7 +533,7 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
-        {(token === null || id === null) && (
+        { (token === null || id ===null) && errorMessage  && (
           <div
             style={{
               position: "absolute",

@@ -58,7 +58,6 @@ function PanelListItem({ label, icon, activePanel, name }: any) {
         alignItems: "center",
         flexDirection: "column",
         justifyContent: "center",
-        fontFamily: "Uber Move Text",
         fontWeight: 500,
         fontSize: "0.8rem",
         userSelect: "none",
@@ -72,7 +71,7 @@ function PanelListItem({ label, icon, activePanel, name }: any) {
       }}
     >
       <Icon size={24} />
-      <div>{label}</div>
+      <div style={{fontFamily: "sans-serif"}}>{label}</div>
     </Block>
   )
 }

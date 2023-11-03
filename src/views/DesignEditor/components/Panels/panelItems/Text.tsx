@@ -10,11 +10,14 @@ import { Block } from "baseui/block"
 import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft"
 import Scrollable from "~/components/Scrollable"
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
-
+import axios from "axios"
+import { useAppSelector } from "~/hooks/hook"
 export default function () {
   const editor = useEditor()
   const setIsSidebarOpen = useSetIsSidebarOpen()
-
+  const network = useAppSelector(state => state.network.ipv4Address)
+  const idProduct = useAppSelector(state => state.token.id)
+  const token = useAppSelector(state => state.token.token)
   const addObject = async () => {
     if (editor) {
       const font: FontItem = {
@@ -22,8 +25,18 @@ export default function () {
         url: "https://fonts.gstatic.com/s/opensans/v27/memSYaGs126MiZpBA-UvWbX2vVnXBbObj2OVZyOOSr4dVJWUgsjZ0C4nY1M2xLER.ttf",
       }
       await loadFonts([font])
-      const options = {
-        id: nanoid(),
+      const res = await axios.post(`${network}/addLayerText`, {
+        idproduct:idProduct,
+        token:token,
+        text: "Thêm chữ",
+        color: "#333333",
+        size:92,
+        font: font.name
+      });
+      if (res.data.code === 1) {
+        console.log(res.data)
+        const options = {
+        id: res.data.data.id,
         type: "StaticText",
         width: 420,
         text: "Thêm chữ",
@@ -36,6 +49,7 @@ export default function () {
         metadata: {},
       }
       editor.objects.add<IStaticText>(options)
+      }
     }
   }
   const addComponent = async (component: any) => {

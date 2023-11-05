@@ -24,8 +24,8 @@ export default function () {
     const url = URL.createObjectURL(file);
     // let blob = await fetch(url).then(r => r.blob());
     // Kiểm tra đuôi file
-    if (!file.name.endsWith(".png")) {
-      toast.error("Chỉ chấp nhận file png");
+    if (!/(png|jpg|jpeg)$/i.test(file.name)) {
+      toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
       return;
     }
 
@@ -53,12 +53,11 @@ export default function () {
 
       setUploads([...uploads, upload]);
       const options = {
-      type: "StaticImage",
-      src: url,
-              id: res.data.data.id,
-
-    };
-    editor.objects.add(options);
+        type: "StaticImage",
+        src: url,
+        id: res.data.data.id,
+      };
+      editor.objects.add(options);
     }
   };
 

@@ -20,6 +20,7 @@ import { loadFonts } from "~/utils/fonts";
 import { toast } from "react-toastify";
 import { useAppDispatch } from "~/hooks/hook";
 import { REPLACE_TOKEN, REPLACE_ID_USER } from "~/store/slices/token/reducers";
+import "../../components/Resizable/loading.css";
 // import
 function GraphicEditor() {
   const dispatch = useAppDispatch();
@@ -29,6 +30,7 @@ function GraphicEditor() {
   const [heightSrc, setHeightSrc] = useState<number>(0);
   const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
   const [errorMessage, setError] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(false);
   const {
     setCurrentScene,
     currentScene,
@@ -110,7 +112,7 @@ function GraphicEditor() {
         progress: undefined,
         theme: "dark",
       });
-      // setError(true) 
+      // setError(true)
     }
   };
   const generateText = (id: string, detail: any) => {
@@ -287,9 +289,9 @@ function GraphicEditor() {
             // getDataFontTextInitial()
             // console.log(detail);
             let stringMerged;
-            stringMerged  = detail.content.text.replace(/<br\s*\/>/g, '\n');
+            stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
             dataString.layers.push({
-              id: uuidv4(),
+              id: detail.id,
               name: "StaticText",
               angle: 0,
               stroke: null,
@@ -339,7 +341,7 @@ function GraphicEditor() {
             // console.log(detail);
 
             dataString.layers.push({
-              id: uuidv4(),
+              id: detail.id,
               name: "StaticImage",
               angle: 0,
               stroke: null,
@@ -347,7 +349,7 @@ function GraphicEditor() {
               left: (detail.content.postion_left / 100) * data.width,
               top: (detail.content.postion_top / 100) * data.height,
 
-              opacity: 1,
+              opacity: detail.content.opacity,
               originX: "left",
               originY: "top",
               scaleX:
@@ -399,7 +401,6 @@ function GraphicEditor() {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));
   }
-  
 
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const loadTemplate = React.useCallback(
@@ -432,13 +433,17 @@ function GraphicEditor() {
   let convertData;
   useEffect(() => {
     const fetchFonts = async () => {
+      setLoading(true);
       try {
         const response = await axios.post(`${networkAPI}/listFont`, {
           token: token,
         });
         const data = response.data.data;
         setCommonFonts(data);
+
         if (commonFonts.length > 0) {
+          setLoading(false);
+
           commonFonts.map(async (font) => {
             handleLoadFont(font);
           });
@@ -448,7 +453,8 @@ function GraphicEditor() {
 
         // }
       } catch (error) {
-                setError(true)
+        setError(true);
+        setLoading(false);
 
         console.error("Error fetching fonts:", error);
       }
@@ -468,7 +474,6 @@ function GraphicEditor() {
 
         if (response) {
           setDataRes(response.data.data);
-
         } else {
         }
       } catch (error) {
@@ -482,13 +487,15 @@ function GraphicEditor() {
           progress: undefined,
           theme: "dark",
         });
-        setError(true)
+        setError(true);
       }
     };
     fetchDataBanks();
   }, []);
   useEffect(() => {
     const fetchDataBanks = async () => {
+      setLoading(true);
+
       try {
         // await .then(async (data) => {
         //   // await loadGraphicTemplate(data);
@@ -496,6 +503,8 @@ function GraphicEditor() {
         const dataRender = dataFunction(dataRes);
         // console.log(dataRender)
         await loadTemplate(dataRender);
+
+        setLoading(false);
 
         // React.useCallback(
         //   async (data: any) => {
@@ -516,6 +525,7 @@ function GraphicEditor() {
         // //   @ts-ignore
       } catch (error) {
         console.log(error);
+        setLoading(false);
       }
     };
     fetchDataBanks();
@@ -533,7 +543,7 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
-        { (token === null || id ===null) && errorMessage  && (
+        {(token === null || id === null) && errorMessage && (
           <div
             style={{
               position: "absolute",
@@ -559,6 +569,25 @@ function GraphicEditor() {
             >
               Bạn không có quyền truy cập, hãy thử lại
             </h2>
+          </div>
+        )}
+        {loading && (
+          <div className="content-bg">
+            <div className="content">
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+              <div></div>
+            </div>
           </div>
         )}
       </EditorContainer>

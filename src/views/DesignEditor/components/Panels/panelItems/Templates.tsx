@@ -117,7 +117,7 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Background thiết kế có sẵn</Block>
+        <Block>Ảnh bạn tải lên</Block>
 
         <Block
           onClick={() => setIsSidebarOpen(false)}
@@ -147,7 +147,7 @@ export default function () {
             {templates.map((item, index) => {
               return (
                 <ImageItem
-                  onClick={() => addObject(item.thumn, item.width,item.height)}
+                  onClick={() => addObject(item.link, item.width,item.height)}
                   key={index}
                   preview={`${item.thumn}`}
                 />

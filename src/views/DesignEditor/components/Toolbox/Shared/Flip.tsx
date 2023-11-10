@@ -8,8 +8,8 @@ import { PLACEMENT, StatefulPopover } from "baseui/popover";
 import { StatefulTooltip } from "baseui/tooltip";
 import FlipHorizontal from "~/components/Icons/FlipHorizontal";
 import FlipVertical from "~/components/Icons/FlipVertical";
-import Box from '@mui/material/Box';
-import SliderBox from '@mui/material/Slider';
+import Box from "@mui/material/Box";
+import SliderBox from "@mui/material/Slider";
 import axios from "axios";
 import { useAppSelector } from "~/hooks/hook";
 
@@ -19,23 +19,22 @@ export default function () {
   const [state, setState] = React.useState({ flipX: false, flipY: false });
   const [stated, setStated] = React.useState({ opacity: 1 });
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
-  const [angle,setAngle] = React.useState(0)
+  const [angle, setAngle] = React.useState(0);
   const [sizeInitial, setSizeInitial] = React.useState({
     width: 0,
-    height: 0
-  })
+    height: 0,
+  });
   const [distance, setDistance] = React.useState({
     left: 0,
-    top: 0
-  })
+    top: 0,
+  });
   const [scale, setScale] = React.useState({
     scaleX: 0,
-    scaleY: 0
-  })
+    scaleY: 0,
+  });
 
   const token = useAppSelector((state) => state.token.token);
   React.useEffect(() => {
-    
     if (activeObject) {
       setState({
         flipX: activeObject.flipX,
@@ -45,16 +44,16 @@ export default function () {
       setSizeInitial({
         width: activeObject.width,
         height: activeObject.height,
-      })
+      });
       setDistance({
         left: activeObject.left,
-        top: activeObject.top
-      })
+        top: activeObject.top,
+      });
       setScale({
-        scaleX: Math.abs(activeObject.scaleX ),
-        scaleY: Math.abs(activeObject.scaleX )
-      })
-      console.log(distance,sizeInitial)
+        scaleX: Math.abs(activeObject.scaleX),
+        scaleY: Math.abs(activeObject.scaleX),
+      });
+      console.log(distance, sizeInitial);
     }
   }, [activeObject]);
 
@@ -130,11 +129,13 @@ export default function () {
             `${networkAPI}/removeBackgroundImageAPI`,
             {
               token: token,
-              // image: imageFile,
-              // headers: {
-              //   "Access-Control-Allow-Origin": "*",
-              //   Accept: "application/json",
-              // },
+              image: imageFile,
+              headers: {
+                // "Access-Control-Allow-Origin": "*",
+                // Accept: "application/json",
+
+                "Content-Type": "multipart/form-data",
+              },
             }
           );
 
@@ -145,12 +146,12 @@ export default function () {
       }
     );
   };
-    const [sliderValue, setSliderValue] = React.useState(0.00000005);
+  const [sliderValue, setSliderValue] = React.useState(0.00000005);
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setSliderValue(newValue as number);
-    console.log(sliderValue)
-    editor.objects.update({ scaleX: sliderValue,scaleY: sliderValue });
+    console.log(sliderValue);
+    editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
   };
   const flipVertically = React.useCallback(() => {
     editor.objects.update({ flipY: !state.flipY });
@@ -169,8 +170,8 @@ export default function () {
     [editor]
   );
   function valuetext(value: number) {
-  return `${value}°C`;
-}
+    return `${value}°C`;
+  }
   return (
     <StatefulPopover placement={PLACEMENT.bottom}>
       <Block>
@@ -390,8 +391,8 @@ export default function () {
                 size={SIZE.mini}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({left:  distance.left - 20 });
-                  setDistance({ ...distance, left:  distance.left - 20});
+                  editor.objects.update({ left: distance.left - 20 });
+                  setDistance({ ...distance, left: distance.left - 20 });
                 }}
               >
                 <img
@@ -403,8 +404,8 @@ export default function () {
                 // isSelected={state.align === TEXT_ALIGNS[1]}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({left:  distance.left + 20 });
-                  setDistance({ ...distance, left:  distance.left + 20});
+                  editor.objects.update({ left: distance.left + 20 });
+                  setDistance({ ...distance, left: distance.left + 20 });
                 }}
                 kind={KIND.tertiary}
                 size={SIZE.mini}
@@ -418,8 +419,8 @@ export default function () {
                 // isSelected={state.align === TEXT_ALIGNS[2]}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({top:  distance.top + 20 });
-                  setDistance({ ...distance, top:  distance.top + 20});
+                  editor.objects.update({ top: distance.top + 20 });
+                  setDistance({ ...distance, top: distance.top + 20 });
                 }}
                 kind={KIND.tertiary}
                 size={SIZE.mini}
@@ -440,8 +441,8 @@ export default function () {
                 size={SIZE.mini}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({top:  distance.top - 20 });
-                  setDistance({ ...distance, top:  distance.top - 20});
+                  editor.objects.update({ top: distance.top - 20 });
+                  setDistance({ ...distance, top: distance.top - 20 });
                 }}
               >
                 <img
@@ -503,18 +504,16 @@ export default function () {
 
               <Block>
                 <SliderBox
-        aria-label="Volume"
-        defaultValue={1}
-        getAriaValueText={valuetext}
-        step={0.01}
-        marks
-        min={0}
-        max={1}
-                onChange={handleSliderChange}
-
-        valueLabelDisplay="auto"
-      />
-
+                  aria-label="Volume"
+                  defaultValue={1}
+                  getAriaValueText={valuetext}
+                  step={0.01}
+                  marks
+                  min={0}
+                  max={10}
+                  onChange={handleSliderChange}
+                  valueLabelDisplay="auto"
+                />
               </Block>
             </Block>
           )}
@@ -590,10 +589,10 @@ export default function () {
                   marks={false}
                   value={[angle]}
                   // @ts-ignore
-                   onChange={({ value }) => {
-                  setAngle(value)
-                  editor.objects.update({angle: value})
-                }}
+                  onChange={({ value }) => {
+                    setAngle(value);
+                    editor.objects.update({ angle: value });
+                  }}
                 />
               </Block>
             </Block>

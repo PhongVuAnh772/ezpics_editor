@@ -79,6 +79,7 @@ export default function () {
         name: x.name,
         url: selectedFont,
       };
+      console.log(font)
       await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({

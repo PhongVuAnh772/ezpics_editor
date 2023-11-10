@@ -10,7 +10,7 @@ import Bold from "~/components/Icons/Bold";
 import Italic from "~/components/Icons/Italic";
 import Underline from "~/components/Icons/Underline";
 import TextAlignCenter from "~/components/Icons/TextAlignCenter";
-import SliderBox from '@mui/material/Slider';
+import SliderBox from "@mui/material/Slider";
 import { Button, SIZE, KIND } from "baseui/button";
 import { StatefulTooltip, PLACEMENT } from "baseui/tooltip";
 import LetterCase from "~/components/Icons/LetterCase";
@@ -24,11 +24,14 @@ import useAppContext from "~/hooks/useAppContext";
 import { FONT_SIZES, SAMPLE_FONTS } from "~/constants/editor";
 import getSelectionType from "~/utils/get-selection-type";
 import { IStaticText } from "@layerhub-io/types";
-import { getTextProperties } from "../../utils/text";
+import { getTextProperties, getTextPropertiesClone } from "../../utils/text";
 import { loadFonts } from "~/utils/fonts";
 import Scrollbar from "@layerhub-io/react-custom-scrollbar";
 import RotateIcon from "~/components/Icons/RotateIcon";
-
+import axios from "axios";
+import { useAppSelector, useAppDispatch } from "~/hooks/hook";
+import { toast } from "react-toastify";
+import "../../../../../src/components/Resizable/loading.css";
 interface TextState {
   color: string;
   bold: boolean;
@@ -36,12 +39,18 @@ interface TextState {
   underline: boolean;
   family: string;
   styleOptions: StyleOptions;
+  boldURL: BoldURL;
 }
 
 interface StyleOptions {
   hasItalic: boolean;
   hasBold: boolean;
   options: any[];
+}
+
+interface BoldURL {
+  URL: any[];
+  name: any[];
 }
 
 const initialOptions: TextState = {
@@ -55,157 +64,307 @@ const initialOptions: TextState = {
     hasItalic: true,
     options: [],
   },
+  boldURL: {
+    URL: [],
+    name: [],
+  },
 };
 export default function () {
   const [state, setState] = React.useState<TextState>(initialOptions);
   const activeObject = useActiveObject() as Required<IStaticText>;
   const { setActiveSubMenu } = useAppContext();
   const editor = useEditor();
+  const networkAPI = useAppSelector((state) => state.network.ipv4Address);
+  const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
+  const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
+  const token = useAppSelector((state) => state.token.token);
+  const [loading, setLoading] = React.useState<boolean>(false);
+  const handleLoadFont = async (x: any) => {
+    if (editor) {
+      let selectedFont = null;
 
-  // React.useEffect(() => {
-  //   if (activeObject && activeObject.type === "StaticText") {
-  //     const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
-  //     setState({ ...state, ...textProperties })
-  //   }
-  // }, [activeObject])
+      if (x.font) {
+        selectedFont = {
+          name: x.name,
+          url: x.font,
+        };
+      } else if (x.font_woff) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_woff,
+        };
+      } else if (x.font_woff2) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_woff2,
+        };
+      } else if (x.font_otf) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_otf,
+        };
+      } else if (x.font_ttf) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_ttf,
+        };
+      }
 
-  // React.useEffect(() => {
-  //   let watcher = async () => {
-  //     if (activeObject && activeObject.type === "StaticText") {
-  //       const textProperties = getTextProperties(activeObject, SAMPLE_FONTS)
-  //       setState({ ...state, ...textProperties })
-  //     }
-  //   }
-  //   if (editor) {
-  //     editor.on("history:changed", watcher)
-  //   }
-  //   return () => {
-  //     if (editor) {
-  //       editor.off("history:changed", watcher)
-  //     }
-  //   }
-  // }, [editor, activeObject])
+      if (selectedFont) {
+        await loadFonts([selectedFont]);
+        // @ts-ignore
+        // editor.objects.update<IStaticText>({
+        //   fontFamily: x.name,
+        //   fontURL: selectedFont.url,
+        // });
+      }
+    }
+  };
+  React.useEffect(() => {
+    const fetchFonts = async () => {
+      setLoading(true);
+      try {
+        const response = await axios.post(`${networkAPI}/listFont`, {
+          token: token,
+        });
+        const data = response?.data?.data;
+
+        setLoading(false);
+        if (data) {
+          // commonFonts.map(async (font) => {
+          //   handleLoadFont(font);
+          // });
+          await fetchFonts();
+        } else {
+          setCommonFonts(data);
+          console.log(commonFonts);
+        }
+      } catch (error) {
+        setLoading(false);
+        console.error("Error fetching fonts:", error);
+        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    };
+
+    fetchFonts();
+  }, [commonFonts]);
+  React.useEffect(() => {
+    if (activeObject && activeObject.type === "StaticText") {
+      const textProperties = getTextPropertiesClone(activeObject, commonFonts);
+      console.log(textProperties, activeObject, commonFonts);
+
+      setState({ ...state, ...textProperties });
+    }
+  }, [activeObject]);
+
+  React.useEffect(() => {
+    let watcher = async () => {
+      if (activeObject && activeObject.type === "StaticText") {
+        const textProperties = getTextPropertiesClone(
+          activeObject,
+          commonFonts
+        );
+        console.log(textProperties, activeObject, commonFonts);
+      }
+    };
+    if (editor) {
+      editor.on("history:changed", watcher);
+    }
+    return () => {
+      if (editor) {
+        editor.off("history:changed", watcher);
+      }
+    };
+  }, [editor, activeObject]);
 
   const makeBold = React.useCallback(async () => {
+    const textProperties = getTextPropertiesClone(activeObject, commonFonts);
+    console.log(textProperties, activeObject, commonFonts);
+
     if (state.bold) {
       let desiredFont;
 
-      // if (state.italic) {
-      //   desiredFont = state.styleOptions.options.find((option) => {
-      //     const postscript_names = option.postscript_name.split("-")
-      //     return postscript_names[postscript_names.length - 1].match(/^Italic$/)
-      //   })
-      // } else {
-      //   desiredFont = state.styleOptions.options.find((option) => {
-      //     const postscript_names = option.postscript_name.split("-")
-      //     return postscript_names[postscript_names.length - 1].match(/^Regular$/)
-      //   })
-      // }
-      console.log(state.styleOptions);
-      // const font = {
-      //   name: desiredFont.postscript_name,
-      //   url: desiredFont.url,
-      // }
-      // await loadFonts([font])
+      if (state.italic) {
+        // desiredFont = state.styleOptions.options.find((option) => {
+        //   console.log(option);
 
-      // editor.objects.update({
-      //   fontFamily: desiredFont.postscript_name,
-      //   fontURL: font.url,
-      // })
-      // setState({ ...state, bold: false })
+        //   const postscript_names = option.postscript_name.split("-");
+        //   return postscript_names[postscript_names.length - 1].match(
+        //     /^Italic$/
+        //   );
+        // });
+        if (activeObject && activeObject.type === "StaticText") {
+          const textProperties = getTextPropertiesClone(
+            activeObject,
+            commonFonts
+          );
+          console.log(textProperties, activeObject, commonFonts);
+        }
+      } else {
+        if (activeObject && activeObject.type === "StaticText") {
+          const textProperties = getTextPropertiesClone(
+            activeObject,
+            commonFonts
+          );
+          console.log(textProperties, activeObject, commonFonts);
+        }
+
+        // desiredFont = state.styleOptions.options.find((option) => {
+        //   const postscript_names = option.postscript_name.split("-");
+        //   console.log(option);
+
+        //   return postscript_names[postscript_names.length - 1].match(
+        //     /^Regular$/
+        //   );
+        // });
+      }
+      // const font = {
+      //   name: textProperties.BoldURL.URL[0].name,
+      //   url: textProperties.BoldURL.URL?.font_otf || textProperties.BoldURL.URL.font_woff2 ||,
+      // };
+      // await loadFonts([font]);
+
+      editor.objects.update({
+        fontFamily: textProperties.BoldURL.URL[0].name,
+        fontURL:
+          textProperties.BoldURL.URL?.font_otf ||
+          textProperties.BoldURL.URL.font_woff2 ||
+          textProperties.BoldURL.URL.font_ttf ||
+          textProperties.BoldURL.URL.font,
+      });
+      console.log(textProperties.BoldURL.URL[0].name);
+      setState({ ...state, bold: false });
     } else {
       let desiredFont;
       if (state.italic) {
         // look for bold italic
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-");
-          return postscript_names[postscript_names.length - 1].match(
-            /^BoldItalic$/
+        // desiredFont = state.styleOptions.options.find((option) => {
+        //   const postscript_names = option.postscript_name.split("-");
+        //   return postscript_names[postscript_names.length - 1].match(
+        //     /^BoldItalic$/
+        //   );
+        // });
+        if (activeObject && activeObject.type === "StaticText") {
+          const textProperties = getTextPropertiesClone(
+            activeObject,
+            commonFonts
           );
-        });
+          console.log(textProperties, activeObject, commonFonts);
+        }
       } else {
         // look for bold
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-");
-          return postscript_names[postscript_names.length - 1].match(/^Bold$/);
-        });
+        // desiredFont = state.styleOptions.options.find((option) => {
+        //   const postscript_names = option.postscript_name.split("-");
+        //   return postscript_names[postscript_names.length - 1].match(/^Bold$/);
+        // });
+        if (activeObject && activeObject.type === "StaticText") {
+          const textProperties = getTextPropertiesClone(
+            activeObject,
+            commonFonts
+          );
+          console.log(textProperties, activeObject, commonFonts);
+        }
       }
 
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      };
-      await loadFonts([font]);
+      // const font = {
+      //   name: textProperties.BoldURL.URL[0].name,
+      //   url: textProperties.BoldURL.URL?.font_otf || .font_woff2 ||,
+      // };
+      // await loadFonts([font]);
 
       editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
+        fontFamily: textProperties.BoldURL.URL[0].name,
+        fontURL:
+          textProperties.BoldURL.URL?.font_otf ||
+          textProperties.BoldURL.URL.font_woff2 ||
+          textProperties.BoldURL.URL.font_ttf ||
+          textProperties.BoldURL.URL.font,
       });
-      setState({ ...state, bold: true });
+      console.log(textProperties.BoldURL.URL[0].name);
     }
   }, [editor, state]);
 
   const makeItalic = React.useCallback(async () => {
-    if (state.italic) {
-      let desiredFont;
-      if (state.bold) {
-        // Search bold regular
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-");
-          return postscript_names[postscript_names.length - 1].match(/^Bold$/);
-        });
-      } else {
-        // Search regular
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-");
-          return postscript_names[postscript_names.length - 1].match(
-            /^Regular$/
-          );
-        });
-      }
+    const textProperties = getTextPropertiesClone(activeObject, commonFonts);
 
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      };
-      await loadFonts([font]);
+    if (state.italic) {
+      // let desiredFont;
+      // if (state.bold) {
+      //   // Search bold regular
+      //   desiredFont = state.styleOptions.options.find((option) => {
+      //     const postscript_names = option.postscript_name.split("-");
+      //     return postscript_names[postscript_names.length - 1].match(/^Bold$/);
+      //   });
+      // } else {
+      //   // Search regular
+      //   desiredFont = state.styleOptions.options.find((option) => {
+      //     const postscript_names = option.postscript_name.split("-");
+      //     return postscript_names[postscript_names.length - 1].match(
+      //       /^Regular$/
+      //     );
+      //   });
+      // }
+
+      // const font = {
+      //   name: textProperties.BoldURL.URL[0].name,
+      //   url: textProperties.BoldURL.URL?.font_otf || textProperties.BoldURL.URL.font_woff2 || textProperties.BoldURL.URL.font || textProperties.BoldURL.URL.font_ttf,
+      // };
+      // await loadFonts([font]);
 
       editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
+        fontFamily: textProperties.BoldURL.URL[0].name,
+        fontURL:
+          textProperties.BoldURL.URL?.font_otf ||
+          textProperties.BoldURL.URL.font_woff2 ||
+          textProperties.BoldURL.URL.font_ttf ||
+          textProperties.BoldURL.URL.font,
       });
-      setState({ ...state, italic: false });
+      console.log(textProperties.BoldURL.URL[0].name);
     } else {
       let desiredFont;
 
-      if (state.bold) {
-        // search italic bold
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-");
-          return postscript_names[postscript_names.length - 1].match(
-            /^BoldItalic$/
-          );
-        });
-      } else {
-        // search regular italic
-        desiredFont = state.styleOptions.options.find((option) => {
-          const postscript_names = option.postscript_name.split("-");
-          return postscript_names[postscript_names.length - 1].match(
-            /^Italic$/
-          );
-        });
-      }
+      // if (state.bold) {
+      //   // search italic bold
+      //   desiredFont = state.styleOptions.options.find((option) => {
+      //     const postscript_names = option.postscript_name.split("-");
+      //     return postscript_names[postscript_names.length - 1].match(
+      //       /^BoldItalic$/
+      //     );
+      //   });
+      // } else {
+      //   // search regular italic
+      //   desiredFont = state.styleOptions.options.find((option) => {
+      //     const postscript_names = option.postscript_name.split("-");
+      //     return postscript_names[postscript_names.length - 1].match(
+      //       /^Italic$/
+      //     );
+      //   });
+      // }
 
-      const font = {
-        name: desiredFont.postscript_name,
-        url: desiredFont.url,
-      };
-      await loadFonts([font]);
+      // const font = {
+      //   name: textProperties.BoldURL.URL[0].name,
+      //   url: textProperties.BoldURL.URL?.font_otf || textProperties.BoldURL.URL.font_woff2 ||textProperties.BoldURL.URL.font_ttf || textProperties.BoldURL.URL.font,
+      // };
+      // await loadFonts([font]);
 
       editor.objects.update({
-        fontFamily: desiredFont.postscript_name,
-        fontURL: font.url,
+        fontFamily: textProperties.BoldURL.URL[0].name,
+        fontURL:
+          textProperties.BoldURL.URL?.font_otf ||
+          textProperties.BoldURL.URL.font_woff2 ||
+          textProperties.BoldURL.URL.font_ttf ||
+          textProperties.BoldURL.URL.font,
       });
+      console.log(textProperties.BoldURL.URL[0].name);
       setState({ ...state, italic: true });
     }
   }, [editor, state]);
@@ -217,169 +376,190 @@ export default function () {
     setState({ ...state, underline: !state.underline });
   }, [editor, state]);
   return (
-    <Block
-      $style={{
-        flex: 1,
-        display: "flex",
-        alignItems: "center",
-        padding: "0 12px",
-        justifyContent: "space-between",
-      }}
-    >
-      <Block display={"flex"} gridGap="0.5rem" alignItems={"center"}>
-        <Block
-          onClick={() => setActiveSubMenu("FontSelector")}
-          $style={{
-            border: "1px solid rgb(185,185,185)",
-            borderRadius: "4px",
-            padding: "0.2rem 0.45rem",
-            cursor: "pointer",
-            fontWeight: 500,
-            fontSize: "14px",
-            gap: "0.5rem",
-          }}
-          height={"24px"}
-          display={"flex"}
-          alignItems={"center"}
-        >
-          <Block>{state.family}</Block>
-          <Block display={"flex"}>
-            <ChevronDown size={22} />
+    <>
+      <Block
+        $style={{
+          flex: 1,
+          display: "flex",
+          alignItems: "center",
+          padding: "0 12px",
+          justifyContent: "space-between",
+        }}
+      >
+        <Block display={"flex"} gridGap="0.5rem" alignItems={"center"}>
+          <Block
+            onClick={() => setActiveSubMenu("FontSelector")}
+            $style={{
+              border: "1px solid rgb(185,185,185)",
+              borderRadius: "4px",
+              padding: "0.2rem 0.45rem",
+              cursor: "pointer",
+              fontWeight: 500,
+              fontSize: "14px",
+              gap: "0.5rem",
+            }}
+            height={"24px"}
+            display={"flex"}
+            alignItems={"center"}
+          >
+            <Block>{state.family}</Block>
+            <Block display={"flex"}>
+              <ChevronDown size={22} />
+            </Block>
           </Block>
-        </Block>
 
-        <TextFontSize />
-        <Block display={"flex"} alignItems={"center"}>
-          <StatefulTooltip
-            placement={PLACEMENT.bottom}
-            showArrow={true}
-            accessibilityType={"tooltip"}
-            content="Text color"
-          >
-            <Button
-              onClick={() => setActiveSubMenu("TextFill")}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
+          <TextFontSize />
+          <Block display={"flex"} alignItems={"center"}>
+            <StatefulTooltip
+              placement={PLACEMENT.bottom}
+              showArrow={true}
+              accessibilityType={"tooltip"}
+              content="Text color"
             >
-              <TextColor color={state.color} size={22} />
-            </Button>
-          </StatefulTooltip>
+              <Button
+                onClick={() => setActiveSubMenu("TextFill")}
+                size={SIZE.mini}
+                kind={KIND.tertiary}
+              >
+                <TextColor color={state.color} size={22} />
+              </Button>
+            </StatefulTooltip>
 
-          <StatefulTooltip
-            placement={PLACEMENT.bottom}
-            showArrow={true}
-            accessibilityType={"tooltip"}
-            content="In đậm"
-          >
-            <Button
-              $style={{ ...(!state.bold && { color: "rgb(169,169,169)" }) }}
-              disabled={!state.styleOptions.hasBold}
-              onClick={makeBold}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
+            <StatefulTooltip
+              placement={PLACEMENT.bottom}
+              showArrow={true}
+              accessibilityType={"tooltip"}
+              content="In đậm"
             >
-              <Bold size={20} />
-            </Button>
-          </StatefulTooltip>
+              <Button
+                $style={{ ...(!state.bold && { color: "rgb(169,169,169)" }) }}
+                // disabled={!state.styleOptions.hasBold}
+                onClick={makeBold}
+                size={SIZE.mini}
+                kind={KIND.tertiary}
+              >
+                <Bold size={20} />
+              </Button>
+            </StatefulTooltip>
 
-          <StatefulTooltip
-            placement={PLACEMENT.bottom}
-            showArrow={true}
-            accessibilityType={"tooltip"}
-            content="In nghiêng"
-          >
-            <Button
-              $style={{ ...(!state.italic && { color: "rgb(169,169,169)" }) }}
-              disabled={!state.styleOptions.hasItalic}
-              onClick={makeItalic}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
+            <StatefulTooltip
+              placement={PLACEMENT.bottom}
+              showArrow={true}
+              accessibilityType={"tooltip"}
+              content="In nghiêng"
             >
-              <Italic size={20} />
-            </Button>
-          </StatefulTooltip>
+              <Button
+                $style={{ ...(!state.italic && { color: "rgb(169,169,169)" }) }}
+                // disabled={!state.styleOptions.hasItalic}
+                onClick={makeItalic}
+                size={SIZE.mini}
+                kind={KIND.tertiary}
+              >
+                <Italic size={20} />
+              </Button>
+            </StatefulTooltip>
 
-          <StatefulTooltip
-            placement={PLACEMENT.bottom}
-            showArrow={true}
-            accessibilityType={"tooltip"}
-            content="Gạch dòng"
-          >
-            <Button
-              $style={{
-                ...(!state.underline && { color: "rgb(169,169,169)" }),
-              }}
-              onClick={makeUnderline}
-              size={SIZE.mini}
-              kind={KIND.tertiary}
+            <StatefulTooltip
+              placement={PLACEMENT.bottom}
+              showArrow={true}
+              accessibilityType={"tooltip"}
+              content="Gạch dòng"
             >
-              <Underline size={24} />
-            </Button>
-          </StatefulTooltip>
+              <Button
+                $style={{
+                  ...(!state.underline && { color: "rgb(169,169,169)" }),
+                }}
+                onClick={makeUnderline}
+                size={SIZE.mini}
+                kind={KIND.tertiary}
+              >
+                <Underline size={24} />
+              </Button>
+            </StatefulTooltip>
 
-          <TextLetterCase />
+            <TextLetterCase />
 
-          <Block
-            width={"1px"}
-            height={"24px"}
-            backgroundColor="rgb(213,213,213)"
-            margin={"0 4px"}
-          />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
 
-          <TextAlign />
+            <TextAlign />
 
-          <Block
-            width={"1px"}
-            height={"24px"}
-            backgroundColor="rgb(213,213,213)"
-            margin={"0 4px"}
-          />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
 
-          <TextSpacing />
-          <Block
-            width={"1px"}
-            height={"24px"}
-            backgroundColor="rgb(213,213,213)"
-            margin={"0 4px"}
-          />
-          {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
+            <TextSpacing />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
+            {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
             Hiệu ứng
           </Button> */}
-          <Rotating />
-          <Block
-            width={"1px"}
-            height={"24px"}
-            backgroundColor="rgb(213,213,213)"
-            margin={"0 4px"}
-          />
-          {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
+            <Rotating />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
+            {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
             Animate
           </Button> */}
-          <EditWord />
-          <Block
-            width={"1px"}
-            height={"24px"}
-            backgroundColor="rgb(213,213,213)"
-            margin={"0 4px"}
-          />
-          {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
+            <EditWord />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
+            {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
             Animate
           </Button> */}
-          <TransitionElement />
-          <Block
-            width={"1px"}
-            height={"24px"}
-            backgroundColor="rgb(213,213,213)"
-            margin={"0 4px"}
-          />
-          {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
+            <TransitionElement />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
+            {/* <Button size={SIZE.compact} kind={KIND.tertiary}>
             Animate
           </Button> */}
-          <ModifyLength />
+            <ModifyLength />
+          </Block>
         </Block>
+        <Common />
       </Block>
-      <Common />
-    </Block>
+      {loading && (
+        // <div className="content-bg">
+        <div className="contentupload">
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+          <div></div>
+        </div>
+        // </div>
+      )}
+    </>
   );
 }
 
@@ -518,30 +698,90 @@ function TextLetterCase() {
   const [state, setState] = React.useState<{ upper: boolean }>({
     upper: false,
   });
+  const [textInput, setTextInput] = React.useState<string>("");
+  const activeObject = useActiveObject();
+  React.useEffect(() => {
+    if (activeObject) {
+      // @ts-ignore
+      const { charSpacing, lineHeight } = activeObject;
+      setTextInput(activeObject?.text);
+      console.log(textInput);
+    }
+  }, [activeObject]);
+  let initialText;
+  initialText = textInput;
   const editor = useEditor();
   return (
-    <StatefulTooltip
-      placement={PLACEMENT.bottom}
+    <StatefulPopover
       showArrow={true}
-      accessibilityType={"tooltip"}
-      content="Định dạng chữ"
+      placement={PLACEMENT.bottom}
+      content={() => (
+        <Block
+          padding={"12px"}
+          backgroundColor={"#ffffff"}
+          display={"grid"}
+          gridTemplateColumns={"1fr 1fr 1fr"}
+          gridGap={"8px"}
+        >
+          <Button
+            onClick={() => {
+              // @ts-ignore
+              setState({ upper: true });
+              editor.objects.toUppercase();
+            }}
+            kind={KIND.tertiary}
+            size={SIZE.mini}
+          >
+            <img
+              src="../../../../../assets/upper.png"
+              style={{ width: "18px", height: "auto" }}
+            />
+          </Button>
+          <Button
+            onClick={() => {
+              // @ts-ignore
+              setState({ upper: false });
+              editor.objects.toLowerCase();
+            }}
+            kind={KIND.tertiary}
+            size={SIZE.mini}
+          >
+            <img
+              src="../../../../../assets/lower.png"
+              style={{ width: "18px", height: "auto" }}
+            />
+          </Button>
+          <Button
+            onClick={() => {
+              // @ts-ignore
+              editor.objects.update({ text: initialText });
+            }}
+            kind={KIND.tertiary}
+            size={SIZE.mini}
+          >
+            <img
+              src="../../../../../assets/initialtext.png"
+              style={{ width: "18px", height: "auto" }}
+            />
+          </Button>
+        </Block>
+      )}
+      returnFocus
+      autoFocus
     >
-      <Button
-        onClick={() => {
-          if (!state.upper) {
-            setState({ upper: true });
-            editor.objects.toUppercase();
-          } else {
-            setState({ upper: false });
-            editor.objects.toLowerCase();
-          }
-        }}
-        size={SIZE.mini}
-        kind={KIND.tertiary}
-      >
-        <LetterCase size={24} />
-      </Button>
-    </StatefulTooltip>
+      <Block>
+        <StatefulTooltip
+          placement={PLACEMENT.bottom}
+          showArrow={true}
+          accessibilityType={"tooltip"}
+          content="Định dạng chữ"
+        >
+          <Button size={SIZE.mini} kind={KIND.tertiary}>
+            <LetterCase size={24} />
+          </Button>
+        </StatefulTooltip>
+      </Block>
+    </StatefulPopover>
   );
 }
 function rotateAngle() {
@@ -1317,12 +1557,11 @@ function ModifyLength() {
         lineHeight: lineHeight * 10,
       });
       setSizeInitial({
-        width: activeObject.width,
-        height: activeObject.height,
+        width: activeObject?.width,
+        height: activeObject?.height,
       });
     }
   }, [activeObject]);
-  
 
   const handleChange = (type: string, value: number[]) => {
     if (editor) {
@@ -1344,99 +1583,100 @@ function ModifyLength() {
     }
   };
   const [sliderValue, setSliderValue] = React.useState(0.00000005);
-function valuetext(value: number) {
-  return `${value}°C`;
-}
+  function valuetext(value: number) {
+    return `${value}°C`;
+  }
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setSliderValue(newValue as number);
-    console.log(sliderValue)
-    editor.objects.update({ scaleX: sliderValue,scaleY: sliderValue });
+    console.log(sliderValue);
+    editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
   };
   return (
-    <StatefulPopover
-      showArrow={true}
-      placement={PLACEMENT.bottom}
-      content={() => (
-        <Block
-          padding={"12px"}
-          width={"200px"}
-          backgroundColor={"#ffffff"}
-          display={"grid"}
-          gridGap={"8px"}
-        >
-          <Block>
-            <Block
-              $style={{
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "space-between",
-              }}
-            >
-              <Block $style={{ fontSize: "14px" }}>Chỉnh kích thước</Block>
-              <Block width={"52px"}>
-                <Input
-                  overrides={{
-                    Input: {
-                      style: {
-                        backgroundColor: "#ffffff",
-                        textAlign: "center",
+    <>
+      <StatefulPopover
+        showArrow={true}
+        placement={PLACEMENT.bottom}
+        content={() => (
+          <Block
+            padding={"12px"}
+            width={"200px"}
+            backgroundColor={"#ffffff"}
+            display={"grid"}
+            gridGap={"8px"}
+          >
+            <Block>
+              <Block
+                $style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <Block $style={{ fontSize: "14px" }}>Chỉnh kích thước</Block>
+                <Block width={"52px"}>
+                  <Input
+                    overrides={{
+                      Input: {
+                        style: {
+                          backgroundColor: "#ffffff",
+                          textAlign: "center",
+                        },
                       },
-                    },
-                    Root: {
-                      style: {
-                        borderBottomColor: "rgba(0,0,0,0.15)",
-                        borderTopColor: "rgba(0,0,0,0.15)",
-                        borderRightColor: "rgba(0,0,0,0.15)",
-                        borderLeftColor: "rgba(0,0,0,0.15)",
-                        borderTopWidth: "1px",
-                        borderBottomWidth: "1px",
-                        borderRightWidth: "1px",
-                        borderLeftWidth: "1px",
-                        height: "26px",
+                      Root: {
+                        style: {
+                          borderBottomColor: "rgba(0,0,0,0.15)",
+                          borderTopColor: "rgba(0,0,0,0.15)",
+                          borderRightColor: "rgba(0,0,0,0.15)",
+                          borderLeftColor: "rgba(0,0,0,0.15)",
+                          borderTopWidth: "1px",
+                          borderBottomWidth: "1px",
+                          borderRightWidth: "1px",
+                          borderLeftWidth: "1px",
+                          height: "26px",
+                        },
                       },
-                    },
-                    InputContainer: {},
-                  }}
-                  size={SIZE.mini}
-                  onChange={() => {}}
-                  value={Math.round(state.lineHeight)}
+                      InputContainer: {},
+                    }}
+                    size={SIZE.mini}
+                    onChange={() => {}}
+                    value={Math.round(state.lineHeight)}
+                  />
+                </Block>
+              </Block>
+
+              <Block>
+                <SliderBox
+                  aria-label="Volume"
+                  defaultValue={1}
+                  getAriaValueText={valuetext}
+                  step={0.01}
+                  marks
+                  min={0}
+                  max={2}
+                  onChange={handleSliderChange}
+                  valueLabelDisplay="auto"
                 />
               </Block>
             </Block>
-
-            <Block>
-              <SliderBox
-        aria-label="Volume"
-        defaultValue={1}
-        getAriaValueText={valuetext}
-        step={0.01}
-        marks
-        min={0}
-        max={1}
-                onChange={handleSliderChange}
-
-        valueLabelDisplay="auto"
-      />
-            </Block>
           </Block>
+        )}
+      >
+        <Block>
+          <StatefulTooltip
+            placement={PLACEMENT.bottom}
+            showArrow={true}
+            accessibilityType={"tooltip"}
+            content="Chỉnh kích thước"
+          >
+            <Button size={SIZE.mini} kind={KIND.tertiary}>
+              <img
+                src="../../../../../assets/changing-length.png"
+                style={{ width: "15px", height: "15px" }}
+              />
+            </Button>
+          </StatefulTooltip>
         </Block>
-      )}
-    >
-      <Block>
-        <StatefulTooltip
-          placement={PLACEMENT.bottom}
-          showArrow={true}
-          accessibilityType={"tooltip"}
-          content="Chỉnh kích thước"
-        >
-          <Button size={SIZE.mini} kind={KIND.tertiary}>
-            <img
-              src="../../../../../assets/changing-length.png"
-              style={{ width: "15px", height: "15px" }}
-            />
-          </Button>
-        </StatefulTooltip>
-      </Block>
-    </StatefulPopover>
+      </StatefulPopover>
+    </>
   );
 }

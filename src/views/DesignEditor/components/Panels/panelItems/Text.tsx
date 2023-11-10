@@ -45,7 +45,7 @@ export default function () {
         textAlign: "center",
         fontStyle: "normal",
         fontURL: font.url,
-        fill: "#333333",
+        fill: "#000000",
         metadata: {},
       }
       editor.objects.add<IStaticText>(options)

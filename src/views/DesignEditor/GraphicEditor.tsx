@@ -8,7 +8,7 @@ import Dashboard from "~/views/Dashboard";
 import PresentationEditor from "./PresentationEditor";
 import axios from "axios";
 import React, { useEffect, useState } from "react";
-import { useAppSelector } from "~/hooks/hook";
+import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import { useEditor } from "@layerhub-io/react";
 import { IDesign } from "~/interfaces/DesignEditor";
 import { IScene } from "@layerhub-io/types";
@@ -18,10 +18,10 @@ import { v4 as uuidv4 } from "uuid";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import { loadFonts } from "~/utils/fonts";
 import { toast } from "react-toastify";
-import { useAppDispatch } from "~/hooks/hook";
 import { REPLACE_TOKEN, REPLACE_ID_USER } from "~/store/slices/token/reducers";
 import "../../components/Resizable/loading.css";
-// import
+import { REPLACE_font } from "~/store/slices/font/fontSlice";
+
 function GraphicEditor() {
   const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
@@ -38,8 +38,10 @@ function GraphicEditor() {
     currentDesign,
     setCurrentDesign,
   } = useDesignEditorContext();
+
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const fontInitial = useAppSelector((state) => state.newFont.font);
   const handleLoadFont = async (x: any) => {
     if (editor) {
       let selectedFont = null;
@@ -91,10 +93,11 @@ function GraphicEditor() {
       });
       const data = response.data.data;
       setCommonFonts(data);
+      dispatch(REPLACE_font(data));
+      console.log(fontInitial);
       if (commonFonts.length > 0) {
         commonFonts.map(function (font) {
           if (font.name.includes(fontInitial)) {
-            // return fontURLInitial[0].font_ttf
             setFontURLInitial(font.font_ttf);
             return fontURLInitial;
           }
@@ -246,7 +249,7 @@ function GraphicEditor() {
           metadata: {},
         },
         {
-          id: "YgXmiNK_RuATY-xMyNf93",
+          id: data.id,
           name: "StaticImage",
           angle: 0,
           stroke: null,
@@ -274,6 +277,10 @@ function GraphicEditor() {
           cropY: 0,
           metadata: {
             brightness: 20,
+            naturalWidth: 0,
+            naturalHeight: 0,
+            initialHeight: 0,
+            initialWidth: 0,
           },
         },
       ],
@@ -375,7 +382,12 @@ function GraphicEditor() {
               src: detail.content.banner,
               cropX: 0,
               cropY: 0,
-              metadata: {},
+              metadata: {
+                naturalWidth: detail.content.naturalWidth,
+                naturalHeight: detail.content.naturalHeight,
+                initialHeight: detail.content.height,
+                initialWidth: detail.content.width,
+              },
             });
             // }
             // else {
@@ -497,6 +509,7 @@ function GraphicEditor() {
       setLoading(true);
 
       try {
+        console.log(dataRes);
         // await .then(async (data) => {
         //   // await loadGraphicTemplate(data);
         // });

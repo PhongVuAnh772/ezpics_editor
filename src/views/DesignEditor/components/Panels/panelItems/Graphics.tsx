@@ -1,48 +1,111 @@
-import React from "react"
-import { useStyletron } from "baseui"
-import { Block } from "baseui/block"
-import { Button, SIZE } from "baseui/button"
-import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft"
-import Scrollable from "~/components/Scrollable"
-import { vectors } from "~/constants/mock-data"
-import { useEditor } from "@layerhub-io/react"
-import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
-
+import React, { useEffect, useState } from "react";
+import { useEditor } from "@layerhub-io/react";
+import { Block } from "baseui/block";
+import { loadFonts } from "~/utils/fonts";
+import Scrollable from "~/components/Scrollable";
+import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
+import { useStyletron } from "baseui";
+import { SAMPLE_TEMPLATES } from "~/constants/editor";
+import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
+import useDesignEditorContext from "~/hooks/useDesignEditorContext";
+import useEditorType from "~/hooks/useEditorType";
+import { loadVideoEditorAssets } from "~/utils/video";
+import axios from "axios";
+import { useAppDispatch, useAppSelector } from "~/hooks/hook";
+import useAppContext from "~/hooks/useAppContext";
 export default function () {
-  const inputFileRef = React.useRef<HTMLInputElement>(null)
+  const { currentDesign, setCurrentDesign } = useDesignEditorContext();
 
-  const editor = useEditor()
-  const setIsSidebarOpen = useSetIsSidebarOpen()
+  const [data, setData] = useState<any>(null);
+  const [templates, setTemplates] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const token = useAppSelector((state) => state.token.token);
+  const network = useAppSelector((state) => state.network.ipv4Address);
+  const { setActiveSubMenu } = useAppContext();
 
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const response = await axios.post<any>(`${network}/listIngredientAPI`, {
+          token: token,
+          limit: 100
+        });
+        setTemplates(response.data.data);
+        console.log(response.data.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Lỗi khi gửi yêu cầu GET:", error);
+      }
+    }
+
+    fetchData();
+  }, []);
+  const editor = useEditor();
+  const setIsSidebarOpen = useSetIsSidebarOpen();
+  const { setCurrentScene, currentScene } = useDesignEditorContext();
+
+  // const loadTemplate = React.useCallback(
+  //   async (template: any) => {
+  //     if (editor) {
+  //       const fonts: any[] = [];
+  //       template.layers.forEach((object: any) => {
+  //         if (object.type === "StaticText" || object.type === "DynamicText") {
+  //           fonts.push({
+  //             name: object.fontFamily,
+  //             url: object.fontURL,
+  //             options: { style: "normal", weight: 400 },
+  //           });
+  //         } else if (object.type === "StaticImage") {
+  //           const image = new Image();
+  //           image.src = object.src;
+  //           const brightnessValue = object.brightness;
+  //           image.onload = () => {
+  //                           image.style.filter = `-moz-filter: brightness(50%);`;
+
+  //             image.style.filter = `brightness(${200}%)`;
+
+  //             image.style.filter = `-webkit-filter: brightness(200%);`;
+
+  //             console.log(image);
+  //                                 image.style.borderRadius = '50%';
+
+  //           };
+
+  //         }
+  //       });
+  //       const filteredFonts = fonts.filter((f) => !!f.url);
+  //       if (filteredFonts.length > 0) {
+  //         await loadFonts(filteredFonts);
+  //       }
+
+  //       setCurrentScene({ ...template, id: currentScene?.id });
+  //     }
+  //   },
+  //   [editor, currentScene]
+  // );
   const addObject = React.useCallback(
     (url: string) => {
       if (editor) {
-        const options = {
-          type: "StaticVector",
-          src: url,
-        }
-        editor.objects.add(options)
+        console.log(url);
+
+        var img = new Image();
+        img.src = url;
+        img.onload = function () {
+          const options = {
+            type: "StaticImage",
+            src: url,
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+            lock: false,
+          };
+
+          editor.objects.add(options);
+          console.log(img.naturalWidth, img.naturalHeight);
+        };
       }
     },
     [editor]
-  )
-
-  const handleDropFiles = (files: FileList) => {
-    const file = files[0]
-    const url = URL.createObjectURL(file)
-    editor.objects.add({
-      src: url,
-      type: "StaticVector",
-    })
-  }
-
-  const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleDropFiles(e.target.files!)
-  }
-
-  const handleInputFileRefClick = () => {
-    inputFileRef.current?.click()
-  }
+  );
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -55,54 +118,168 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Graphics</Block>
+        <Block>Thành phần</Block>
 
-        <Block onClick={() => setIsSidebarOpen(false)} $style={{ cursor: "pointer", display: "flex" }}>
+        <Block
+          onClick={() => setIsSidebarOpen(false)}
+          $style={{ cursor: "pointer", display: "flex" }}
+        >
           <AngleDoubleLeft size={18} />
         </Block>
       </Block>
-
-      <Block padding={"0 1.5rem"}>
-        <Button
-          onClick={handleInputFileRefClick}
-          size={SIZE.compact}
-          overrides={{
-            Root: {
-              style: {
-                width: "100%",
-              },
-            },
-          }}
-        >
-          Đẩy ảnh lên
-        </Button>
-      </Block>
       <Scrollable>
-        <input onChange={handleFileInput} type="file" id="file" ref={inputFileRef} style={{ display: "none" }} />
-        <Block>
-          <Block $style={{ display: "grid", gap: "8px", padding: "1.5rem", gridTemplateColumns: "1fr 1fr" }}>
-            {vectors.map((vector, index) => (
-              <GraphicItem onClick={() => addObject(vector)} key={index} preview={vector} />
-            ))}
-          </Block>
-        </Block>
+        <div style={{ padding: "0 1.5rem" }}>
+          <div
+            style={{
+              display: "flex",
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>Người mẫu</div>
+            <button
+              style={{
+                // height: "20px",
+                // width: "50px",
+                border: 0,
+                backgroundColor: "white",
+                color: "rgb(0, 95, 198)",
+                cursor: "pointer",
+              }}
+              onClick={() => setActiveSubMenu("Beauty")}
+            >
+              Xem thêm
+            </button>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gap: "0.5rem",
+              gridTemplateColumns: "1fr 1fr",
+            }}
+          >
+            {templates
+              .filter((item) => item.keyword === "Mẫu Beauty")
+              .slice(0, 3)
+              .map((item, index) => (
+                <ImageItem
+                  onClick={() => addObject(item.image)}
+                  key={index}
+                  preview={`${item.image}`}
+                />
+              ))}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>Khung ảnh</div>
+            <button
+              style={{
+                // height: "20px",
+                // width: "50px",
+                border: 0,
+                backgroundColor: "white",
+                color: "rgb(0, 95, 198)",
+                cursor: "pointer",
+              }}
+              onClick={() => setActiveSubMenu("PictureFrame")}
+            >
+              Xem thêm
+            </button>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gap: "0.5rem",
+              gridTemplateColumns: "1fr 1fr",
+            }}
+          >
+            {templates
+              .filter((item) => item.keyword === "Khung ảnh đẹp")
+              .slice(0, 3)
+              .map((item, index) => (
+                <ImageItem
+                  onClick={() => addObject(item.image)}
+                  key={index}
+                  preview={`${item.image}`}
+                />
+              ))}
+          </div>
+          <div
+            style={{
+              display: "flex",
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>Ảnh nền</div>
+            <button
+              style={{
+                // height: "20px",
+                // width: "50px",
+                border: 0,
+                backgroundColor: "white",
+                color: "rgb(0, 95, 198)",
+                cursor: "pointer",
+              }}
+              onClick={() => setActiveSubMenu("BackgroundImage")}
+            >
+              Xem thêm
+            </button>
+          </div>
+          <div
+            style={{
+              display: "grid",
+              gap: "0.5rem",
+              gridTemplateColumns: "1fr 1fr",
+            }}
+          >
+            {templates
+  .filter((item) => item.keyword.includes("Ảnh nền xanh đẹp"))
+  .slice(0, 3)
+  .map((item, index) => (
+    <ImageItem
+      onClick={() => addObject(item.image)}
+      key={index}
+      preview={`${item.image}`}
+    />
+  ))}
+
+          </div>
+        </div>
       </Scrollable>
     </Block>
-  )
+  );
 }
 
-function GraphicItem({ preview, onClick }: { preview: any; onClick?: (option: any) => void }) {
-  const [css] = useStyletron()
+function ImageItem({
+  preview,
+  onClick,
+}: {
+  preview: any;
+  onClick?: (option: any) => void;
+}) {
+  const [css] = useStyletron();
   return (
     <div
       onClick={onClick}
-      // onClick={() => onClick(component.layers[0])}
       className={css({
         position: "relative",
-        height: "84px",
         background: "#f8f8fb",
         cursor: "pointer",
-        padding: "12px",
         borderRadius: "8px",
         overflow: "hidden",
         "::before:hover": {
@@ -154,5 +331,5 @@ function GraphicItem({ preview, onClick }: { preview: any; onClick?: (option: an
         })}
       />
     </div>
-  )
+  );
 }

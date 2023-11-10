@@ -2,15 +2,16 @@
     "panels": {
         "panelsList": {
                         "layers": "Layers",
-            "templates": "Background",
+            "templates": "Ảnh tải lên",
             "customize": "Chỉnh sửa",
             "elements": "Hình dạng",
             "images": "Ảnh có sẵn",
             "videos": "Videos",
             "uploads": "Đẩy ảnh lên",
             "text": "Kiểu chữ",
-            "graphics": "Graphics",
-            "pixabay": "Pixabay"
+            "graphics": "Thành phần",
+            "pixabay": "Pixabay",
+            "component": "Thành phần"
         }
     }
 }

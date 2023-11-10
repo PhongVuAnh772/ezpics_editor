@@ -12,6 +12,9 @@ import Elements from "./Elements"
 import Graphics from "./Graphics"
 import TextFill from "./TextFill"
 import PathFill from "./PathFill"
+import Beauty from './Beauty'
+import PictureFrame from "../PictureFrame"
+import BackgroundImage from "./BackgroundImage"
 
 export default {
     Layers: Layers,
@@ -28,4 +31,8 @@ export default {
   Graphics: Graphics,
   TextFill: TextFill,
   PathFill: PathFill,
+  // Component: Component,
+    Beauty: Beauty,
+      PictureFrame: PictureFrame,
+        BackgroundImage: BackgroundImage,
 }

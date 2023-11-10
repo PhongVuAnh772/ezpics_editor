@@ -540,7 +540,7 @@ export default function () {
         </Block>
         <Common />
       </Block>
-      {loading && (
+      {/* {loading && (
         // <div className="content-bg">
         <div className="contentupload">
           <div></div>
@@ -558,7 +558,7 @@ export default function () {
           <div></div>
         </div>
         // </div>
-      )}
+      )} */}
     </>
   );
 }

@@ -11,25 +11,24 @@ import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import useEditorType from "~/hooks/useEditorType";
 import { loadVideoEditorAssets } from "~/utils/video";
 import axios from "axios";
-import { useAppDispatch,useAppSelector } from "~/hooks/hook";
-
+import { useAppDispatch, useAppSelector } from "~/hooks/hook";
+import useAppContext from "~/hooks/useAppContext";
 export default function () {
-  const { currentDesign, setCurrentDesign } = useDesignEditorContext()
-  const dispatch = useAppDispatch();
-  const network = useAppSelector(state => state.network.ipv4Address)
-  const token = useAppSelector(state => state.token.token)
+  const { currentDesign, setCurrentDesign } = useDesignEditorContext();
+
   const [data, setData] = useState<any>(null);
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const token = useAppSelector((state) => state.token.token);
+  const network = useAppSelector((state) => state.network.ipv4Address);
+  const { setActiveSubMenu } = useAppContext();
+
   useEffect(() => {
     async function fetchData() {
       try {
-        const response = await axios.post<any>(
-          `${network}/listImage`, {
-            token: token
-          }
-          
-        );
+        const response = await axios.post<any>(`${network}/listIngredientAPI`, {
+          token: token,
+        });
         setTemplates(response.data.data);
         console.log(response.data.data);
         setIsLoading(false);
@@ -43,66 +42,69 @@ export default function () {
   const editor = useEditor();
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const { setCurrentScene, currentScene } = useDesignEditorContext();
-  const idProduct = useAppSelector((state) => state.token.id);
-  const handleImage = async(item: any) => {
-     const res = await axios.post(
-      `${network}/addLayerImageUrlAPI`,
-      {
-        idproduct: idProduct,
-        token: token,
-        imageUrl: item.link,
-      },
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }
-    );
-    console.log(res.data);
 
-    if (res.data.code === 1) {
-      const upload = {
-        id: res.data.data.id,
-        url: res.data.data.content.banner,
-      };
+  // const loadTemplate = React.useCallback(
+  //   async (template: any) => {
+  //     if (editor) {
+  //       const fonts: any[] = [];
+  //       template.layers.forEach((object: any) => {
+  //         if (object.type === "StaticText" || object.type === "DynamicText") {
+  //           fonts.push({
+  //             name: object.fontFamily,
+  //             url: object.fontURL,
+  //             options: { style: "normal", weight: 400 },
+  //           });
+  //         } else if (object.type === "StaticImage") {
+  //           const image = new Image();
+  //           image.src = object.src;
+  //           const brightnessValue = object.brightness;
+  //           image.onload = () => {
+  //                           image.style.filter = `-moz-filter: brightness(50%);`;
 
-      const options = {
-        type: "StaticImage",
-        src: res.data.data.content.banner,
-        id: res.data.data.id,
-      };
-      // editor.objects.add(options);
-          addObject(item.link, item.width,item.height)
+  //             image.style.filter = `brightness(${200}%)`;
 
-    }
-  }
-   const addObject = React.useCallback(
-    (url: string,width: string,height: string) => {
-      
+  //             image.style.filter = `-webkit-filter: brightness(200%);`;
+
+  //             console.log(image);
+  //                                 image.style.borderRadius = '50%';
+
+  //           };
+
+  //         }
+  //       });
+  //       const filteredFonts = fonts.filter((f) => !!f.url);
+  //       if (filteredFonts.length > 0) {
+  //         await loadFonts(filteredFonts);
+  //       }
+
+  //       setCurrentScene({ ...template, id: currentScene?.id });
+  //     }
+  //   },
+  //   [editor, currentScene]
+  // );
+  const addObject = React.useCallback(
+    (url: string) => {
       if (editor) {
-        const options = {
-          type: "StaticImage",
-          src: url,
-          width: width,
-          height: height,
-          lock:true
-        }
-        editor.objects.add(options)
-      //   editor.frame.resize({
-      //   width: parseInt(width),
-      //   height: parseInt(height),
-      // })
-      // setCurrentDesign({
-      //   ...currentDesign,
-      //   frame: {
-      //     width: parseInt(width),
-      //     height: parseInt(height),
-      //   },
-      // })
+        console.log(url);
+
+        var img = new Image();
+        img.src = url;
+        img.onload = function () {
+          const options = {
+            type: "StaticImage",
+            src: url,
+            width: img.naturalWidth,
+            height: img.naturalHeight,
+            lock: false,
+          };
+
+          editor.objects.add(options);
+          console.log(img.naturalWidth, img.naturalHeight);
+        };
       }
     },
     [editor]
-  )
+  );
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -115,7 +117,7 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Ảnh bạn tải lên</Block>
+        <Block>Thành phần</Block>
 
         <Block
           onClick={() => setIsSidebarOpen(false)}
@@ -126,6 +128,20 @@ export default function () {
       </Block>
       <Scrollable>
         <div style={{ padding: "0 1.5rem" }}>
+          
+          <div
+            style={{
+              display: "flex",
+              paddingTop: "10px",
+              paddingBottom: "10px",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            <div>Khung ảnh</div>
+            
+          </div>
           <div
             style={{
               display: "grid",
@@ -133,25 +149,19 @@ export default function () {
               gridTemplateColumns: "1fr 1fr",
             }}
           >
-            {/* {templates.map((item, index) => {
-              return (
+            {templates
+              .filter((item) => item.keyword === "Khung ảnh đẹp")
+              .slice(0, 3)
+              .map((item, index) => (
                 <ImageItem
-                  onClick={() => loadTemplate(item)}
+                  onClick={() => addObject(item.image)}
                   key={index}
-                  preview={`${item.thumbnail}`}
+                  preview={`${item.image}`}
                 />
-              );
-            })} */}
-            {templates.map((item, index) => {
-              return (
-                <ImageItem
-                  onClick={() => handleImage(item)}
-                  key={index}
-                  preview={`${item.link}`}
-                />
-              );
-            })}
+              ))}
           </div>
+         
+          
         </div>
       </Scrollable>
     </Block>

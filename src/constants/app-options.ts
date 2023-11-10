@@ -4,6 +4,22 @@ export const BASE_ITEMS = [
     name: "Layers",
   },
   {
+    id: "graphics",
+    name: "Graphics",
+  },
+  {
+    id: "text",
+    name: "Text",
+  },
+  {
+    id: "images",
+    name: "Images",
+  },
+  {
+    id: "uploads",
+    name: "Uploads",
+  },
+  {
     id: "templates",
     name: "Templates",
   },
@@ -15,18 +31,8 @@ export const BASE_ITEMS = [
     id: "elements",
     name: "Elements",
   },
-  {
-    id: "images",
-    name: "Images",
-  },
-  {
-    id: "uploads",
-    name: "Uploads",
-  },
-  {
-    id: "text",
-    name: "Text",
-  },
+  
+  
   
   
 

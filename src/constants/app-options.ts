@@ -15,10 +15,10 @@ export const BASE_ITEMS = [
     id: "images",
     name: "Images",
   },
-  {
-    id: "uploads",
-    name: "Uploads",
-  },
+  // {
+  //   id: "uploads",
+  //   name: "Uploads",
+  // },
   {
     id: "templates",
     name: "Templates",

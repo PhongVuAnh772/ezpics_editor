@@ -117,7 +117,7 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Ảnh người mẫu</Block>
+        <Block>Thành phần</Block>
 
         <Block
           onClick={() => setIsSidebarOpen(false)}
@@ -128,6 +128,7 @@ export default function () {
       </Block>
       <Scrollable>
         <div style={{ padding: "0 1.5rem" }}>
+          
           <div
             style={{
               display: "flex",
@@ -138,20 +139,8 @@ export default function () {
               alignItems: "center",
             }}
           >
-            <div>Người mẫu</div>
-            <button
-              style={{
-                // height: "20px",
-                // width: "50px",
-                border: 0,
-                backgroundColor: "white",
-                color: "rgb(0, 95, 198)",
-                cursor: "pointer",
-              }}
-              onClick={() => setActiveSubMenu("Component")}
-            >
-              Xem thêm
-            </button>
+            <div>Ảnh người mẫu</div>
+            
           </div>
           <div
             style={{
@@ -170,6 +159,7 @@ export default function () {
                 />
               ))}
           </div>
+         
           
         </div>
       </Scrollable>

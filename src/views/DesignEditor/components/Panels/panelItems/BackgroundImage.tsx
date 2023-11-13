@@ -25,17 +25,20 @@ export default function () {
 
   useEffect(() => {
     async function fetchData() {
+      setIsLoading(true)
       try {
         const response = await axios.post<any>(`${network}/listIngredientAPI`, {
           token: token,
           limit: 100,
-          keyword: "Ảnh nền"
+          keyword: "Ảnh nền",
         });
         setTemplates(response.data.data);
         console.log(response.data.data);
         setIsLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
+                setIsLoading(false);
+
       }
     }
 
@@ -109,61 +112,75 @@ export default function () {
   );
 
   return (
-    <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      <Block
-        $style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          justifyContent: "space-between",
-          padding: "1.5rem",
-        }}
-      >
-        <Block>Thành phần</Block>
-
+    <>
+      <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Block
-          onClick={() => setIsSidebarOpen(false)}
-          $style={{ cursor: "pointer", display: "flex" }}
+          $style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+            justifyContent: "space-between",
+            paddingLeft: "1.5rem",
+            paddingRight: "1.5rem",
+          }}
         >
-          <AngleDoubleLeft size={18} />
+          <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+            Thành phần
+          </h4>
+
+          <Block
+            onClick={() => setActiveSubMenu("Graphics")}
+            $style={{ cursor: "pointer", display: "flex" }}
+          >
+            <AngleDoubleLeft size={18} />
+          </Block>
         </Block>
-      </Block>
-      <Scrollable>
-        <div style={{ padding: "0 1.5rem" }}>
-          
-          <div
-            style={{
-              display: "flex",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>Ảnh nền</div>
-           
+        <Scrollable>
+          <div style={{ padding: "0 1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                paddingBottom: "10px",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Ảnh nền
+              </h4>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {templates
+                // .filter((item) => item.keyword === "Ảnh nền")
+                .map((item, index) => (
+                  <ImageItem
+                    onClick={() => addObject(item.image)}
+                    key={index}
+                    preview={`${item.image}`}
+                  />
+                ))}
+            </div>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {templates
-              // .filter((item) => item.keyword === "Ảnh nền")
-              .map((item, index) => (
-                <ImageItem
-                  onClick={() => addObject(item.image)}
-                  key={index}
-                  preview={`${item.image}`}
-                />
-              ))}
+        </Scrollable>
+      </Block>
+      {isLoading && (
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+          <div className="ldio-4qpid53rus9">
+            <div></div>
+            <div>
+              <div></div>
+            </div>
           </div>
         </div>
-      </Scrollable>
-    </Block>
+      )}
+    </>
   );
 }
 

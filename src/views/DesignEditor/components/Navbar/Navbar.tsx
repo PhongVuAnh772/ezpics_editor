@@ -18,6 +18,10 @@ import { generateToServer } from "~/api/gererateToServer";
 import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import axios from "axios";
 import { toast } from "react-toastify";
+import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
+import imageIcon from './Layer 1.png'
+import exportIcon from './Layer 2.png'
+
 
 const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
   height: "64px",
@@ -423,6 +427,7 @@ export default function () {
               },
             }}
           >
+            <img src={imageIcon}  style={{width:15, height :15,marginRight: 10}}/>
             Lưu mẫu thiết kế
           </Button>
           <Button
@@ -437,7 +442,7 @@ export default function () {
               },
             }}
           >
-            Xuất ảnh
+            <img src={exportIcon}  style={{width:15, height :15,marginRight: 10}}/>Xuất ảnh
           </Button>
         </Block>
       </Container>

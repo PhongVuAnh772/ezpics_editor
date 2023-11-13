@@ -25,6 +25,8 @@ export default function () {
 
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
+  const [searchedFonts, setSearchedFonts] = React.useState(commonFonts);
+  const token = useAppSelector((state) => state.token.token);
   const [css] = useStyletron();
   const editor = useEditor();
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
@@ -33,16 +35,23 @@ export default function () {
       console.log(networkAPI);
       try {
         const response = await axios.post(`${networkAPI}/listFont`, {
-          token: "Gtac1lkOEdYgKr9u6UH5mAnTboyPi81696410044",
+          token: token,
         });
         const data = response.data.data;
-        setCommonFonts(data);
-        if (commonFonts.length > 0) {
-          commonFonts.map(async (font) => {
+        if (data) {
+          setCommonFonts(data);
+          response.data.data.map(async (font: any) => {
             handleLoadFont(font);
           });
           console.log(data);
         }
+        console.log(response);
+        // if (commonFonts.length > 0) {
+        //   commonFonts.map(async (font) => {
+        //     handleLoadFont(font);
+        //   });
+        //   console.log(data);
+        // }
       } catch (error) {
         console.error("Error fetching fonts:", error);
         toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
@@ -59,7 +68,7 @@ export default function () {
     };
 
     fetchFonts();
-  }, [commonFonts]);
+  }, []);
   // useEffect(() => {
 
   // }, [commonFonts]);
@@ -79,7 +88,7 @@ export default function () {
         name: x.name,
         url: selectedFont,
       };
-      console.log(font)
+      console.log(font);
       await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({
@@ -116,6 +125,7 @@ export default function () {
       >
         <Block
           $style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+          onClick={() => setActiveSubMenu("Text")}
         >
           <ArrowBackOutline size={24} />
           <Block>Chọn kiểu chữ</Block>

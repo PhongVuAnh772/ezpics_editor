@@ -487,6 +487,8 @@ function GraphicEditor() {
         if (response) {
           setDataRes(response.data.data);
         } else {
+                  setError(true);
+
         }
       } catch (error) {
         toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
@@ -556,7 +558,7 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
-        {(token === null || id === null) && errorMessage && (
+        {((token === null || id === null) || errorMessage) && (
           <div
             style={{
               position: "absolute",

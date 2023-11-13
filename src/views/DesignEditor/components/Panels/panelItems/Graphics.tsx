@@ -13,6 +13,7 @@ import { loadVideoEditorAssets } from "~/utils/video";
 import axios from "axios";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import useAppContext from "~/hooks/useAppContext";
+import "../../Preview/newloading.css";
 export default function () {
   const { currentDesign, setCurrentDesign } = useDesignEditorContext();
 
@@ -24,17 +25,20 @@ export default function () {
   const { setActiveSubMenu } = useAppContext();
 
   useEffect(() => {
+    setIsLoading(true);
     async function fetchData() {
       try {
         const response = await axios.post<any>(`${network}/listIngredientAPI`, {
           token: token,
-          limit: 100
+          limit: 100,
         });
         setTemplates(response.data.data);
         console.log(response.data.data);
         setIsLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
+                setIsLoading(false);
+
       }
     }
 
@@ -108,160 +112,184 @@ export default function () {
   );
 
   return (
-    <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      <Block
-        $style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          justifyContent: "space-between",
-          padding: "1.5rem",
-        }}
-      >
-        <Block>Thành phần</Block>
-
+    <>
+      <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Block
-          onClick={() => setIsSidebarOpen(false)}
-          $style={{ cursor: "pointer", display: "flex" }}
+          $style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+            justifyContent: "space-between",
+            paddingLeft: "1.5rem",
+            paddingRight: "1.5rem",
+          }}
         >
-          <AngleDoubleLeft size={18} />
-        </Block>
-      </Block>
-      <Scrollable>
-        <div style={{ padding: "0 1.5rem" }}>
-          <div
-            style={{
-              display: "flex",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>Người mẫu</div>
-            <button
-              style={{
-                // height: "20px",
-                // width: "50px",
-                border: 0,
-                backgroundColor: "white",
-                color: "rgb(0, 95, 198)",
-                cursor: "pointer",
-              }}
-              onClick={() => setActiveSubMenu("Beauty")}
-            >
-              Xem thêm
-            </button>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {templates
-              .filter((item) => item.keyword === "Mẫu Beauty")
-              .slice(0, 3)
-              .map((item, index) => (
-                <ImageItem
-                  onClick={() => addObject(item.image)}
-                  key={index}
-                  preview={`${item.image}`}
-                />
-              ))}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>Khung ảnh</div>
-            <button
-              style={{
-                // height: "20px",
-                // width: "50px",
-                border: 0,
-                backgroundColor: "white",
-                color: "rgb(0, 95, 198)",
-                cursor: "pointer",
-              }}
-              onClick={() => setActiveSubMenu("PictureFrame")}
-            >
-              Xem thêm
-            </button>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {templates
-              .filter((item) => item.keyword === "Khung ảnh đẹp")
-              .slice(0, 3)
-              .map((item, index) => (
-                <ImageItem
-                  onClick={() => addObject(item.image)}
-                  key={index}
-                  preview={`${item.image}`}
-                />
-              ))}
-          </div>
-          <div
-            style={{
-              display: "flex",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>Ảnh nền</div>
-            <button
-              style={{
-                // height: "20px",
-                // width: "50px",
-                border: 0,
-                backgroundColor: "white",
-                color: "rgb(0, 95, 198)",
-                cursor: "pointer",
-              }}
-              onClick={() => setActiveSubMenu("BackgroundImage")}
-            >
-              Xem thêm
-            </button>
-          </div>
-          <div
-            style={{
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {templates
-  .filter((item) => item.keyword.includes("Ảnh nền xanh đẹp"))
-  .slice(0, 3)
-  .map((item, index) => (
-    <ImageItem
-      onClick={() => addObject(item.image)}
-      key={index}
-      preview={`${item.image}`}
-    />
-  ))}
+          <Block>
+            <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+              Thành phần
+            </h4>
+          </Block>
 
+          <Block
+            onClick={() => setIsSidebarOpen(false)}
+            $style={{ cursor: "pointer", display: "flex" }}
+          >
+            <AngleDoubleLeft size={18} />
+          </Block>
+        </Block>
+        <Scrollable>
+          <div style={{ padding: "0 1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                paddingBottom: "10px",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              {/* <div >Người mẫu</div> */}
+
+              <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Người mẫu
+              </h4>
+
+              <button
+                style={{
+                  // height: "20px",
+                  // width: "50px",
+                  border: 0,
+                  backgroundColor: "white",
+                  color: "rgb(0, 95, 198)",
+                  cursor: "pointer",
+                }}
+                onClick={() => setActiveSubMenu("Beauty")}
+              >
+                Xem thêm
+              </button>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {templates
+                .filter((item) => item.keyword === "Mẫu Beauty")
+                .slice(0, 3)
+                .map((item, index) => (
+                  <ImageItem
+                    onClick={() => addObject(item.image)}
+                    key={index}
+                    preview={`${item.image}`}
+                  />
+                ))}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                paddingTop: "10px",
+                paddingBottom: "10px",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Khung ảnh
+              </h4>
+              <button
+                style={{
+                  // height: "20px",
+                  // width: "50px",
+                  border: 0,
+                  backgroundColor: "white",
+                  color: "rgb(0, 95, 198)",
+                  cursor: "pointer",
+                }}
+                onClick={() => setActiveSubMenu("PictureFrame")}
+              >
+                Xem thêm
+              </button>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {templates
+                .filter((item) => item.keyword === "Khung ảnh đẹp")
+                .slice(0, 3)
+                .map((item, index) => (
+                  <ImageItem
+                    onClick={() => addObject(item.image)}
+                    key={index}
+                    preview={`${item.image}`}
+                  />
+                ))}
+            </div>
+            <div
+              style={{
+                display: "flex",
+                paddingTop: "10px",
+                paddingBottom: "10px",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Ảnh nền
+              </h4>
+              <button
+                style={{
+                  // height: "20px",
+                  // width: "50px",
+                  border: 0,
+                  backgroundColor: "white",
+                  color: "rgb(0, 95, 198)",
+                  cursor: "pointer",
+                }}
+                onClick={() => setActiveSubMenu("BackgroundImage")}
+              >
+                Xem thêm
+              </button>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {templates
+                .filter((item) => item.keyword.includes("Ảnh nền xanh đẹp"))
+                .slice(0, 3)
+                .map((item, index) => (
+                  <ImageItem
+                    onClick={() => addObject(item.image)}
+                    key={index}
+                    preview={`${item.image}`}
+                  />
+                ))}
+            </div>
+          </div>
+        </Scrollable>
+      </Block>
+       {isLoading && (
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+          <div className="ldio-4qpid53rus9">
+            <div></div>
+            <div>
+              <div></div>
+            </div>
           </div>
         </div>
-      </Scrollable>
-    </Block>
+      )}
+    </>
   );
 }
 

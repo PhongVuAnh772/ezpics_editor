@@ -48,10 +48,11 @@ export default function () {
           alignItems: "center",
           fontWeight: 500,
           justifyContent: "space-between",
-          padding: "1.5rem",
+          paddingLeft: "1.5rem",
+          paddingRight: "1.5rem"
         }}
       >
-        <Block>Layers</Block>
+        <Block><h3 style={{fontFamily:"Helvetica, Arial, sans-serif"}}>Layers</h3></Block>
 
         <Block
           onClick={() => setIsSidebarOpen(false)}
@@ -85,8 +86,8 @@ export default function () {
                 </Block>
               ) : (
                 <img
-                  src={object._element.currentSrc}
-                  alt="lỗi"
+                  src={object._element?.currentSrc}
+                  alt="ảnh"
                   style={{ width: "auto", height: 40, maxWidth: '100px',resize: "both" }}
                   onClick={() => editor.objects.select(object.id)}
                 />

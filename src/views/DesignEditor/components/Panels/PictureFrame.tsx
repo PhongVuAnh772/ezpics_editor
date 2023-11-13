@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useEditor } from "@layerhub-io/react";
 import { Block } from "baseui/block";
+import { Button } from "baseui/button";
 import { loadFonts } from "~/utils/fonts";
 import Scrollable from "~/components/Scrollable";
 import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
@@ -34,6 +35,8 @@ export default function () {
         setIsLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
+                setIsLoading(false);
+
       }
     }
 
@@ -107,64 +110,78 @@ export default function () {
   );
 
   return (
-    <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      <Block
-        $style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          justifyContent: "space-between",
-          padding: "1.5rem",
-        }}
-      >
-        <Block>Thành phần</Block>
-
+    <>
+      <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Block
-          onClick={() => setIsSidebarOpen(false)}
-          $style={{ cursor: "pointer", display: "flex" }}
+          $style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+            justifyContent: "space-between",
+            paddingLeft: "1.5rem",
+            paddingRight: "1.5rem",
+          }}
         >
-          <AngleDoubleLeft size={18} />
+          <Block>
+            <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+              Thành phần
+            </h4>
+          </Block>
+
+          <Block
+            onClick={() => setActiveSubMenu("Graphics")}
+            $style={{ cursor: "pointer", display: "flex" }}
+          >
+            <AngleDoubleLeft size={18} />
+          </Block>
         </Block>
+        <Scrollable>
+          <div style={{ padding: "0 1.5rem" }}>
+            <div
+              style={{
+                display: "flex",
+                paddingBottom: "10px",
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
+              }}
+            >
+              <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Khung ảnh
+              </h4>
+            </div>
+            <div
+              style={{
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {templates
+                .filter((item) => item.keyword === "Khung ảnh đẹp")
+                .slice(0, 3)
+                .map((item, index) => (
+                  <ImageItem
+                    onClick={() => addObject(item.image)}
+                    key={index}
+                    preview={`${item.image}`}
+                  />
+                ))}
+            </div>
+          </div>
+        </Scrollable>
       </Block>
-      <Scrollable>
-        <div style={{ padding: "0 1.5rem" }}>
-          
-          <div
-            style={{
-              display: "flex",
-              paddingTop: "10px",
-              paddingBottom: "10px",
-              flexDirection: "row",
-              justifyContent: "space-between",
-              alignItems: "center",
-            }}
-          >
-            <div>Khung ảnh</div>
-            
+      {isLoading && (
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+          <div className="ldio-4qpid53rus9">
+            <div></div>
+            <div>
+              <div></div>
+            </div>
           </div>
-          <div
-            style={{
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {templates
-              .filter((item) => item.keyword === "Khung ảnh đẹp")
-              .slice(0, 3)
-              .map((item, index) => (
-                <ImageItem
-                  onClick={() => addObject(item.image)}
-                  key={index}
-                  preview={`${item.image}`}
-                />
-              ))}
-          </div>
-         
-          
         </div>
-      </Scrollable>
-    </Block>
+      )}
+    </>
   );
 }
 

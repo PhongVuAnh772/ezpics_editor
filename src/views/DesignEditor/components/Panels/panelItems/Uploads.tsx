@@ -10,7 +10,7 @@ import { nanoid } from "nanoid";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import axios from "axios";
-import '../../../../../components/Resizable/loading.css'
+import "../../../../../components/Loading/Initial.css";
 
 export default function () {
   const inputFileRef = React.useRef<HTMLInputElement>(null);
@@ -20,16 +20,16 @@ export default function () {
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
-  const [loading,setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
   const handleDropFiles = async (files: FileList) => {
-    setLoading(true)
+    setLoading(true);
     const file = files[0];
     const url = URL.createObjectURL(file);
     // let blob = await fetch(url).then(r => r.blob());
     // Kiểm tra đuôi file
     if (!/(png|jpg|jpeg)$/i.test(file.name)) {
       toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
-          setLoading(false)
+      // setLoading(false);
 
       return;
     }
@@ -63,7 +63,7 @@ export default function () {
         id: res.data.data.id,
       };
       editor.objects.add(options);
-      setLoading(false)
+      setLoading(false);
     }
   };
 
@@ -84,7 +84,14 @@ export default function () {
   };
   return (
     <DropZone handleDropFiles={handleDropFiles}>
-      <Block $style={{ flex: 1, display: "flex", flexDirection: "column",position: 'relative' }}>
+      <Block
+        $style={{
+          flex: 1,
+          display: "flex",
+          flexDirection: "column",
+          position: "relative",
+        }}
+      >
         <Block
           $style={{
             display: "flex",
@@ -154,25 +161,11 @@ export default function () {
         </Scrollable>
         {loading && (
           // <div className="content-bg">
-            <div className="contentupload">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-            </div>
+         <div className="loader"></div>
+
           // </div>
         )}
       </Block>
-      
     </DropZone>
   );
 }

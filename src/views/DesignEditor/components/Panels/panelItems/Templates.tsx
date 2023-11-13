@@ -14,6 +14,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import { Button, SIZE } from "baseui/button";
+import "../../Preview/newloading.css";
 
 export default function () {
   const inputFileRef = React.useRef<HTMLInputElement>(null);
@@ -81,6 +82,7 @@ export default function () {
     handleDropFiles(e.target.files!);
   };
   useEffect(() => {
+    setIsLoading(true);
     async function fetchData() {
       try {
         const response = await axios.post<any>(`${network}/listImage`, {
@@ -91,6 +93,7 @@ export default function () {
         setIsLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
+        setIsLoading(false);
       }
     }
 
@@ -165,94 +168,104 @@ export default function () {
     editor.objects.add(options);
   };
   return (
-    <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      <Block
-        $style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          justifyContent: "space-between",
-          padding: "1.5rem",
-        }}
-      >
-        <Block>Tải ảnh lên</Block>
-
+    <>
+      <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Block
-          onClick={() => setIsSidebarOpen(false)}
-          $style={{ cursor: "pointer", display: "flex" }}
+          $style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+            justifyContent: "space-between",
+            paddingLeft: "1.5rem",
+            paddingRight: "1.5rem",
+          }}
         >
-          <AngleDoubleLeft size={18} />
+          <Block>
+            <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+              Tải ảnh lên
+            </h4>
+          </Block>
+
+          <Block
+            onClick={() => setIsSidebarOpen(false)}
+            $style={{ cursor: "pointer", display: "flex" }}
+          >
+            <AngleDoubleLeft size={18} />
+          </Block>
         </Block>
-      </Block>
-      <Scrollable>
-        <Block padding={"0 1.5rem"}>
-          <Button
-            onClick={handleInputFileRefClick}
-            size={SIZE.compact}
-            overrides={{
-              Root: {
-                style: {
-                  width: "100%",
+        <Scrollable>
+          <Block padding={"0 1.5rem"}>
+            <Button
+              onClick={handleInputFileRefClick}
+              size={SIZE.compact}
+              overrides={{
+                Root: {
+                  style: {
+                    width: "100%",
+                  },
                 },
-              },
-            }}
-          >
-            Chọn từ máy tính
-          </Button>
-          <input
-            onChange={handleFileInput}
-            type="file"
-            id="file"
-            ref={inputFileRef}
-            style={{ display: "none" }}
-          />
-          
-          <div
-            style={{
-              marginTop: "1rem",
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
-            }}
-          >
-            {uploads.map((upload) => (
-              <div
-                key={upload.id}
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                }}
-                onClick={() => addImageToCanvas(upload.url)}
-              >
-                <div>
-                  <img width="100%" src={upload.url} alt="preview" />
+              }}
+            >
+              Chọn từ máy tính
+            </Button>
+            <input
+              onChange={handleFileInput}
+              type="file"
+              id="file"
+              ref={inputFileRef}
+              style={{ display: "none" }}
+            />
+
+            <div
+              style={{
+                marginTop: "1rem",
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {uploads.map((upload) => (
+                <div
+                  key={upload.id}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => addImageToCanvas(upload.url)}
+                >
+                  <div>
+                    <img width="100%" src={upload.url} alt="preview" />
+                  </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </Block>
-        <Block
-        $style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          justifyContent: "space-between",
-          padding: "1.5rem",
-        }}
-      >
-        <Block>Ảnh bạn tải lên</Block>
-      </Block>
-        <div style={{ padding: "0 1.5rem" }}>
-          
-          <div
-            style={{
-              display: "grid",
-              gap: "0.5rem",
-              gridTemplateColumns: "1fr 1fr",
+              ))}
+            </div>
+          </Block>
+          <Block
+            $style={{
+              display: "flex",
+              alignItems: "center",
+              fontWeight: 500,
+              justifyContent: "space-between",
+              paddingLeft: "1.5rem",
+              paddingRight: "1.5rem",
             }}
           >
-            {/* {templates.map((item, index) => {
+            <Block>
+              <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Ảnh bạn đã tải
+              </h4>
+            </Block>
+          </Block>
+          <div style={{ padding: "0 1.5rem" }}>
+            <div
+              style={{
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
+              }}
+            >
+              {/* {templates.map((item, index) => {
               return (
                 <ImageItem
                   onClick={() => loadTemplate(item)}
@@ -261,19 +274,30 @@ export default function () {
                 />
               );
             })} */}
-            {templates.map((item, index) => {
-              return (
-                <ImageItem
-                  onClick={() => handleImage(item)}
-                  key={index}
-                  preview={`${item.link}`}
-                />
-              );
-            })}
+              {templates.map((item, index) => {
+                return (
+                  <ImageItem
+                    onClick={() => handleImage(item)}
+                    key={index}
+                    preview={`${item.link}`}
+                  />
+                );
+              })}
+            </div>
+          </div>
+        </Scrollable>
+      </Block>
+      {loading && (
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+          <div className="ldio-4qpid53rus9">
+            <div></div>
+            <div>
+              <div></div>
+            </div>
           </div>
         </div>
-      </Scrollable>
-    </Block>
+      )}
+    </>
   );
 }
 

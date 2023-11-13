@@ -31,7 +31,7 @@ import RotateIcon from "~/components/Icons/RotateIcon";
 import axios from "axios";
 import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import { toast } from "react-toastify";
-import "../../../../../src/components/Resizable/loading.css";
+import "../../../../../src/components/Loading/Initial.css";
 interface TextState {
   color: string;
   bold: boolean;
@@ -156,7 +156,7 @@ export default function () {
     };
 
     fetchFonts();
-  }, [commonFonts]);
+  }, []);
   React.useEffect(() => {
     if (activeObject && activeObject.type === "StaticText") {
       const textProperties = getTextPropertiesClone(activeObject, commonFonts);

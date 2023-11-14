@@ -21,6 +21,7 @@ import { toast } from "react-toastify";
 import { REPLACE_TOKEN, REPLACE_ID_USER } from "~/store/slices/token/reducers";
 import "../../components/Resizable/loading.css";
 import { REPLACE_font } from "~/store/slices/font/fontSlice";
+import '../../../src/views/DesignEditor/components/Preview/newestLoading.css'
 
 function GraphicEditor() {
   const dispatch = useAppDispatch();
@@ -246,7 +247,9 @@ function GraphicEditor() {
             nonScaling: false,
           },
           fill: "#FFFFFF",
-          metadata: {},
+          metadata: {
+            lock: false
+          },
         },
         {
           id: data.id,
@@ -281,6 +284,7 @@ function GraphicEditor() {
             naturalHeight: 0,
             initialHeight: 0,
             initialWidth: 0,
+            lock: false
           },
         },
       ],
@@ -340,7 +344,9 @@ function GraphicEditor() {
               textAlign: detail.content.text_align,
               // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
               // fontURLInitial
-              metadata: {},
+              metadata: {
+                lock: detail.content.lock === 0 ? false : true
+              },
             });
           } else if (detail.content.type == "image") {
             // getMeta(detail.content.banner).then((img) => {
@@ -387,6 +393,7 @@ function GraphicEditor() {
                 naturalHeight: detail.content.naturalHeight,
                 initialHeight: detail.content.height,
                 initialWidth: detail.content.width,
+                lock: detail.content.lock ? false : true
               },
             });
             // }
@@ -473,7 +480,7 @@ function GraphicEditor() {
     };
 
     fetchFonts();
-  }, [currentScene]);
+  }, []);
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
@@ -512,9 +519,7 @@ function GraphicEditor() {
 
       try {
         console.log(dataRes);
-        // await .then(async (data) => {
-        //   // await loadGraphicTemplate(data);
-        // });
+       
         const dataRender = dataFunction(dataRes);
         // console.log(dataRender)
         await loadTemplate(dataRender);
@@ -587,24 +592,18 @@ function GraphicEditor() {
           </div>
         )}
         {loading && (
-          <div className="content-bg">
-            <div className="content">
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
-              <div></div>
+          
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+          <div className="ldio-4qpid53rus92">
+            <div></div>
+            <div>
               <div></div>
             </div>
+            <img style={{position: "absolute",top: '22%',left: '25%',width: 70,height: 70}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
           </div>
-        )}
+          
+        </div>
+      )}
       </EditorContainer>
     </>
   );

@@ -88,7 +88,7 @@ export default function () {
                 <img
                   src={object._element?.currentSrc}
                   alt="ảnh"
-                  style={{ width: "auto", height: 40, maxWidth: '100px',resize: "both" }}
+                  style={{ width: "auto", height: 40, maxWidth: '100px',resize: "both",border: "1px solid black"}}
                   onClick={() => editor.objects.select(object.id)}
                 />
               )}

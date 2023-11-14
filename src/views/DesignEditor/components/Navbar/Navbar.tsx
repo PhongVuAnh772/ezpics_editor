@@ -19,7 +19,7 @@ import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import axios from "axios";
 import { toast } from "react-toastify";
 import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
-import imageIcon from './Layer 1.png'
+import imageIcon from './Layer 1 (1).png'
 import exportIcon from './Layer 2.png'
 
 

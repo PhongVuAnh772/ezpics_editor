@@ -33,7 +33,7 @@ export default function () {
 
       return;
     }
-
+    
     const res = await axios.post(
       `${network}/addLayerImageAPI`,
       {
@@ -55,7 +55,6 @@ export default function () {
         id: res.data.data.id,
         url: res.data.data.content.banner,
       };
-
       setUploads([...uploads, upload]);
       const options = {
         type: "StaticImage",

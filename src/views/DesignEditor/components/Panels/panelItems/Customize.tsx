@@ -1,44 +1,294 @@
-import React from "react"
-import { Button, SIZE } from "baseui/button"
-import { HexColorPicker } from "react-colorful"
-import { StatefulPopover, PLACEMENT } from "baseui/popover"
-import { Plus } from "baseui/icon"
-import { Input } from "baseui/input"
-import { useEditor, useFrame } from "@layerhub-io/react"
-import { Modal, ROLE } from "baseui/modal"
-import { Block } from "baseui/block"
-import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft"
-import Scrollable from "~/components/Scrollable"
-import { sampleFrames } from "~/constants/editor"
-import Scrollbar from "@layerhub-io/react-custom-scrollbar"
-import SwapHorizontal from "~/components/Icons/SwapHorizontal"
-import { Tabs, Tab } from "baseui/tabs"
-import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
-import useDesignEditorContext from "~/hooks/useDesignEditorContext"
-
-const colors = ["#ffffff", "#9B9B9B", "#4A4A4A", "#000000", "#A70C2C", "#DA9A15", "#F8E71D", "#47821A", "#4990E2"]
+import React, { useState, useEffect, useRef, ChangeEvent } from "react";
+import { Button, SIZE } from "baseui/button";
+import { HexColorPicker } from "react-colorful";
+import { StatefulPopover, PLACEMENT } from "baseui/popover";
+import { Plus } from "baseui/icon";
+import { Input } from "baseui/input";
+import { useEditor, useFrame } from "@layerhub-io/react";
+import { Modal, ROLE } from "baseui/modal";
+import { Block } from "baseui/block";
+import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
+import Scrollable from "~/components/Scrollable";
+import { sampleFrames } from "~/constants/editor";
+import Scrollbar from "@layerhub-io/react-custom-scrollbar";
+import SwapHorizontal from "~/components/Icons/SwapHorizontal";
+import { Tabs, Tab } from "baseui/tabs";
+import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
+import useDesignEditorContext from "~/hooks/useDesignEditorContext";
+import "./Form.css";
+import axios from "axios";
+import "../../Preview/newloading.css";
+import { useAppSelector } from "~/hooks/hook";
+import { toast } from "react-toastify";
+const colors = [
+  "#ffffff",
+  "#9B9B9B",
+  "#4A4A4A",
+  "#000000",
+  "#A70C2C",
+  "#DA9A15",
+  "#F8E71D",
+  "#47821A",
+  "#4990E2",
+];
 
 interface State {
-  backgroundColor: string
+  backgroundColor: string;
 }
-
+interface CheckedItems {
+  [key: string]: boolean;
+}
 export default function () {
-  const editor = useEditor()
-  const setIsSidebarOpen = useSetIsSidebarOpen()
+  const editor = useEditor();
+  const setIsSidebarOpen = useSetIsSidebarOpen();
+  const idProduct = useAppSelector((state) => state.token.id);
+  const network = useAppSelector((state) => state.network.ipv4Address);
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [price, setPrice] = useState(0);
+  const [sessPrice, setsessPrice] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [categoryId, setCategoryId] = useState(0);
+  const [categoryList, setCategoryList] = useState<any>([]);
+  const [selectedOption, setSelectedOption] = useState("");
+  const [selectedFilesBackground, setSelectedFilesBackground] =
+    useState<FileList | null>(null);
+  const [selectedOptionStorage, setSelectedOptionStorage] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
+  const [selectedFilesSecond, setSelectedFilesSecond] =
+    useState<FileList | null>(null);
+      const [listWarehouse, setListWarehouse] = useState<any>([]);
+
+
+  const [dataStorage, setDataStorage] = useState<any>([]);
+  const token = useAppSelector((state) => state.token.token);
+  const [checkedItems, setCheckedItems] = useState<any[]>([]);
+
+  // Hàm xử lý sự kiện khi checkbox thay đổi trạng thái
+  const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, checked } = event.target;
+    console.log(id,!checked)
+    setCheckedItems((prev) => {
+      if (checked) {
+        // If checked, add the ID to the array
+        console.log([...prev, parseInt(id)])
+        return [...prev, parseInt(id)];
+      } else {
+
+        return prev.filter((item) => item !== parseInt(id));
+      }
+    });
+  };
+  useEffect(() => {
+    const getDataCategory = async () => {
+      const response = await axios.get(`${network}/getProductCategoryAPI`);
+      if (response.data) {
+        setCategoryList(response.data.listData);
+      }
+    };
+    getDataCategory();
+  }, []);
+
+  useEffect(() => {
+    setLoading(true);
+    const getData = async () => {
+      try {
+        const response = await axios.post(`${network}/getInfoProductAPI`, {
+          id: idProduct,
+        });
+        if (response.data && response.data.data) {
+          setName(response.data.data.name);
+          setDescription(response.data.data.description);
+          setPrice(response.data.data.sale_price);
+          setsessPrice(response.data.data.price);
+          setCategoryId(response.data.data.category_id);
+          setSelectedOption(response.data.data.status.toString());
+          setSelectedOptionStorage(response.data.data.id);
+                  setListWarehouse(response.data.data.listWarehouse);
+                  setCheckedItems(response.data.data.listWarehouse)
+          // https://apis.ezpics.vn/apis/getInfoProductAPI
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+        setLoading(false);
+      }
+        console.log(listWarehouse);
+
+    };
+    getData();
+  }, []);
 
   const [state, setState] = React.useState<State>({
     backgroundColor: "#000000",
-  })
+  });
 
   const changeBackgroundColor = (color: string) => {
     if (editor) {
-      editor.frame.setBackgroundColor(color)
+      editor.frame.setBackgroundColor(color);
     }
-  }
+  };
+  useEffect(() => {
+    const getDataStorage = async () => {
+      const response = await axios.post(
+        `${network}/getListWarehouseDesignerAPI`,
+        {
+          token: token,
+        }
+      );
+      if (response.data) {
+        setDataStorage(response.data.data);
+      }
+    };
+    getDataStorage();
+  }, []);
+
+  const handleSelectChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setCategoryId(event.target.value);
+  };
   const handleChange = (type: string, value: any) => {
-    setState({ ...state, [type]: value })
-    changeBackgroundColor(value)
-  }
+    setState({ ...state, [type]: value });
+    changeBackgroundColor(value);
+  };
+  const handleSelectChangeStatus = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedOption(event.target.value);
+  };
+
+  const handleSelectChangeStatusStorage = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedOptionStorage(event.target.value);
+  };
+
+  const options = [
+    { value: "", label: "Chọn trạng thái" },
+
+    { value: "0", label: "Đang chỉnh sửa" },
+    { value: "1", label: "Đã hoàn thành" },
+  ];
+  const inputFileRef = React.useRef<HTMLInputElement>(null);
+  const inputFileRefThumn = React.useRef<HTMLInputElement>(null);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [selectedSecondFile, setSelectedSecondFile] = useState(null);
+
+  const handleInputFileRefClickBackground = () => {
+    inputFileRef.current?.click();
+  };
+  const handleInputFileRefClickThumn = () => {
+    inputFileRefThumn.current?.click();
+  };
+  const handleChangeInputFileBackground = (
+    event: ChangeEvent<HTMLInputElement>
+  ) => {
+    const files = event.target.files!;
+    const file = files[0];
+
+    if (!file) {
+      setSelectedFiles(null);
+      toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
+      return;
+    }
+
+    if (!/(png|jpg|jpeg)$/i.test(file.name)) {
+      setSelectedFilesBackground(null);
+      toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
+    } else {
+      setSelectedFilesBackground(file);
+    }
+  };
+  const handleChangeInputFile = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files!;
+    const file = files[0];
+
+    if (!file) {
+      setSelectedFiles(null);
+      toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
+      return;
+    }
+
+    if (!/(png|jpg|jpeg)$/i.test(file.name)) {
+      setSelectedFiles(null);
+      toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
+    } else {
+      setSelectedFiles(file);
+    }
+  };
+
+  const handleSaveInformation = async () => {
+    console.log(checkedItems.join(","));
+    if (
+      name === "" ||
+      description === "" ||
+      Number.isNaN(price) ||
+      Number.isNaN(sessPrice) ||
+      (categoryId === 0 && isNaN(categoryId)) ||
+      selectedOption === ""
+    ) {
+      toast.error("Bạn hãy nhập đầy đủ thông tin", {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      console.log(categoryId);
+    } else {
+      setLoading(true);
+      try {
+        const formData = new FormData();
+        if (selectedFiles) {
+          formData.append("background", selectedFiles);
+        }
+
+        if (selectedFilesBackground) {
+          formData.append("thumbnail", selectedFilesBackground);
+        }
+        console.log(selectedOption);
+        formData.append("name", name);
+        formData.append("sale_price", price.toString());
+        formData.append("price", sessPrice.toString());
+        formData.append("category_id", categoryId.toString());
+        formData.append("warehouse_id", checkedItems.join(","));
+        formData.append("status", selectedOption === "1" ? true : false);
+        formData.append("description", description);
+        formData.append("token", token);
+        formData.append("idProduct", idProduct.toString());
+
+        const response = await axios.post(
+          `${network}/updateProductAPI`,
+          formData,
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+
+        if (response.data) {
+          console.log(response.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.log(error);
+        toast.error("Lỗi khi lưu thông tin mẫu thiết kế", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      }
+    }
+  };
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -48,17 +298,20 @@ export default function () {
           alignItems: "center",
           fontWeight: 500,
           justifyContent: "space-between",
-           paddingLeft: "1.5rem",
-          paddingRight: "1.5rem"
+          paddingLeft: "1.5rem",
+          paddingRight: "1.5rem",
         }}
       >
         <Block>
-            <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
-              Chỉnh sửa
-            </h4>
-          </Block>
+          <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+            Chỉnh sửa
+          </h4>
+        </Block>
 
-        <Block onClick={() => setIsSidebarOpen(false)} $style={{ cursor: "pointer", display: "flex" }}>
+        <Block
+          onClick={() => setIsSidebarOpen(false)}
+          $style={{ cursor: "pointer", display: "flex" }}
+        >
           <AngleDoubleLeft size={18} />
         </Block>
       </Block>
@@ -66,7 +319,15 @@ export default function () {
         <Block padding={"0 1.5rem"}>
           <Block>
             <ResizeTemplate />
-            <Block $style={{ fontSize: "14px", textAlign: "center", paddingTop: "0.35rem" }}>1080 x 1920px</Block>
+            <Block
+              $style={{
+                fontSize: "14px",
+                textAlign: "center",
+                paddingTop: "0.35rem",
+              }}
+            >
+              1080 x 1920px
+            </Block>
           </Block>
 
           <Block paddingTop={"0.5rem"}>
@@ -102,11 +363,20 @@ export default function () {
                         textAlign: "center",
                       }}
                     >
-                      <HexColorPicker onChange={(v) => handleChange("backgroundColor", v)} />
+                      <HexColorPicker
+                        onChange={(v) => handleChange("backgroundColor", v)}
+                      />
                       <Input
-                        overrides={{ Input: { style: { textAlign: "center" } } }}
+                        overrides={{
+                          Input: { style: { textAlign: "center" } },
+                        }}
                         value={state.backgroundColor}
-                        onChange={(e) => handleChange("backgroundColor", (e.target as any).value)}
+                        onChange={(e) =>
+                          handleChange(
+                            "backgroundColor",
+                            (e.target as any).value
+                          )
+                        }
                         placeholder="#000000"
                         clearOnEscape
                       />
@@ -161,60 +431,228 @@ export default function () {
               </div>
             </div>
           </Block>
+          <Block paddingTop={"0.5rem"}>
+            <div className="container">
+              <div className="row">
+                <h4 style={{ fontFamily: "Arial" }}>Thông tin thiết kế</h4>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Tên thiết kế</p>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                  />
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Mô tả mẫu thiết kế</p>
+
+                  <input
+                    type="text"
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                  />
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Giá bán thị trường</p>
+
+                  <input
+                    type="number"
+                    value={price}
+                    onChange={(e) => setPrice(parseInt(e.target.value))}
+                  />
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Giá bán</p>
+
+                  <input
+                    type="number"
+                    value={sessPrice}
+                    onChange={(e) => setsessPrice(parseInt(e.target.value))}
+                  />
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Danh mục</p>
+
+                  <select
+                    value={categoryId}
+                    onChange={(e) => handleSelectChange(e)}
+                  >
+                    {categoryList &&
+                      categoryList.map((category: any) => (
+                        <option key={category.id} value={category.id}>
+                          {category.name}
+                        </option>
+                      ))}
+                  </select>
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Ảnh nền</p>
+
+                  <input
+                    onChange={(e) => handleChangeInputFile(e)}
+                    type="file"
+                    id="file"
+                    ref={inputFileRef}
+                    style={{}}
+                  />
+                  {/* onChange={changeHandler} */}
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Ảnh minh họa</p>
+
+                  <input
+                    onChange={(e) => handleChangeInputFileBackground(e)}
+                    type="file"
+                    id="file"
+                    ref={inputFileRefThumn}
+                    style={{}}
+                  />
+                  {/* onChange={changeHandler} */}
+                </div>
+                <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Trạng thái</p>
+
+                  <select
+                    value={selectedOption}
+                    onChange={handleSelectChangeStatus}
+                  >
+                    {options.map((option) => (
+                      <option key={option.value} value={option.value}>
+                        {option.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+                {/* <div className="input-group">
+                  <p style={{ fontFamily: "Arial" }}>Chọn kho thiết kế</p>
+
+                  <select
+                    value={selectedOptionStorage}
+                    onChange={handleSelectChangeStatusStorage}
+                  >
+                    {dataStorage &&
+                      dataStorage.map((option: any) => (
+                        <option key={option.id} value={option.id}>
+                          {option.name}
+                        </option>
+                      ))}
+
+                  </select> */}
+                <div className="input-group">
+                  {dataStorage &&
+                    dataStorage.map((item: any, index: any) => (
+                      <div key={item.id} style={{ marginBottom: "15px" }}>
+                        <input
+                          type="checkbox"
+                          id={`${item.id}`}
+                          checked={checkedItems.includes(item.id)}
+                          onChange={handleCheckboxChange}
+                        />
+                        <label
+                          htmlFor={`${item.id}`}
+                          style={{ marginTop: "10px" }}
+                        >
+                          {item.name}
+                        </label>
+                      </div>
+                    ))}
+                </div>
+                {/* </div> */}
+
+                <Button
+                  onClick={() => handleSaveInformation()}
+                  size={SIZE.compact}
+                  overrides={{
+                    Root: {
+                      style: {
+                        width: "100%",
+                        marginBottom: "30px",
+                      },
+                    },
+                  }}
+                >
+                  Lưu thông tin
+                </Button>
+              </div>
+            </div>
+          </Block>
         </Block>
       </Scrollable>
+      {loading && (
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+          <div className="ldio-4qpid53rus9">
+            <div></div>
+            <div>
+              <div></div>
+            </div>
+          </div>
+          <img
+            style={{
+              position: "absolute",
+              top: "22%",
+              left: "25%",
+              width: 70,
+              height: 70,
+            }}
+            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+          />
+        </div>
+      )}
     </Block>
-  )
+  );
 }
 
 function ResizeTemplate() {
-  const [isOpen, setIsOpen] = React.useState(false)
-  const [activeKey, setActiveKey] = React.useState<string | number>("0")
-  const { currentDesign, setCurrentDesign } = useDesignEditorContext()
-  const editor = useEditor()
+  const [isOpen, setIsOpen] = React.useState(false);
+  const [activeKey, setActiveKey] = React.useState<string | number>("0");
+  const { currentDesign, setCurrentDesign } = useDesignEditorContext();
+  const editor = useEditor();
   const [desiredFrame, setDesiredFrame] = React.useState({
     width: 0,
     height: 0,
-  })
+  });
   const [selectedFrame, setSelectedFrame] = React.useState<any>({
     id: 0,
     width: 0,
     height: 0,
-  })
-  const frame = useFrame()
+  });
+  const frame = useFrame();
 
   React.useEffect(() => {
     if (frame) {
       setDesiredFrame({
         width: frame.width,
         height: frame.height,
-      })
+      });
     }
-  }, [frame])
+  }, [frame]);
 
   const applyResize = () => {
     // @ts-ignore
-    const size = activeKey === "0" ? selectedFrame : desiredFrame
+    const size = activeKey === "0" ? selectedFrame : desiredFrame;
     if (editor) {
       editor.frame.resize({
         width: parseInt(size.width),
         height: parseInt(size.height),
-      })
+      });
       setCurrentDesign({
         ...currentDesign,
         frame: {
           width: parseInt(size.width),
           height: parseInt(size.height),
         },
-      })
+      });
     }
-    setIsOpen(false)
-  }
+    setIsOpen(false);
+  };
   const isEnabled =
     // @ts-ignore
-    (activeKey === "0" && selectedFrame.id !== 0) ||
+    activeKey === "0" &&
+    selectedFrame.id !== 0 &&
     // @ts-ignore
-    (activeKey === "1" && !!parseInt(desiredFrame.width) && !!parseInt(desiredFrame.height))
+    activeKey === "1" &&
+    !!parseInt(desiredFrame?.width) &&
+    !!parseInt(desiredFrame?.height);
 
   return (
     <>
@@ -280,19 +718,27 @@ function ResizeTemplate() {
             }}
             activeKey={activeKey}
             onChange={({ activeKey }) => {
-              setActiveKey(activeKey)
+              setActiveKey(activeKey);
             }}
           >
             <Tab title="Kích thước chọn">
               <Block $style={{ width: "100%", height: "400px" }}>
                 <Scrollbar>
-                  <Block $style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr" }}>
+                  <Block
+                    $style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr 1fr",
+                    }}
+                  >
                     {sampleFrames.map((sampleFrame, index) => (
                       <Block
                         onClick={() => setSelectedFrame(sampleFrame)}
                         $style={{
                           padding: "0.5rem",
-                          backgroundColor: selectedFrame.id === sampleFrame.id ? "rgb(243,244,245)" : "#ffffff",
+                          backgroundColor:
+                            selectedFrame.id === sampleFrame.id
+                              ? "rgb(243,244,245)"
+                              : "#ffffff",
                           ":hover": {
                             backgroundColor: "rgb(246,247,248)",
                             cursor: "pointer",
@@ -308,10 +754,21 @@ function ResizeTemplate() {
                             justifyContent: "center",
                           }}
                         >
-                          <img src={sampleFrame.preview} style={{ width: '100%',height:'100%',resize: 'block' }}/>
+                          <img
+                            src={sampleFrame.preview}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              resize: "block",
+                            }}
+                          />
                         </Block>
-                        <Block $style={{ fontSize: "13px", textAlign: "center" }}>
-                          <Block $style={{ fontWeight: 500 }}>{sampleFrame.name}</Block>
+                        <Block
+                          $style={{ fontSize: "13px", textAlign: "center" }}
+                        >
+                          <Block $style={{ fontWeight: 500 }}>
+                            {sampleFrame.name}
+                          </Block>
                           <Block $style={{ color: "rgb(119,119,119)" }}>
                             {sampleFrame.width} x {sampleFrame.height}px
                           </Block>
@@ -325,10 +782,20 @@ function ResizeTemplate() {
             <Tab title="Kích thước tự chỉnh">
               <Block $style={{ padding: "2rem 2rem" }}>
                 <Block
-                  $style={{ display: "grid", gridTemplateColumns: "1fr 50px 1fr", alignItems: "end", fontSize: "14px" }}
+                  $style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 50px 1fr",
+                    alignItems: "end",
+                    fontSize: "14px",
+                  }}
                 >
                   <Input
-                    onChange={(e: any) => setDesiredFrame({ ...desiredFrame, width: e.target.value })}
+                    onChange={(e: any) =>
+                      setDesiredFrame({
+                        ...desiredFrame,
+                        width: e.target.value,
+                      })
+                    }
                     value={desiredFrame.width}
                     startEnhancer="W"
                     size={SIZE.compact}
@@ -343,13 +810,22 @@ function ResizeTemplate() {
                     }}
                     size={SIZE.compact}
                     kind="tertiary"
-                    onClick={() => setDesiredFrame({ height: desiredFrame.width, width: desiredFrame.height })}
-
+                    onClick={() =>
+                      setDesiredFrame({
+                        height: desiredFrame.width,
+                        width: desiredFrame.height,
+                      })
+                    }
                   >
                     <SwapHorizontal size={24} />
                   </Button>
                   <Input
-                    onChange={(e: any) => setDesiredFrame({ ...desiredFrame, height: e.target.value })}
+                    onChange={(e: any) =>
+                      setDesiredFrame({
+                        ...desiredFrame,
+                        height: e.target.value,
+                      })
+                    }
                     value={desiredFrame.height}
                     startEnhancer="H"
                     size={SIZE.compact}
@@ -359,12 +835,23 @@ function ResizeTemplate() {
             </Tab>
           </Tabs>
         </Block>
-        <Block $style={{ display: "flex", alignItems: "center", justifyContent: "center", paddingBottom: "2rem" }}>
-          <Button disabled={!isEnabled} onClick={applyResize} style={{ width: "190px" }}>
-           Chọn
+        <Block
+          $style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            paddingBottom: "2rem",
+          }}
+        >
+          <Button
+            disabled={!isEnabled}
+            onClick={applyResize}
+            style={{ width: "190px" }}
+          >
+            Chọn
           </Button>
         </Block>
       </Modal>
     </>
-  )
+  );
 }

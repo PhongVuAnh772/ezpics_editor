@@ -22,6 +22,7 @@ import { REPLACE_TOKEN, REPLACE_ID_USER } from "~/store/slices/token/reducers";
 import "../../components/Resizable/loading.css";
 import { REPLACE_font } from "~/store/slices/font/fontSlice";
 import '../../../src/views/DesignEditor/components/Preview/newestLoading.css'
+import useAppContext from "~/hooks/useAppContext";
 
 function GraphicEditor() {
   const dispatch = useAppDispatch();
@@ -32,6 +33,8 @@ function GraphicEditor() {
   const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
   const [errorMessage, setError] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
+    const { setActiveSubMenu } = useAppContext();
+
   const {
     setCurrentScene,
     currentScene,
@@ -45,7 +48,7 @@ function GraphicEditor() {
   const fontInitial = useAppSelector((state) => state.newFont.font);
   const handleLoadFont = async (x: any) => {
     if (editor) {
-      let selectedFont = null;
+      let selectedFont
 
       if (x.font) {
         selectedFont = {
@@ -77,17 +80,14 @@ function GraphicEditor() {
       if (selectedFont) {
         await loadFonts([selectedFont]);
         // @ts-ignore
-        // editor.objects.update<IStaticText>({
-        //   fontFamily: x.name,
-        //   fontURL: selectedFont.url,
-        // });
+        
       }
     }
   };
 
   const getDataFontTextInitial = async (fontInitial: any) => {
     //
-
+    setLoading(true)
     try {
       const response = await axios.post(`${networkAPI}/listFont`, {
         token: token,
@@ -96,13 +96,15 @@ function GraphicEditor() {
       setCommonFonts(data);
       dispatch(REPLACE_font(data));
       console.log(fontInitial);
-      if (commonFonts.length > 0) {
-        commonFonts.map(function (font) {
+      if (response.data.data) {
+        response.data.data.map(function (font:any) {
           if (font.name.includes(fontInitial)) {
             setFontURLInitial(font.font_ttf);
             return fontURLInitial;
           }
         });
+            setLoading(false)
+
       }
     } catch (error) {
       console.error("Error fetching fonts:", error);
@@ -452,30 +454,38 @@ function GraphicEditor() {
   let convertData;
   useEffect(() => {
     const fetchFonts = async () => {
-      setLoading(true);
+      console.log(networkAPI);
       try {
         const response = await axios.post(`${networkAPI}/listFont`, {
           token: token,
         });
-        const data = response.data.data;
-        setCommonFonts(data);
-
-        if (commonFonts.length > 0) {
-          setLoading(false);
-
-          commonFonts.map(async (font) => {
+        // const data = response.data.data;
+        if (response.data.data) {
+          setCommonFonts(response.data.data);
+          response.data.data.map(async (font: any) => {
             handleLoadFont(font);
+                      console.log(response.data.data)
+
           });
         }
-        // else {
-        //                   setError(true)
 
+        // if (commonFonts.length > 0) {
+        //   commonFonts.map(async (font) => {
+        //     handleLoadFont(font);
+        //   });
         // }
       } catch (error) {
-        setError(true);
-        setLoading(false);
-
         console.error("Error fetching fonts:", error);
+        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     };
 
@@ -513,6 +523,10 @@ function GraphicEditor() {
     };
     fetchDataBanks();
   }, []);
+  useEffect(() => {
+    setActiveSubMenu("FontSelector")
+  }, [])
+  
   useEffect(() => {
     const fetchDataBanks = async () => {
       setLoading(true);
@@ -599,7 +613,7 @@ function GraphicEditor() {
             <div>
               <div></div>
             </div>
-            <img style={{position: "absolute",top: '22%',left: '25%',width: 70,height: 70}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
+                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
           </div>
           
         </div>

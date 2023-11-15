@@ -99,16 +99,43 @@ export default function () {
   };
   const handleLoadFont = async (x: any) => {
     if (editor) {
-      const font = {
-        name: x.name,
-        url: x.font_ttf,
-      };
-      await loadFonts([font]);
-      // @ts-ignore
-      // editor.objects.update<IStaticText>({
-      //   fontFamily: x.name,
-      //   fontURL: font.url,
-      // });
+      let selectedFont = null;
+
+      if (x.font) {
+        selectedFont = {
+          name: x.name,
+          url: x.font,
+        };
+      } else if (x.font_woff) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_woff,
+        };
+      } else if (x.font_woff2) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_woff2,
+        };
+      } else if (x.font_otf) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_otf,
+        };
+      } else if (x.font_ttf) {
+        selectedFont = {
+          name: x.name,
+          url: x.font_ttf,
+        };
+      }
+
+      if (selectedFont) {
+        await loadFonts([selectedFont]);
+        // @ts-ignore
+        // editor.objects.update<IStaticText>({
+        //   fontFamily: x.name,
+        //   fontURL: selectedFont.url,
+        // });
+      }
     }
   };
 

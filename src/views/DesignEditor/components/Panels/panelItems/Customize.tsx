@@ -49,6 +49,7 @@ export default function () {
   const [sessPrice, setsessPrice] = useState(0);
   const [loading, setLoading] = useState(false);
   const [categoryId, setCategoryId] = useState(0);
+  const [typeUser, setTypeUser] = useState("");
   const [categoryList, setCategoryList] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
   const [selectedFilesBackground, setSelectedFilesBackground] =
@@ -57,8 +58,7 @@ export default function () {
   const [selectedFiles, setSelectedFiles] = useState<FileList | null>(null);
   const [selectedFilesSecond, setSelectedFilesSecond] =
     useState<FileList | null>(null);
-      const [listWarehouse, setListWarehouse] = useState<any>([]);
-
+  const [listWarehouse, setListWarehouse] = useState<any>([]);
 
   const [dataStorage, setDataStorage] = useState<any>([]);
   const token = useAppSelector((state) => state.token.token);
@@ -67,14 +67,13 @@ export default function () {
   // Hàm xử lý sự kiện khi checkbox thay đổi trạng thái
   const handleCheckboxChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     const { id, checked } = event.target;
-    console.log(id,!checked)
+    console.log(id, !checked);
     setCheckedItems((prev) => {
       if (checked) {
         // If checked, add the ID to the array
-        console.log([...prev, parseInt(id)])
+        console.log([...prev, parseInt(id)]);
         return [...prev, parseInt(id)];
       } else {
-
         return prev.filter((item) => item !== parseInt(id));
       }
     });
@@ -84,6 +83,7 @@ export default function () {
       const response = await axios.get(`${network}/getProductCategoryAPI`);
       if (response.data) {
         setCategoryList(response.data.listData);
+        console.log(response.data.listData);
       }
     };
     getDataCategory();
@@ -104,8 +104,9 @@ export default function () {
           setCategoryId(response.data.data.category_id);
           setSelectedOption(response.data.data.status.toString());
           setSelectedOptionStorage(response.data.data.id);
-                  setListWarehouse(response.data.data.listWarehouse);
-                  setCheckedItems(response.data.data.listWarehouse)
+          setListWarehouse(response.data.data.listWarehouse);
+          setCheckedItems(response.data.data.listWarehouse);
+          setTypeUser(response.data.data.type);
           // https://apis.ezpics.vn/apis/getInfoProductAPI
           setLoading(false);
         }
@@ -113,8 +114,7 @@ export default function () {
         console.log(error);
         setLoading(false);
       }
-        console.log(listWarehouse);
-
+      console.log(listWarehouse);
     };
     getData();
   }, []);
@@ -218,64 +218,16 @@ export default function () {
 
   const handleSaveInformation = async () => {
     console.log(checkedItems.join(","));
-    if (
-      name === "" ||
-      description === "" ||
-      Number.isNaN(price) ||
-      Number.isNaN(sessPrice) ||
-      (categoryId === 0 && isNaN(categoryId)) ||
-      selectedOption === ""
-    ) {
-      toast.error("Bạn hãy nhập đầy đủ thông tin", {
-        position: "top-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      console.log(categoryId);
-    } else {
-      setLoading(true);
-      try {
-        const formData = new FormData();
-        if (selectedFiles) {
-          formData.append("background", selectedFiles);
-        }
-
-        if (selectedFilesBackground) {
-          formData.append("thumbnail", selectedFilesBackground);
-        }
-        console.log(selectedOption);
-        formData.append("name", name);
-        formData.append("sale_price", price.toString());
-        formData.append("price", sessPrice.toString());
-        formData.append("category_id", categoryId.toString());
-        formData.append("warehouse_id", checkedItems.join(","));
-        formData.append("status", selectedOption === "1" ? true : false);
-        formData.append("description", description);
-        formData.append("token", token);
-        formData.append("idProduct", idProduct.toString());
-
-        const response = await axios.post(
-          `${network}/updateProductAPI`,
-          formData,
-          {
-            headers: {
-              "Content-Type": "multipart/form-data",
-            },
-          }
-        );
-
-        if (response.data) {
-          console.log(response.data);
-          setLoading(false);
-        }
-      } catch (error) {
-        console.log(error);
-        toast.error("Lỗi khi lưu thông tin mẫu thiết kế", {
+    if (typeUser !== "user_edit") {
+      if (
+        name === "" ||
+        description === "" ||
+        Number.isNaN(price) ||
+        Number.isNaN(sessPrice) ||
+        (categoryId === 0 && isNaN(categoryId)) ||
+        selectedOption === ""
+      ) {
+        toast.error("Bạn hãy nhập đầy đủ thông tin", {
           position: "top-left",
           autoClose: 5000,
           hideProgressBar: false,
@@ -285,7 +237,143 @@ export default function () {
           progress: undefined,
           theme: "dark",
         });
-        setLoading(false);
+        console.log(categoryId);
+      } else {
+        if (price === 0 || sessPrice === 0) {
+          toast.error("Trường giá không được bằng 0", {
+            position: "top-left",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        } else {
+          setLoading(true);
+
+          try {
+            const formData = new FormData();
+            if (selectedFiles) {
+              formData.append("background", selectedFiles);
+            }
+
+            if (selectedFilesBackground) {
+              formData.append("thumbnail", selectedFilesBackground);
+            }
+            console.log(selectedOption);
+            formData.append("name", name);
+            formData.append("sale_price", price.toString());
+            formData.append("price", sessPrice.toString());
+            formData.append("category_id", categoryId.toString());
+            formData.append("warehouse_id", checkedItems.join(","));
+            formData.append("status", selectedOption === "1" ? true : false);
+            formData.append("description", description);
+            formData.append("token", token);
+            formData.append("idProduct", idProduct.toString());
+
+            const response = await axios.post(
+              `${network}/updateProductAPI`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (response.data) {
+              console.log(response.data);
+              setLoading(false);
+              toast("Lưu thông tin mẫu thiết kế thành công !! 🦄", {
+                position: "top-left",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+              });
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Lỗi khi lưu thông tin mẫu thiết kế", {
+              position: "top-left",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+            setLoading(false);
+          }
+        }
+      }
+    } else {
+      if (name === "" || description === "") {
+        toast.error("Bạn hãy nhập đầy đủ thông tin", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        console.log(categoryId);
+      } else {
+        setLoading(true);
+
+        try {
+          const formData = new FormData();
+          
+          formData.append("name", name);       
+          formData.append("description", description);
+          formData.append("token", token);
+
+          const response = await axios.post(
+            `${network}/updateProductAPI`,
+            formData,
+            {
+              headers: {
+                "Content-Type": "multipart/form-data",
+              },
+            }
+          );
+
+          if (response.data) {
+            console.log(response.data);
+            setLoading(false);
+            toast("Lưu thông tin mẫu thiết kế thành công !! 🦄", {
+              position: "top-left",
+              autoClose: 2000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: false,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error("Lỗi khi lưu thông tin mẫu thiết kế", {
+            position: "top-left",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+          setLoading(false);
+        }
       }
     }
   };
@@ -452,78 +540,80 @@ export default function () {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
-                <div className="input-group">
-                  <p style={{ fontFamily: "Arial" }}>Giá bán thị trường</p>
+                {typeUser !== "user_edit" && (
+                  <>
+                    <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Giá bán thị trường</p>
 
-                  <input
-                    type="number"
-                    value={price}
-                    onChange={(e) => setPrice(parseInt(e.target.value))}
-                  />
-                </div>
-                <div className="input-group">
-                  <p style={{ fontFamily: "Arial" }}>Giá bán</p>
+                      <input
+                        type="number"
+                        value={price}
+                        onChange={(e) => setPrice(parseInt(e.target.value))}
+                      />
+                    </div>
+                    <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Giá bán</p>
 
-                  <input
-                    type="number"
-                    value={sessPrice}
-                    onChange={(e) => setsessPrice(parseInt(e.target.value))}
-                  />
-                </div>
-                <div className="input-group">
-                  <p style={{ fontFamily: "Arial" }}>Danh mục</p>
+                      <input
+                        type="number"
+                        value={sessPrice}
+                        onChange={(e) => setsessPrice(parseInt(e.target.value))}
+                      />
+                    </div>
+                    <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Danh mục</p>
 
-                  <select
-                    value={categoryId}
-                    onChange={(e) => handleSelectChange(e)}
-                  >
-                    {categoryList &&
-                      categoryList.map((category: any) => (
-                        <option key={category.id} value={category.id}>
-                          {category.name}
-                        </option>
-                      ))}
-                  </select>
-                </div>
-                <div className="input-group">
-                  <p style={{ fontFamily: "Arial" }}>Ảnh nền</p>
+                      <select
+                        value={categoryId}
+                        onChange={(e) => handleSelectChange(e)}
+                      >
+                        {categoryList &&
+                          categoryList.map((category: any) => (
+                            <option key={category.id} value={category.id}>
+                              {category.name}
+                            </option>
+                          ))}
+                      </select>
+                    </div>
+                    <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Ảnh nền</p>
 
-                  <input
-                    onChange={(e) => handleChangeInputFile(e)}
-                    type="file"
-                    id="file"
-                    ref={inputFileRef}
-                    style={{}}
-                  />
-                  {/* onChange={changeHandler} */}
-                </div>
-                <div className="input-group">
-                  <p style={{ fontFamily: "Arial" }}>Ảnh minh họa</p>
+                      <input
+                        onChange={(e) => handleChangeInputFile(e)}
+                        type="file"
+                        id="file"
+                        ref={inputFileRef}
+                        style={{}}
+                      />
+                      {/* onChange={changeHandler} */}
+                    </div>
+                    <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Ảnh minh họa</p>
 
-                  <input
-                    onChange={(e) => handleChangeInputFileBackground(e)}
-                    type="file"
-                    id="file"
-                    ref={inputFileRefThumn}
-                    style={{}}
-                  />
-                  {/* onChange={changeHandler} */}
-                </div>
-                <div className="input-group">
-                  <p style={{ fontFamily: "Arial" }}>Trạng thái</p>
+                      <input
+                        onChange={(e) => handleChangeInputFileBackground(e)}
+                        type="file"
+                        id="file"
+                        ref={inputFileRefThumn}
+                        style={{}}
+                      />
+                      {/* onChange={changeHandler} */}
+                    </div>
+                    <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Trạng thái</p>
 
-                  <select
-                    value={selectedOption}
-                    onChange={handleSelectChangeStatus}
-                  >
-                    {options.map((option) => (
-                      <option key={option.value} value={option.value}>
-                        {option.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                {/* <div className="input-group">
+                      <select
+                        value={selectedOption}
+                        onChange={handleSelectChangeStatus}
+                      >
+                        {options.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    {/* <div className="input-group">
                   <p style={{ fontFamily: "Arial" }}>Chọn kho thiết kế</p>
 
                   <select
@@ -538,25 +628,27 @@ export default function () {
                       ))}
 
                   </select> */}
-                <div className="input-group">
-                  {dataStorage &&
-                    dataStorage.map((item: any, index: any) => (
-                      <div key={item.id} style={{ marginBottom: "15px" }}>
-                        <input
-                          type="checkbox"
-                          id={`${item.id}`}
-                          checked={checkedItems.includes(item.id)}
-                          onChange={handleCheckboxChange}
-                        />
-                        <label
-                          htmlFor={`${item.id}`}
-                          style={{ marginTop: "10px" }}
-                        >
-                          {item.name}
-                        </label>
-                      </div>
-                    ))}
-                </div>
+                    <div className="input-group">
+                      {dataStorage &&
+                        dataStorage.map((item: any, index: any) => (
+                          <div key={item.id} style={{ marginBottom: "15px" }}>
+                            <input
+                              type="checkbox"
+                              id={`${item.id}`}
+                              checked={checkedItems.includes(item.id)}
+                              onChange={handleCheckboxChange}
+                            />
+                            <label
+                              htmlFor={`${item.id}`}
+                              style={{ marginTop: "10px" }}
+                            >
+                              {item.name}
+                            </label>
+                          </div>
+                        ))}
+                    </div>
+                  </>
+                )}
                 {/* </div> */}
 
                 <Button
@@ -589,10 +681,10 @@ export default function () {
           <img
             style={{
               position: "absolute",
-              top: "22%",
-              left: "25%",
-              width: 70,
-              height: 70,
+              top: "12%",
+              left: "16%",
+              width: 40,
+              height: 40,
             }}
             src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
           />
@@ -843,11 +935,7 @@ function ResizeTemplate() {
             paddingBottom: "2rem",
           }}
         >
-          <Button
-            disabled={!isEnabled}
-            onClick={applyResize}
-            style={{ width: "190px" }}
-          >
+          <Button onClick={applyResize} style={{ width: "190px" }}>
             Chọn
           </Button>
         </Block>

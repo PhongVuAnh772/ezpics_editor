@@ -83,7 +83,10 @@ export default function () {
   };
   useEffect(() => {
     setIsLoading(true);
+        setLoading(true);
+
     async function fetchData() {
+      
       try {
         const response = await axios.post<any>(`${network}/listImage`, {
           token: token,
@@ -91,9 +94,12 @@ export default function () {
         setTemplates(response.data.data);
         console.log(response.data.data);
         setIsLoading(false);
+            setLoading(false);
+
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
-        setIsLoading(false);
+            setLoading(false);
+
       }
     }
 
@@ -295,6 +301,16 @@ export default function () {
               <div></div>
             </div>
           </div>
+          <img
+            style={{
+              position: "absolute",
+              top: "12%",
+              left: "16%",
+              width: 40,
+              height: 40,
+            }}
+            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+          />
         </div>
       )}
     </>

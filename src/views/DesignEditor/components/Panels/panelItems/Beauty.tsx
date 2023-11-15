@@ -177,7 +177,7 @@ export default function () {
               <div></div>
             </div>
           </div>
-                      <img style={{position: "absolute",top: '22%',left: '25%',width: 70,height: 70}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
+                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
 
         </div>
       )}

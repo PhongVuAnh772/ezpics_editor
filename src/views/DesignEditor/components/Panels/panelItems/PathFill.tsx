@@ -5,6 +5,7 @@ import { HexColorPicker } from "react-colorful"
 import { Delete } from "baseui/icon"
 import { throttle } from "lodash"
 import { useActiveObject, useEditor } from "@layerhub-io/react"
+import useAppContext from "~/hooks/useAppContext";
 
 const PRESET_COLORS = [
   "#f44336",
@@ -25,6 +26,8 @@ export default function () {
   const [color, setColor] = React.useState("#b32aa9")
   const activeObject = useActiveObject()
   const editor = useEditor()
+    const { setActiveSubMenu } = useAppContext();
+
 
   const updateObjectFill = throttle((color: string) => {
     if (activeObject) {
@@ -45,9 +48,9 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Path Fill</Block>
+        <Block style={{ fontFamily: "Helvetica, Arial, sans-serif",fontWeight: 'bold', }}>Màu</Block>
 
-        <Block $style={{ cursor: "pointer", display: "flex" }}>
+        <Block $style={{ cursor: "pointer", display: "flex" }} onClick={() => setActiveSubMenu("Graphics")}>
           <Delete size={24} />
         </Block>
       </Block>
@@ -55,7 +58,7 @@ export default function () {
         <Block padding={"0 1.5rem"}>
           <HexColorPicker onChange={updateObjectFill} style={{ width: "100%" }} />
           <Block>
-            <Block $style={{ padding: "0.75rem 0", fontWeight: 500, fontSize: "14px" }}>Preset colors</Block>
+            <Block $style={{ padding: "0.75rem 0", fontWeight: 'bold', fontSize: "14px" ,fontFamily: "Helvetica, Arial, sans-serif",}}>Màu khuyến khích dùng</Block>
             <Block $style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr", gap: "0.25rem" }}>
               {PRESET_COLORS.map((color, index) => (
                 <Block

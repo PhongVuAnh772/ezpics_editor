@@ -120,43 +120,43 @@ export default function () {
       }
     }
   };
-  React.useEffect(() => {
-    const fetchFonts = async () => {
-      setLoading(true);
-      try {
-        const response = await axios.post(`${networkAPI}/listFont`, {
-          token: token,
-        });
-        const data = response?.data?.data;
+  // React.useEffect(() => {
+  //   const fetchFonts = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const response = await axios.post(`${networkAPI}/listFont`, {
+  //         token: token,
+  //       });
+  //       const data = response?.data?.data;
 
-        setLoading(false);
-        if (data) {
-          // commonFonts.map(async (font) => {
-          //   handleLoadFont(font);
-          // });
-          await fetchFonts();
-        } else {
-          setCommonFonts(data);
-          console.log(commonFonts);
-        }
-      } catch (error) {
-        setLoading(false);
-        console.error("Error fetching fonts:", error);
-        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      }
-    };
+  //       setLoading(false);
+  //       if (data) {
+  //         // commonFonts.map(async (font) => {
+  //         //   handleLoadFont(font);
+  //         // });
+  //         await fetchFonts();
+  //       } else {
+  //         setCommonFonts(data);
+  //         console.log(commonFonts);
+  //       }
+  //     } catch (error) {
+  //       setLoading(false);
+  //       console.error("Error fetching fonts:", error);
+  //       toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+  //         position: "top-left",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //         theme: "dark",
+  //       });
+  //     }
+  //   };
 
-    fetchFonts();
-  }, []);
+  //   fetchFonts();
+  // }, []);
   React.useEffect(() => {
     if (activeObject && activeObject.type === "StaticText") {
       const textProperties = getTextPropertiesClone(activeObject, commonFonts);

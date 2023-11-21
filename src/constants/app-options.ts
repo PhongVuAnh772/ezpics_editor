@@ -1,3 +1,5 @@
+
+
 export const BASE_ITEMS = [
   {
     id: "layers",
@@ -19,10 +21,7 @@ export const BASE_ITEMS = [
   //   id: "images",
   //   name: "Images",
   // },
-  // {
-  //   id: "uploads",
-  //   name: "Uploads",
-  // },
+  
  
   {
     id: "customize",
@@ -32,7 +31,18 @@ export const BASE_ITEMS = [
     id: "elements",
     name: "Elements",
   },
-  
+  {
+    id: "uploads",
+    name: "Uploads",
+  },
+  {
+    id: "landing",
+    name: "Landing",
+  }
+  // {
+  //   id: "PrintedForm",
+  //   name: "PrintedForm",
+  // },
   
   
   

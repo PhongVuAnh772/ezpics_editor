@@ -15,6 +15,10 @@ import { toast } from "react-toastify";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import { Button, SIZE } from "baseui/button";
 import "../../Preview/newloading.css";
+import ReactDOM from "react-dom";
+import "./modal.css";
+import check from "./check.png";
+import remove from "./magic-wand (1).png";
 
 export default function () {
   const inputFileRef = React.useRef<HTMLInputElement>(null);
@@ -27,6 +31,7 @@ export default function () {
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = React.useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
 
   const handleDropFiles = async (files: FileList) => {
     setLoading(true);
@@ -54,7 +59,7 @@ export default function () {
         },
       }
     );
-    console.log(res);
+    console.log(res.data);
     console.log(files);
 
     if (res.data.code === 1) {
@@ -83,23 +88,19 @@ export default function () {
   };
   useEffect(() => {
     setIsLoading(true);
-        setLoading(true);
+    setLoading(true);
 
     async function fetchData() {
-      
       try {
         const response = await axios.post<any>(`${network}/listImage`, {
           token: token,
         });
         setTemplates(response.data.data);
-        console.log(response.data.data);
         setIsLoading(false);
-            setLoading(false);
-
+        setLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
-            setLoading(false);
-
+        setLoading(false);
       }
     }
 
@@ -109,7 +110,57 @@ export default function () {
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const { setCurrentScene, currentScene } = useDesignEditorContext();
   const idProduct = useAppSelector((state) => state.token.id);
-  const handleImage = async (item: any) => {
+  const [position, setPosition] = useState({ top: 0, left: 0 });
+  const [currentItem, setCurrentItem] = useState(null);
+  // const [modalOpen, setModalOpen] = useState(false);
+  const closeModal = () => {
+    setModalOpen(false);
+    setCurrentItem(null);
+  };
+
+  const openModal = (
+    event: React.MouseEvent<HTMLDivElement>,
+    item: any
+  ) => {
+    setModalOpen(true);
+    setCurrentItem(item);
+    setPosition({
+      top: event.clientY,
+      left: event.clientX,
+    });
+  };
+
+  // const handleContextMenu = (
+  //   event: React.MouseEvent<HTMLDivElement>,
+  //   item: any
+  // ) => {
+  //   event.preventDefault();
+
+  //   if (currentItem === null) {
+  //     openModal(event, item);
+  //   } else if (currentItem !== item) {
+  //     setModalOpen(false);
+  //     setCurrentItem(item);
+  //   }
+
+  //   console.log(currentItem, item);
+  // };
+
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setModalOpen(false);
+      setCurrentItem(null);
+    };
+
+    document.addEventListener("click", handleClickOutside);
+
+    return () => {
+      document.removeEventListener("click", handleClickOutside);
+    };
+  }, []);
+
+  
+  const  handleImage = async (item: any) => {
     const res = await axios.post(
       `${network}/addLayerImageUrlAPI`,
       {
@@ -135,11 +186,30 @@ export default function () {
         type: "StaticImage",
         src: res.data.data.content.banner,
         id: res.data.data.id,
+        
       };
       // editor.objects.add(options);
       addObject(item.link, item.width, item.height);
     }
   };
+  const handleContextMenu = (
+    event: React.MouseEvent<HTMLDivElement>,
+    item: any
+  ) => {
+    event.preventDefault(); // Ngăn chặn hiển thị menu chuột phải mặc định
+    // Thực hiện các hành động khi chuột phải vào hình ảnh
+    // Ví dụ: hiển thị modal, thêm vào canvas, v.v.
+    setModalOpen(true);
+    console.log("Context Menu Clicked on", item);
+    console.log(event.target);
+    setPosition({
+      top: event.clientY,
+      left: event.clientX,
+    });
+    setCurrentItem(item)
+  };
+   const [modalisopen, setmodalisopen] = React.useState(false);
+   const [modaldata, setmodaldata] = React.useState(null); 
   const addObject = React.useCallback(
     (url: string, width: string, height: string) => {
       if (editor) {
@@ -151,21 +221,53 @@ export default function () {
           lock: true,
         };
         editor.objects.add(options);
-        //   editor.frame.resize({
-        //   width: parseInt(width),
-        //   height: parseInt(height),
-        // })
-        // setCurrentDesign({
-        //   ...currentDesign,
-        //   frame: {
-        //     width: parseInt(width),
-        //     height: parseInt(height),
-        //   },
-        // })
       }
     },
     [editor]
   );
+    const addObjectd = async () => {
+    
+      setLoading(true);
+      const res = await axios.post(
+        `${network}/addLayerImageUrlAPI`,
+        {
+          idproduct: idProduct,
+          token: token,
+          imageUrl:
+            "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      console.log(res);
+
+      if (res.data.code === 1) {
+        
+        const options = {
+          id: res?.data?.data.id,
+          name: "StaticImage",
+          src: "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+          width: 206,
+          height: 206,
+          metadata: {
+            naturalWidth: 206,
+            naturalHeight: 206,
+            initialHeight: 206,
+            initialWidth: 206,
+
+            lock: false,
+            
+          },
+        };
+        editor.objects.add(options);
+        setLoading(false);
+      }
+    }
+    
+  
   const addImageToCanvas = (url: string) => {
     const options = {
       type: "StaticImage",
@@ -280,15 +382,30 @@ export default function () {
                 />
               );
             })} */}
+            
               {templates.map((item, index) => {
                 return (
                   <ImageItem
                     onClick={() => handleImage(item)}
                     key={index}
                     preview={`${item.link}`}
+                    onContextMenu={(event) => handleContextMenu(event, item)} // Thêm sự kiện onContextMenuƠ
+                    item={item}
+                    // isopen={modalisopen}
+                    
                   />
                 );
               })}
+              {modalOpen && (
+        <Modal
+          onClose={closeModal}
+          // item={item}
+          position={position}
+          // onClick={onClick}
+          currentItem={currentItem}
+          onClick={() => handleImage(currentItem)}
+        />
+      )}
             </div>
           </div>
         </Scrollable>
@@ -320,68 +437,154 @@ export default function () {
 function ImageItem({
   preview,
   onClick,
+  onContextMenu,
+  item,
+  
 }: {
   preview: any;
   onClick?: (option: any) => void;
+  onContextMenu?: (event: React.MouseEvent<HTMLDivElement>) => void;
+  item: any;
 }) {
+  
   const [css] = useStyletron();
+
+
+
   return (
-    <div
-      onClick={onClick}
-      className={css({
-        position: "relative",
-        background: "#f8f8fb",
-        cursor: "pointer",
-        borderRadius: "8px",
-        overflow: "hidden",
-        "::before:hover": {
-          opacity: 1,
-        },
-      })}
-    >
+    <>
       <div
+        onClick={onClick}
+        onContextMenu={onContextMenu}
         className={css({
-          backgroundImage: `linear-gradient(to bottom,
-          rgba(0, 0, 0, 0) 0,
-          rgba(0, 0, 0, 0.006) 8.1%,
-          rgba(0, 0, 0, 0.022) 15.5%,
-          rgba(0, 0, 0, 0.047) 22.5%,
-          rgba(0, 0, 0, 0.079) 29%,
-          rgba(0, 0, 0, 0.117) 35.3%,
-          rgba(0, 0, 0, 0.158) 41.2%,
-          rgba(0, 0, 0, 0.203) 47.1%,
-          rgba(0, 0, 0, 0.247) 52.9%,
-          rgba(0, 0, 0, 0.292) 58.8%,
-          rgba(0, 0, 0, 0.333) 64.7%,
-          rgba(0, 0, 0, 0.371) 71%,
-          rgba(0, 0, 0, 0.403) 77.5%,
-          rgba(0, 0, 0, 0.428) 84.5%,
-          rgba(0, 0, 0, 0.444) 91.9%,
-          rgba(0, 0, 0, 0.45) 100%)`,
-          position: "absolute",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          opacity: 0,
-          transition: "opacity 0.3s ease-in-out",
-          height: "100%",
-          width: "100%",
-          ":hover": {
+          position: "relative",
+          background: "#f8f8fb",
+          cursor: "pointer",
+          borderRadius: "8px",
+          overflow: "hidden",
+          "::before:hover": {
             opacity: 1,
           },
         })}
-      ></div>
-      <img
-        src={preview}
-        className={css({
-          width: "100%",
-          height: "100%",
-          objectFit: "contain",
-          pointerEvents: "none",
-          verticalAlign: "middle",
-        })}
-      />
-    </div>
+      >
+        <div
+          className={css({
+            backgroundImage: `linear-gradient(to bottom,
+              rgba(0, 0, 0, 0) 0,
+              rgba(0, 0, 0, 0.006) 8.1%,
+              rgba(0, 0, 0, 0.022) 15.5%,
+              rgba(0, 0, 0, 0.047) 22.5%,
+              rgba(0, 0, 0, 0.079) 29%,
+              rgba(0, 0, 0, 0.117) 35.3%,
+              rgba(0, 0, 0, 0.158) 41.2%,
+              rgba(0, 0, 0, 0.203) 47.1%,
+              rgba(0, 0, 0, 0.247) 52.9%,
+              rgba(0, 0, 0, 0.292) 58.8%,
+              rgba(0, 0, 0, 0.333) 64.7%,
+              rgba(0, 0, 0, 0.371) 71%,
+              rgba(0, 0, 0, 0.403) 77.5%,
+              rgba(0, 0, 0, 0.428) 84.5%,
+              rgba(0, 0, 0, 0.444) 91.9%,
+              rgba(0, 0, 0, 0.45) 100%)`,
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            bottom: 0,
+            opacity: 0,
+            transition: "opacity 0.3s ease-in-out",
+            height: "100%",
+            width: "100%",
+            ":hover": {
+              opacity: 1,
+            },
+          })}
+        ></div>
+        <img
+          src={preview}
+          className={css({
+            width: "100%",
+            height: "100%",
+            objectFit: "contain",
+            pointerEvents: "none",
+            verticalAlign: "middle",
+          })}
+        />
+      </div>
+      
+    </>
   );
 }
+
+const Modal = ({ onClose, position, currentItem ,onClick}) => {
+  // const [css] = useStyletron();
+  // const editor = useEditor();
+
+
+  // // Update the position when the modal is clicked
+  const downloadImage = async (fileName: any) => {
+    try {
+      // Fetch the image data
+      const response = await fetch(currentItem.link);
+      const blob = await response.blob();
+
+      // Create a link element and trigger the download
+      const link = document.createElement("a");
+      link.href = window.URL.createObjectURL(blob);
+      link.download = fileName;
+      link.click();
+
+      // Release the object URL to free up resources
+      window.URL.revokeObjectURL(link.href);
+    } catch (error) {
+      console.error("Error downloading image:", error);
+    }
+  };
+
+  if (!currentItem) {
+    return null;
+  }
+
+  // Use ReactDOM.createPortal to render the modal outside the main component tree
+  return ReactDOM.createPortal(
+    <div
+      style={{
+        position: "fixed",
+        top: position.top,
+        left: position.left,
+        background: "#fff",
+        width: "160px",
+        border: "1px solid #ccc",
+        boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)",
+        zIndex: 9999,
+        cursor: "pointer",
+        boxSizing: "border-box", // Thêm box-sizing để tính toán kích thước đúng
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      {/* */}
+      <div className="my-div" onClick={onClick}>
+        <img src={check} alt="" style={{ width: 15, height: 15 }} />
+        {"\u00A0"}Sử dụng
+      </div>
+{/*  */}
+      <div className="my-div" onClick={() => console.log(currentItem)} >
+        <img src={remove} alt="" style={{ width: 15, height: 15 }} />
+        {"\u00A0"}Xóa nền
+      </div>
+{/* onClick={() => downloadImage("download.png")} */}
+      <div className="my-div" onClick={() => downloadImage("download.png")}>
+        <img
+          src="https://cdn-icons-png.flaticon.com/512/2550/2550221.png"
+          alt=""
+          style={{ width: 15, height: 15 }}
+        />
+        {"\u00A0"}Tải về
+      </div>
+
+      {/* Add your modal content here */}
+    </div>,
+    document.body
+  );
+};

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Block } from "baseui/block";
 import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
 import Scrollable from "~/components/Scrollable";
@@ -8,7 +8,6 @@ import { useEditor } from "@layerhub-io/react";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import { nanoid } from "nanoid";
 import { toast } from "react-toastify";
-import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import axios from "axios";
 import "../../../../../components/Loading/Initial.css";
 import { NavLink } from "react-router-dom";
@@ -19,6 +18,9 @@ import { FontItem } from "~/interfaces/common";
 import { loadFonts } from "~/utils/fonts";
 import { IStaticText } from "@layerhub-io/types";
 import "../../../../../../src/views/DesignEditor/components/Preview/newloading.css";
+import useAppContext from "~/hooks/useAppContext";
+import ArrowBackOutline from "~/components/Icons/ArrowBackOutline";
+import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 interface Tab {
   id: number;
   name: string;
@@ -29,26 +31,28 @@ export default function () {
   const [uploads, setUploads] = React.useState<any[]>([]);
   const network = useAppSelector((state) => state.network.ipv4Address);
   const editor = useEditor();
+  const { setActiveSubMenu } = useAppContext();
+  const variable = useAppSelector((state) => state.variable.metadataVariables);
+
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
   const [loading, setLoading] = React.useState(false);
-  const [nameTextVariable, setNameTextVariable] = React.useState("");
-  const [nameTextLabel, setNameTextLabel] = React.useState("");
   const [nameImageVariable, setNameImageVariable] = React.useState("");
   const [nameImageLabel, setNameImageLabel] = React.useState("");
+  const [nameTextVariable, setNameTextVariable] = React.useState("");
+  const [nameTextLabel, setNameTextLabel] = React.useState("");
   const [contentTextVariable, setContentTextVariable] = React.useState("");
   const [selectedOption, setSelectedOption] = React.useState("");
   const addObjectImage = React.useCallback(
-    (res: any,string1:any,string2:any) => {
-      console.log("chạy hàm image added");
+    (res: any) => {
       if (editor) {
         const options = {
-          id: res.data.data.id,
-          type: "StaticImage",
-          src: res.data?.data?.content?.banner,
-          // width: 206,
-          // height: 206,
+          id: res.data.id,
+          name: "StaticImage",
+          src: "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+          width: 206,
+          height: 206,
           metadata: {
             naturalWidth: 206,
             naturalHeight: 206,
@@ -56,16 +60,39 @@ export default function () {
             initialWidth: 206,
 
             lock: false,
-            variable: string1,
-            variableLabel: string2,
+            variable: nameImageVariable,
+            variableLabel: nameImageLabel,
           },
         };
-        editor.objects.add(options);
-        console.log(options);
+        // editor.objects.add(options);
       }
     },
     [editor]
   );
+  useEffect(() => {
+    console.log(editor);
+    if (variable) {
+      console.log(variable);
+      if (variable?.uppercase === undefined) {
+        setNameImageVariable(variable?.variable);
+        setNameImageLabel(variable?.variableLabel);
+        console.log(variable?.variable);
+      } else {
+        setNameTextVariable(variable?.variable);
+        setNameTextLabel(variable?.variableLabel);
+        setContentTextVariable(`%${variable?.variableLabel}%`);
+        // setSelectedOption()
+        if (variable?.uppercase === "lower") {
+          setSelectedOption("2");
+        } else if (variable?.uppercase === "upper") {
+          setSelectedOption("1");
+        } else if (variable?.uppercase === "") {
+          setSelectedOption("0");
+        }
+      }
+    }
+  }, []);
+
   const options = [
     { value: "", label: "Chọn trạng thái" },
     { value: "0", label: "Mặc định" },
@@ -86,28 +113,13 @@ export default function () {
         theme: "dark",
       });
     } else {
-      setLoading(true);
-      console.log(nameImageVariable,nameImageLabel)
-      const res = await axios.post(
-        `${network}/addLayerImageUrlAPI`,
-        {
-          idproduct: idProduct,
-          token: token,
-          imageUrl:
-            "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+      // setLoading(true);
+      editor.objects.update({
+        metadata: {
+          variable: nameImageVariable,
+          variableLabel: nameImageLabel,
         },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(res);
-
-      if (res.data.code === 1) {
-        addObjectImage(res,nameImageVariable,nameImageLabel);
-        setLoading(false);
-      }
+      });
     }
   };
 
@@ -129,57 +141,62 @@ export default function () {
         theme: "dark",
       });
     } else {
-      setLoading(true);
       if (editor) {
-        const font: FontItem = {
-          name: "Helve",
-          url: "https://apis.ezpics.vn/upload/admin/fonts/UTMHelve.woff",
-        };
-        await loadFonts([font]);
-        const res = await axios.post(`${network}/addLayerText`, {
-          idproduct: idProduct,
-          token: token,
-          text: contentTextVariable,
-          color: "#333333",
-          size: 92,
-          font: font.name,
+        // const font: FontItem = {
+        //   name: "Helve",
+        //   url: "https://apis.ezpics.vn/upload/admin/fonts/UTMHelve.woff",
+        // };
+        // await loadFonts([font]);
+        // const res = await axios.post(`${network}/addLayerText`, {
+        //   idproduct: idProduct,
+        //   token: token,
+        //   text: contentTextVariable,
+        //   color: "#333333",
+        //   size: 92,
+        //   font: font.name,
+        // });
+        // if (res.data.code === 1) {
+        //   console.log(res.data);
+        //   const options = {
+        //     id: res.data.data.id,
+        //     type: "StaticText",
+        //     width: 420,
+        //     text: contentTextVariable,
+        //     fontSize: 92,
+        //     fontFamily: font.name,
+        //     textAlign: "center",
+        //     fontStyle: "normal",
+        //     fontURL: font.url,
+        //     fill: "#000000",
+        //     metadata: {
+        //       variable: nameTextVariable,
+        //       variableLabel: nameTextLabel,
+        //     },
+        //   };
+        //   editor.objects.add<IStaticText>(options);
+        //   setLoading(false);
+        // } else {
+        //   setLoading(false);
+        //   toast.error("Có lỗi khi tạo mới biến chữ", {
+        //     position: "top-left",
+        //     autoClose: 5000,
+        //     hideProgressBar: false,
+        //     closeOnClick: true,
+        //     pauseOnHover: true,
+        //     draggable: true,
+        //     progress: undefined,
+        //     theme: "dark",
+        //   });
+        // }
+        // editor.objects.update({  });
+        editor.objects.update({text: contentTextVariable,
+          metadata: {
+            lock: false,
+            variable: nameTextVariable,
+            variableLabel: nameTextLabel,
+            uppercase: contentTextVariable,
+          },
         });
-        if (res.data.code === 1) {
-          console.log(res.data);
-          const options = {
-            id: res.data.data.id,
-            type: "StaticText",
-            width: 420,
-            text: contentTextVariable,
-            fontSize: 92,
-            fontFamily: font.name,
-            textAlign: "center",
-            fontStyle: "normal",
-            fontURL: font.url,
-            fill: "#000000",
-            metadata: {
-              variable: nameTextVariable,
-              variableLabel: nameTextLabel,
-              lock: false,
-              uppercase: contentTextVariable,
-            },
-          };
-          console.log(nameTextVariable,nameTextLabel);
-          editor.objects.add<IStaticText>(options);
-          setLoading(false);
-        } else {
-          setLoading(false);
-          toast.error("Có lỗi khi tạo mới biến chữ", {
-            position: "top-left",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-          });
-        }
       }
     }
   };
@@ -248,6 +265,7 @@ export default function () {
     editor.objects.add(options);
   };
   return (
+    <DropZone handleDropFiles={handleDropFiles}>
       <Block
         $style={{
           flex: 1,
@@ -266,12 +284,17 @@ export default function () {
             paddingRight: "1.5rem",
           }}
         >
-          <Block style={{}}>
-            <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
-              Mẫu in hàng loạt
-            </h4>
+          <Block
+            $style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            onClick={() => setActiveSubMenu("Layers")}
+          >
+            <ArrowBackOutline size={24} />
+            <Block>
+              <h3 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Sửa biến
+              </h3>
+            </Block>
           </Block>
-
           <Block
             onClick={() => setIsSidebarOpen(false)}
             $style={{ cursor: "pointer", display: "flex" }}
@@ -282,7 +305,10 @@ export default function () {
         <Scrollable>
           <Block padding={"0 1.5rem"}>
             <div style={{}}>
-              <Tabs forceRenderTabPanel defaultIndex={1}>
+              <Tabs
+                forceRenderTabPanel
+                defaultIndex={variable?.uppercase === undefined ? 1 : 0}
+              >
                 <TabList
                   style={{
                     display: "flex",
@@ -297,6 +323,7 @@ export default function () {
                       alignItems: "center",
                       justifyContent: "center",
                     }}
+                    disabled={variable?.uppercase === undefined}
                   >
                     <h4 style={{ fontFamily: "Arial", textAlign: "center" }}>
                       Biến chữ
@@ -309,6 +336,7 @@ export default function () {
                       alignItems: "center",
                       justifyContent: "center",
                     }}
+                    disabled={variable?.uppercase !== undefined}
                   >
                     <h4 style={{ fontFamily: "Arial", textAlign: "center" }}>
                       Biến ảnh
@@ -326,6 +354,7 @@ export default function () {
                       type="text"
                       onChange={(e) => setNameTextLabel(e.target.value)}
                       placeholder="Tên trường dữ liệu biến chữ"
+                      value={nameTextLabel}
                     />
                   </div>
                   <div className="input-group">
@@ -340,6 +369,7 @@ export default function () {
                           : setContentTextVariable(`%${e.target.value}%`)
                       }
                       placeholder="Tên biến chữ"
+                      value={nameTextVariable}
                     />
                   </div>
                   <div className="input-group">
@@ -380,7 +410,7 @@ export default function () {
                       },
                     }}
                   >
-                    Tạo biến chữ
+                    Sửa biến chữ
                   </Button>
                 </TabPanel>
                 <TabPanel>
@@ -395,6 +425,7 @@ export default function () {
                       // value={name}
                       onChange={(e) => setNameImageLabel(e.target.value)}
                       placeholder="Tên trường dữ liệu biến ảnh"
+                      value={nameImageLabel}
                     />
                   </div>
                   <div className="input-group">
@@ -405,6 +436,7 @@ export default function () {
                       // value={description}
                       onChange={(e) => setNameImageVariable(e.target.value)}
                       placeholder="Tên biến ảnh"
+                      value={nameImageVariable}
                     />
                   </div>
 
@@ -420,7 +452,7 @@ export default function () {
                       },
                     }}
                   >
-                    Tạo biến ảnh
+                    Sửa biến ảnh
                   </Button>
                 </TabPanel>
               </Tabs>
@@ -448,5 +480,6 @@ export default function () {
           </div>
         )}
       </Block>
+    </DropZone>
   );
 }

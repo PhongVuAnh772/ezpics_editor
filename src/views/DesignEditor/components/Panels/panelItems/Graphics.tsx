@@ -33,7 +33,6 @@ export default function () {
           limit: 100,
         });
         setTemplates(response.data.data);
-        console.log(response.data.data);
         setIsLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);

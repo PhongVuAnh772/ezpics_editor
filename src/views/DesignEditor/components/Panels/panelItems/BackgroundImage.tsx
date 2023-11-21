@@ -25,7 +25,7 @@ export default function () {
 
   useEffect(() => {
     async function fetchData() {
-      setIsLoading(true)
+      setIsLoading(true);
       try {
         const response = await axios.post<any>(`${network}/listIngredientAPI`, {
           token: token,
@@ -33,12 +33,10 @@ export default function () {
           keyword: "Ảnh nền",
         });
         setTemplates(response.data.data);
-        console.log(response.data.data);
         setIsLoading(false);
       } catch (error) {
         console.error("Lỗi khi gửi yêu cầu GET:", error);
-                setIsLoading(false);
-
+        setIsLoading(false);
       }
     }
 
@@ -178,8 +176,16 @@ export default function () {
               <div></div>
             </div>
           </div>
-                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
-
+          <img
+            style={{
+              position: "absolute",
+              top: "12%",
+              left: "16%",
+              width: 40,
+              height: 40,
+            }}
+            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+          />
         </div>
       )}
     </>

@@ -21,8 +21,9 @@ import { toast } from "react-toastify";
 import { REPLACE_TOKEN, REPLACE_ID_USER } from "~/store/slices/token/reducers";
 import "../../components/Resizable/loading.css";
 import { REPLACE_font } from "~/store/slices/font/fontSlice";
-import '../../../src/views/DesignEditor/components/Preview/newestLoading.css'
+import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
+import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 
 function GraphicEditor() {
   const dispatch = useAppDispatch();
@@ -33,8 +34,8 @@ function GraphicEditor() {
   const [fontURLInitial, setFontURLInitial] = React.useState<string>("");
   const [errorMessage, setError] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
-    const { setActiveSubMenu } = useAppContext();
-
+  const { setActiveSubMenu } = useAppContext();
+  const typeUser = useAppSelector((state) => state.typeUser.typeUser);
   const {
     setCurrentScene,
     currentScene,
@@ -48,7 +49,7 @@ function GraphicEditor() {
   const fontInitial = useAppSelector((state) => state.newFont.font);
   const handleLoadFont = async (x: any) => {
     if (editor) {
-      let selectedFont
+      let selectedFont;
 
       if (x.font) {
         selectedFont = {
@@ -80,14 +81,13 @@ function GraphicEditor() {
       if (selectedFont) {
         await loadFonts([selectedFont]);
         // @ts-ignore
-        
       }
     }
   };
 
   const getDataFontTextInitial = async (fontInitial: any) => {
     //
-    setLoading(true)
+    setLoading(true);
     try {
       const response = await axios.post(`${networkAPI}/listFont`, {
         token: token,
@@ -97,14 +97,13 @@ function GraphicEditor() {
       dispatch(REPLACE_font(data));
       console.log(fontInitial);
       if (response.data.data) {
-        response.data.data.map(function (font:any) {
+        response.data.data.map(function (font: any) {
           if (font.name.includes(fontInitial)) {
             setFontURLInitial(font.font_ttf);
             return fontURLInitial;
           }
         });
-            setLoading(false)
-
+        setLoading(false);
       }
     } catch (error) {
       console.error("Error fetching fonts:", error);
@@ -181,12 +180,15 @@ function GraphicEditor() {
       src: detail.content.banner,
       cropX: 0,
       cropY: 0,
-      metadata: {},
+      metadata: {
+        variable: "",
+        variableLabel: "",
+      },
     };
   };
 
   const editor = useEditor();
-  const [dataRes, setDataRes] = useState(null);
+  const [dataRes, setDataRes] = useState<any>(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
     const scenes = [];
     // const { scenes: scns, ...design } = payload;
@@ -250,7 +252,10 @@ function GraphicEditor() {
           },
           fill: "#FFFFFF",
           metadata: {
-            lock: false
+            lock: false,
+            variable: "",
+            variableLabel: "",
+            uppercase: ""
           },
         },
         {
@@ -286,7 +291,9 @@ function GraphicEditor() {
             naturalHeight: 0,
             initialHeight: 0,
             initialWidth: 0,
-            lock: false
+            lock: false,
+            variable: "",
+            variableLabel: "",
           },
         },
       ],
@@ -347,7 +354,10 @@ function GraphicEditor() {
               // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
               // fontURLInitial
               metadata: {
-                lock: detail.content.lock === 0 ? false : true
+                lock: detail.content.lock === 0 ? false : true,
+                variable: detail.content.variable,
+                variableLabel: detail.content.variableLabel,
+                uppercase: detail.content.typeShowTextVariable
               },
             });
           } else if (detail.content.type == "image") {
@@ -363,7 +373,6 @@ function GraphicEditor() {
               strokeWidth: 0,
               left: (detail.content.postion_left / 100) * data.width,
               top: (detail.content.postion_top / 100) * data.height,
-
               opacity: detail.content.opacity,
               originX: "left",
               originY: "top",
@@ -395,7 +404,10 @@ function GraphicEditor() {
                 naturalHeight: detail.content.naturalHeight,
                 initialHeight: detail.content.height,
                 initialWidth: detail.content.width,
-                lock: detail.content.lock ? false : true
+                lock: detail.content.lock ? false : true,
+                variable: detail.content.variable,
+                variableLabel: detail.content.variableLabel,
+                brightness: 0
               },
             });
             // }
@@ -464,8 +476,6 @@ function GraphicEditor() {
           setCommonFonts(response.data.data);
           response.data.data.map(async (font: any) => {
             handleLoadFont(font);
-                      console.log(response.data.data)
-
           });
         }
 
@@ -501,11 +511,11 @@ function GraphicEditor() {
 
         const response = await axios.post(`${networkAPI}/listLayerAPI`, data);
 
-        if (response) {
+        if (response && response.data.code === 1) {
           setDataRes(response.data.data);
+          console.log(response.data.data)
         } else {
-                  setError(true);
-
+          setError(true);
         }
       } catch (error) {
         toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
@@ -524,21 +534,24 @@ function GraphicEditor() {
     fetchDataBanks();
   }, []);
   useEffect(() => {
-    setActiveSubMenu("FontSelector")
-  }, [])
-  
+    setActiveSubMenu("FontSelector");
+  }, []);
+
   useEffect(() => {
     const fetchDataBanks = async () => {
       setLoading(true);
 
       try {
         console.log(dataRes);
-       
+        dispatch(REPLACE_TYPE_USER(dataRes?.type));
+
         const dataRender = dataFunction(dataRes);
         // console.log(dataRender)
         await loadTemplate(dataRender);
 
-        setLoading(false);
+        setTimeout(() => {
+          setLoading(false);
+        },4000)
 
         // React.useCallback(
         //   async (data: any) => {
@@ -577,7 +590,7 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
-        {((token === null || id === null) || errorMessage) && (
+        {(token === null || id === null || errorMessage) && (
           <div
             style={{
               position: "absolute",
@@ -606,18 +619,25 @@ function GraphicEditor() {
           </div>
         )}
         {loading && (
-          
-        <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
-          <div className="ldio-4qpid53rus92">
-            <div></div>
-            <div>
+          <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+            <div className="ldio-4qpid53rus92">
               <div></div>
+              <div>
+                <div></div>
+              </div>
+              <img
+                style={{
+                  position: "absolute",
+                  top: "12%",
+                  left: "16%",
+                  width: 40,
+                  height: 40,
+                }}
+                src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+              />
             </div>
-                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
           </div>
-          
-        </div>
-      )}
+        )}
       </EditorContainer>
     </>
   );

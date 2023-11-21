@@ -15,6 +15,8 @@ import PathFill from "./PathFill"
 import Beauty from './Beauty'
 import PictureFrame from "../PictureFrame"
 import BackgroundImage from "./BackgroundImage"
+import PrintedForm from './PrintedForm'
+import Landing from './Landing'
 
 export default {
     Layers: Layers,
@@ -35,4 +37,6 @@ export default {
     Beauty: Beauty,
       PictureFrame: PictureFrame,
         BackgroundImage: BackgroundImage,
+        PrintedForm: PrintedForm,
+        Landing: Landing
 }

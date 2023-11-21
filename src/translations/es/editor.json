@@ -11,7 +11,8 @@
       "text": "Texto",
       "graphics": "Graficos",
       "pixabay": "Pixabay",
-      "component": "Thành phần"
+      "component": "Thành phần",
+      "PrintedForm": "Mẫu in"
     }
   }
 }

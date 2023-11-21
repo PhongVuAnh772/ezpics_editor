@@ -1,3 +1,4 @@
+import React, {useEffect,useState} from 'react'
 import { useStyletron } from "baseui"
 import { BASE_ITEMS, VIDEO_PANEL_ITEMS } from "~/constants/app-options"
 import useAppContext from "~/hooks/useAppContext"
@@ -8,6 +9,7 @@ import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen"
 import useEditorType from "~/hooks/useEditorType"
 import Scrollable from "~/components/Scrollable"
 import { Block } from "baseui/block"
+import { useAppSelector } from "~/hooks/hook"
 
 const Container = styled("div", (props) => ({
   width: "80px",
@@ -16,10 +18,49 @@ const Container = styled("div", (props) => ({
 }))
 
 function PanelsList() {
+  const userType = useAppSelector(state => state.typeUser.typeUser)
   const { activePanel } = useAppContext()
   const { t } = useTranslation("editor")
   const editorType = useEditorType()
-  const PANEL_ITEMS =  BASE_ITEMS
+  const PANEL_ITEMS =  [
+  {
+    id: "layers",
+    name: "Layers",
+  },
+   {
+    id: "templates",
+    name: "Templates",
+  },
+  {
+    id: "graphics",
+    name: "Graphics",
+  },
+  {
+    id: "text",
+    name: "Text",
+  },
+  // {
+  //   id: "images",
+  //   name: "Images",
+  // },
+  
+ 
+  {
+    id: "customize",
+    name: "Customize",
+  },
+  {
+    id: "elements",
+    name: "Elements",
+  },
+  {
+    id: "uploads",
+    name: "Uploads",
+  },
+  
+
+]
+
   return (
     <Container>
       <Scrollable autoHide={true}>
@@ -30,6 +71,7 @@ function PanelsList() {
             key={panelListItem.name}
             icon={panelListItem.name}
             activePanel={activePanel}
+            item={panelListItem}
           />
         ))}
       </Scrollable>
@@ -37,12 +79,63 @@ function PanelsList() {
   )
 }
 
-function PanelListItem({ label, icon, activePanel, name }: any) {
+function PanelListItem({ label, icon, activePanel, name, item }: any) {
+    const userType = useAppSelector(state => state.typeUser.typeUser)
+
   const { setActivePanel } = useAppContext()
   const setIsSidebarOpen = useSetIsSidebarOpen()
   const [css, theme] = useStyletron()
   // @ts-ignore
   const Icon = Icons[icon]
+  useEffect(() => {
+    console.log(userType === "user_edit")
+  }, [])
+  
+  return (
+   
+      <Block
+        id={"EditorPanelList"}
+        onClick={() => {
+          setIsSidebarOpen(true)
+          setActivePanel(name)
+        }}
+        $style={{
+          display: name === "Uploads" && userType === "user_edit" ? "none" : "flex",
+          width: "80px",
+          height: "80px",
+          backgroundColor: name === activePanel ? theme.colors.white : theme.colors.primary100,
+          // display: "flex",
+          alignItems: "center",
+          flexDirection: "column",
+          justifyContent: "center",
+          fontWeight: 500,
+          fontSize: "0.8rem",
+          userSelect: "none",
+          transition: "all 0.5s",
+          gap: "0.1rem",
+          ":hover": {
+            cursor: "pointer",
+            backgroundColor: theme.colors.white,
+            transition: "all 1s",
+          },
+          
+        }}
+      >
+        <Icon size={24} />
+        <div style={{ fontFamily: "sans-serif" }}>{label}</div>
+      </Block>
+    )
+  
+}
+
+export function PanelListItemTab({ label, icon, activePanel, name }: any) {
+  const { setActivePanel } = useAppContext()
+  const setIsSidebarOpen = useSetIsSidebarOpen()
+  const [css, theme] = useStyletron()
+  // @ts-ignore
+  const Icon = Icons[icon]
+  
+  
   return (
     <Block
       id={"EditorPanelList"}
@@ -51,6 +144,7 @@ function PanelListItem({ label, icon, activePanel, name }: any) {
         setActivePanel(name)
       }}
       $style={{
+
         width: "80px",
         height: "80px",
         backgroundColor: name === activePanel ? theme.colors.white : theme.colors.primary100,
@@ -75,5 +169,6 @@ function PanelListItem({ label, icon, activePanel, name }: any) {
     </Block>
   )
 }
+
 
 export default PanelsList

@@ -19,9 +19,9 @@ import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import axios from "axios";
 import { toast } from "react-toastify";
 import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
-import imageIcon from './save.png'
-import exportIcon from './Layer 2.png'
-
+import imageIcon from "./save.png";
+import exportIcon from "./Layer 2.png";
+import "../../components/Preview/newloading.css";
 
 const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
   height: "64px",
@@ -48,7 +48,7 @@ export default function () {
   const [state, setState] = React.useState({
     image: "",
   });
-  const [loading, setLoading] = React.useState(true);
+  const [loading, setLoading] = React.useState(false);
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
@@ -275,11 +275,12 @@ export default function () {
       const template = editor.scene.exportToJSON();
       const image = (await editor.renderer.render(template)) as string;
       setState({ image });
-      setLoading(false);
       if (image) {
         // downloadImage(image, "preview.png");
+        setLoading(true);
+
         try {
-          const res = await axios.post(`${network}/updateListLayerAPI`, {
+          const res = await axios.post(`${network}/addListLayerAPI`, {
             idProduct: idProduct,
             token: token,
             listLayer: JSON.stringify(generateToServer(template)),
@@ -299,6 +300,7 @@ export default function () {
               progress: undefined,
               theme: "dark",
             });
+            setLoading(false);
           } else {
             toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
               position: "top-left",
@@ -310,6 +312,7 @@ export default function () {
               progress: undefined,
               theme: "dark",
             });
+            setLoading(false);
           }
         } catch (error) {
           toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
@@ -322,7 +325,8 @@ export default function () {
             progress: undefined,
             theme: "dark",
           });
-          console.log(error)
+          console.log(error);
+          setLoading(false);
         }
       }
     }
@@ -352,58 +356,59 @@ export default function () {
 
   return (
     // @ts-ignore
-    <ThemeProvider theme={DarkTheme}>
-      <Container>
-        <div style={{ color: "#ffffff" }}>
-          <img src={EzpicsLogo} style={{ width: 60, height: 60 }} />
-        </div>
-        {/* <DesignTitle /> */}
-        <Block
-          $style={{
-            alignSelf: "center",
-            gap: "0.5rem",
-            alignItems: "center",
-            paddingBottom: "10px",
-          }}
-        >
-          <input
-            multiple={false}
-            onChange={handleFileInput}
-            type="file"
-            id="file"
-            ref={inputFileRef}
-            style={{ display: "none" }}
-          />
-          <Button
-            size="compact"
-            onClick={handleInputFileRefClick}
-            kind={KIND.tertiary}
-            overrides={{
-              StartEnhancer: {
-                style: {
-                  marginRight: "4px",
-                },
-              },
+    <>
+      <ThemeProvider theme={DarkTheme}>
+        <Container>
+          <div style={{ color: "#ffffff" }}>
+            <img src={EzpicsLogo} style={{ width: 60, height: 60 }} />
+          </div>
+          {/* <DesignTitle /> */}
+          <Block
+            $style={{
+              alignSelf: "center",
+              gap: "0.5rem",
+              alignItems: "center",
+              paddingBottom: "10px",
             }}
           >
-            Nhập dữ liệu JSON
-          </Button>
+            <input
+              multiple={false}
+              onChange={handleFileInput}
+              type="file"
+              id="file"
+              ref={inputFileRef}
+              style={{ display: "none" }}
+            />
+            <Button
+              size="compact"
+              onClick={handleInputFileRefClick}
+              kind={KIND.tertiary}
+              overrides={{
+                StartEnhancer: {
+                  style: {
+                    marginRight: "4px",
+                  },
+                },
+              }}
+            >
+              Nhập dữ liệu JSON
+            </Button>
 
-          <Button
-            size="compact"
-            onClick={makeDownloadTemplate}
-            kind={KIND.tertiary}
-            overrides={{
-              StartEnhancer: {
-                style: {
-                  marginRight: "4px",
+            <Button
+              size="compact"
+              onClick={makeDownloadTemplate}
+              kind={KIND.tertiary}
+              overrides={{
+                StartEnhancer: {
+                  style: {
+                    marginRight: "4px",
+                  },
                 },
-              },
-            }}
-          >
-            Xuất dữ liệu JSON
-          </Button>
-          {/* <Button
+              }}
+            >
+              Xuất dữ liệu JSON
+            </Button>
+            {/* <Button
             size="mini"
             onClick={}
             kind={KIND.tertiary}
@@ -415,39 +420,69 @@ export default function () {
           >
             Xem ảnh
           </Button> */}
-          <Button
-            size="compact"
-            onClick={() => makePreview()}
-            kind={KIND.tertiary}
-            overrides={{
-              StartEnhancer: {
-                style: {
-                  marginRight: "4px",
-                  paddingTop: "10px",
-                  alignSelf:"center"
+            <Button
+              size="compact"
+              onClick={() => makePreview()}
+              kind={KIND.tertiary}
+              overrides={{
+                StartEnhancer: {
+                  style: {
+                    marginRight: "4px",
+                    paddingTop: "10px",
+                    alignSelf: "center",
+                  },
                 },
-              },
-            }}
-          >
-            <img src={imageIcon}  style={{width:15, height :15,marginRight: 10}}/>
-            Lưu mẫu thiết kế
-          </Button>
-          <Button
-            size="compact"
-            onClick={() => setDisplayPreview(true)}
-            kind={KIND.tertiary}
-            overrides={{
-              StartEnhancer: {
-                style: {
-                  marginRight: "4px",
+              }}
+            >
+              <img
+                src={imageIcon}
+                style={{ width: 15, height: 15, marginRight: 10 }}
+              />
+              Lưu mẫu thiết kế
+            </Button>
+            <Button
+              size="compact"
+              onClick={() => setDisplayPreview(true)}
+              kind={KIND.tertiary}
+              overrides={{
+                StartEnhancer: {
+                  style: {
+                    marginRight: "4px",
+                  },
                 },
-              },
+              }}
+            >
+              <img
+                src={exportIcon}
+                style={{ width: 15, height: 15, marginRight: 10 }}
+              />
+              Xuất ảnh
+            </Button>
+          </Block>
+        </Container>
+      </ThemeProvider>
+      {loading && (
+        <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+          <div className="ldio-4qpid53rus92">
+            <div></div>
+            <div>
+              <div></div>
+            </div>
+          </div>
+          <img
+            style={{
+              position: "absolute",
+              top: 10,
+              left: 17,
+              width: 40,
+              height: 40,
+              // alignSelf: 'center',
+              zIndex: 999999,
             }}
-          >
-            <img src={exportIcon}  style={{width:15, height :15,marginRight: 10}}/>Xuất ảnh
-          </Button>
-        </Block>
-      </Container>
-    </ThemeProvider>
+            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+          />
+        </div>
+      )}
+    </>
   );
 }

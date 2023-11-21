@@ -43,7 +43,6 @@ export default function () {
           response.data.data.map(async (font: any) => {
             handleLoadFont(font);
           });
-          console.log(data);
         }
         console.log(response);
         // if (commonFonts.length > 0) {

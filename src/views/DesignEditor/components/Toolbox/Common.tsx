@@ -19,15 +19,20 @@ import BringToFront from "~/components/Icons/BringToFront"
 import SendToBack from "~/components/Icons/SendToBack"
 import AlignBottom from "~/components/Icons/AlignBottom"
 import Opacity from "./Shared/Opacity"
-
+import Lighting from '../Panels/panelItems/setting.png'
+import { useAppDispatch, useAppSelector } from "~/hooks/hook"
+import useAppContext from "~/hooks/useAppContext"
+import { REPLACE_METADATA } from "~/store/slices/variable/variableSlice"
 export default function () {
   const [state, setState] = React.useState({ isGroup: false, isMultiple: false })
   const activeObject = useActiveObject() as any
+  const variables = useAppSelector(state => state.variable.metadataVariables)
 
   const editor = useEditor()
 
   React.useEffect(() => {
     if (activeObject) {
+      console.log(activeObject)
       setState({ isGroup: activeObject.type === "group", isMultiple: activeObject.type === "activeSelection" })
     }
   }, [activeObject])
@@ -51,6 +56,8 @@ export default function () {
 
   return (
     <Block $style={{ display: "flex", alignItems: "center" }}>
+            
+      {activeObject?.metadata?.variable && <VariableLayer />}
       {state.isGroup ? (
         <Button
           onClick={() => {
@@ -76,7 +83,6 @@ export default function () {
       ) : null}
 
       {(state.isGroup || !state.isMultiple) && <CommonLayers />}
-
       <CommonAlign />
       <Opacity />
       <LockUnlock />
@@ -265,6 +271,37 @@ function LockUnlock() {
           </Button>
         </StatefulTooltip>
       )}
+    </>
+  )
+}
+
+
+function VariableLayer() {
+    const { setActiveSubMenu } = useAppContext();
+    const editor = useEditor();
+  const activeObject = useActiveObject() as any
+  const dispatch = useAppDispatch()
+  const objectMetadata = (object: any) => {
+    //  console.log(object.metadata)
+    //  console.log(object)
+        editor.objects.select(object.id)
+
+     setActiveSubMenu("Landing")
+     dispatch(REPLACE_METADATA(object.metadata));
+  }
+  return (
+    <>
+      
+        <StatefulTooltip placement={PLACEMENT.bottom} showArrow={true} accessibilityType={"tooltip"} content="Sửa biến">
+          <Button
+            onClick={() => objectMetadata(activeObject)}
+            size={SIZE.mini}
+            kind={KIND.tertiary}
+          >
+            <img src={Lighting} style={{width: 20,height: 20}}  />
+          </Button>
+        </StatefulTooltip>
+      
     </>
   )
 }

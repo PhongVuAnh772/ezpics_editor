@@ -357,7 +357,7 @@ export default function () {
               pauseOnHover: false,
               draggable: true,
               progress: undefined,
-              theme: "dark",
+              theme: "colored",
             });
           }
         } catch (error) {

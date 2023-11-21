@@ -40,8 +40,8 @@ export const generateToServer = (datas: any) => {
           height: data.metadata.initialHeight, //
           gradient: 0,
           gradient_color: [],
-          variable: "",
-          variableLabel: "",
+          variable: data.metadata.variable,
+          variableLabel: data.metadata.variableLabel,
           lock: 0,
           lat_anh: 0, //
           naturalWidth: data.metadata.naturalWidth,
@@ -81,10 +81,12 @@ export const generateToServer = (datas: any) => {
           height: "0vh", //
           gradient: 0,
           gradient_color: [],
-          variable: "",
-          variableLabel: "",
-          lock: 0,
+         variable: data.metadata.variable,
+          variableLabel: data.metadata.variableLabel,
+          lock: data.metadata.lock,
           lat_anh: 0,
+          naturalWidth:data.metadata.naturalWidth,
+          naturalHeight: data.metadata.naturalHeight
         },
         
         sort: index + 1,
@@ -177,8 +179,8 @@ export const generateToServerSaving = (datas: any) => {
           height: "0vh", //
           gradient: 0,
           gradient_color: [],
-          variable: "",
-          variableLabel: "",
+          variable: data.metadata.variable,
+          variableLabel: data.metadata.variableLabel,
           lock: 0,
           lat_anh: 0,
         },

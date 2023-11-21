@@ -11,16 +11,30 @@ import EyeCrossed from "~/components/Icons/EyeCrossed";
 import Delete from "~/components/Icons/Delete";
 import { Button, KIND, SIZE } from "baseui/button";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
+import Lighting from './setting.png'
+import useAppContext from "~/hooks/useAppContext";
+import { REPLACE_METADATA } from "~/store/slices/variable/variableSlice";
+import { useAppDispatch,useAppSelector } from "~/hooks/hook";
+import ArrowBackOutline from "~/components/Icons/ArrowBackOutline";
 
 export default function () {
   const editor = useEditor();
   const objects = useObjects() as ILayer[];
   const [layerObjects, setLayerObjects] = React.useState<any[]>([]);
   const setIsSidebarOpen = useSetIsSidebarOpen();
-
+  const { setActiveSubMenu } = useAppContext();
+  const dispatch = useAppDispatch();
+  const objectMetadata = (object: any) => {
+    //  console.log(object.metadata)
+    editor.objects.select(object.id)
+     console.log(object)
+     setActiveSubMenu("Landing")
+     dispatch(REPLACE_METADATA(object.metadata));
+  }
   React.useEffect(() => {
     if (objects) {
       setLayerObjects(objects);
+      console.log(objects);
     }
   }, [objects]);
 
@@ -39,6 +53,8 @@ export default function () {
       }
     };
   }, [editor, objects]);
+  
+  
 
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -49,10 +65,12 @@ export default function () {
           fontWeight: 500,
           justifyContent: "space-between",
           paddingLeft: "1.5rem",
-          paddingRight: "1.5rem"
+          paddingRight: "1.5rem",
         }}
       >
-        <Block><h3 style={{fontFamily:"Helvetica, Arial, sans-serif"}}>Layers</h3></Block>
+        <Block>
+          <h3 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>Layers</h3>
+        </Block>
 
         <Block
           onClick={() => setIsSidebarOpen(false)}
@@ -88,7 +106,13 @@ export default function () {
                 <img
                   src={object._element?.currentSrc}
                   alt="ảnh"
-                  style={{ width: "auto", height: 40, maxWidth: '100px',resize: "both",border: "1px solid black"}}
+                  style={{
+                    width: "auto",
+                    height: 40,
+                    maxWidth: "100px",
+                    resize: "both",
+                    border: "1px solid black",
+                  }}
                   onClick={() => editor.objects.select(object.id)}
                 />
               )}
@@ -99,11 +123,28 @@ export default function () {
                   justifyContent: "flex-end",
                 }}
               >
+                {object.metadata.variable && (
+                  <Button
+                    kind={KIND.tertiary}
+                    size={SIZE.mini}
+                    onClick={() => objectMetadata(object)}
+                    overrides={{
+                      Root: {
+                        style: {
+                          paddingLeft: "4px",
+                          paddingRight: "4px",
+                        },
+                      },
+                    }}
+                  >
+                    <img src={Lighting} style={{width: 20,height: 20}} />
+                  </Button>
+                )}
                 {object.locked ? (
                   <Button
                     kind={KIND.tertiary}
                     size={SIZE.mini}
-                    onClick={() => console.log(object)}
+                    onClick={() => editor.objects.unlock(object.id)}
                     overrides={{
                       Root: {
                         style: {
@@ -170,6 +211,7 @@ export default function () {
                     <EyeCrossed size={24} />
                   </Button>
                 )}
+                {/* {} */}
                 <Button
                   kind={KIND.tertiary}
                   size={SIZE.mini}

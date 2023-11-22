@@ -172,6 +172,15 @@ export default function () {
   function valuetext(value: number) {
     return `${value}°C`;
   }
+  const [sliderValued, setSliderValued] = React.useState(0);
+
+  const handleSliderChanged = (event: Event, newValue: number | number[]) => {
+    setSliderValued(newValue as number);
+    console.log(sliderValue);
+    // editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
+    setAngle(newValue);
+                  editor.objects.update({ angle: newValue });
+  };
   return (
     <StatefulPopover placement={PLACEMENT.bottom}>
       <Block>
@@ -511,7 +520,7 @@ export default function () {
                   marks
                   min={0}
                   max={10}
-                  onChangeCommitted={handleSliderChange}
+                  onChangeCommitted={handleSliderChanged}
                   valueLabelDisplay="auto"
                 />
               </Block>
@@ -560,39 +569,22 @@ export default function () {
                     }}
                     size={SIZE.mini}
                     onChange={() => {}}
-                    value={angle}
+                    value={sliderValued}
                   />
                 </Block>
               </Block>
 
               <Block>
-                <Slider
-                  overrides={{
-                    InnerThumb: () => null,
-                    ThumbValue: () => null,
-                    TickBar: () => null,
-                    Track: {
-                      style: {
-                        paddingRight: 0,
-                        paddingLeft: 0,
-                      },
-                    },
-                    Thumb: {
-                      style: {
-                        height: "12px",
-                        width: "12px",
-                      },
-                    },
-                  }}
+                <SliderBox
+                  aria-label="Volume"
+                  defaultValue={1}
+                  // getAriaValueText={valuetext}
+                  step={1}
+                  marks
                   min={0}
-                  max={360}
-                  marks={false}
-                  value={[angle]}
-                  // @ts-ignore
-                  onChange={({ value }) => {
-                    setAngle(value);
-                    editor.objects.update({ angle: value });
-                  }}
+                max={360}
+                  onChangeCommitted={handleSliderChanged}
+                  valueLabelDisplay="auto"
                 />
               </Block>
             </Block>

@@ -46,6 +46,7 @@ export const generateToServer = (datas: any) => {
           lat_anh: 0, //
           naturalWidth: data.metadata.naturalWidth,
           naturalHeight: data.metadata.naturalHeight,
+          image_svg: ""
         },
         sort: index + 1,
       });
@@ -144,6 +145,7 @@ export const generateToServerSaving = (datas: any) => {
           lat_anh: 0, //
           naturalWidth: data.metadata.naturalWidth,
           naturalHeight: data.metadata.naturalHeight,
+          image_svg: ""
         },
         sort: index + 1,
       });

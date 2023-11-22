@@ -379,7 +379,7 @@ export default function () {
               ref={inputFileRef}
               style={{ display: "none" }}
             />
-            <Button
+            {/* <Button
               size="compact"
               onClick={handleInputFileRefClick}
               kind={KIND.tertiary}
@@ -407,7 +407,7 @@ export default function () {
               }}
             >
               Xuất dữ liệu JSON
-            </Button>
+            </Button> */}
             {/* <Button
             size="mini"
             onClick={}
@@ -428,15 +428,16 @@ export default function () {
                 StartEnhancer: {
                   style: {
                     marginRight: "4px",
-                    paddingTop: "10px",
+                    paddingTop: "20px",
                     alignSelf: "center",
+                    // marginBottom: "10px",
                   },
                 },
               }}
             >
               <img
                 src={imageIcon}
-                style={{ width: 15, height: 15, marginRight: 10 }}
+                style={{ width: 15, height: 15, marginRight: 10, }}
               />
               Lưu mẫu thiết kế
             </Button>
@@ -448,6 +449,7 @@ export default function () {
                 StartEnhancer: {
                   style: {
                     marginRight: "4px",
+                    paddingBottom: "10px",
                   },
                 },
               }}

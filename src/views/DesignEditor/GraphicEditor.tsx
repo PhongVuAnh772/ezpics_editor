@@ -255,7 +255,7 @@ function GraphicEditor() {
             lock: false,
             variable: "",
             variableLabel: "",
-            uppercase: ""
+            uppercase: "",
           },
         },
         {
@@ -285,6 +285,7 @@ function GraphicEditor() {
           src: data.thumn,
           cropX: 0,
           cropY: 0,
+          image_svg: "",
           metadata: {
             brightness: 20,
             naturalWidth: 0,
@@ -357,7 +358,7 @@ function GraphicEditor() {
                 lock: detail.content.lock === 0 ? false : true,
                 variable: detail.content.variable,
                 variableLabel: detail.content.variableLabel,
-                uppercase: detail.content.typeShowTextVariable
+                uppercase: detail.content.typeShowTextVariable,
               },
             });
           } else if (detail.content.type == "image") {
@@ -399,6 +400,7 @@ function GraphicEditor() {
               src: detail.content.banner,
               cropX: 0,
               cropY: 0,
+              image_svg: "",
               metadata: {
                 naturalWidth: detail.content.naturalWidth,
                 naturalHeight: detail.content.naturalHeight,
@@ -407,7 +409,7 @@ function GraphicEditor() {
                 lock: detail.content.lock ? false : true,
                 variable: detail.content.variable,
                 variableLabel: detail.content.variableLabel,
-                brightness: 0
+                brightness: 0,
               },
             });
             // }
@@ -513,7 +515,7 @@ function GraphicEditor() {
 
         if (response && response.data.code === 1) {
           setDataRes(response.data.data);
-          console.log(response.data.data)
+          console.log(response.data.data);
         } else {
           setError(true);
         }
@@ -551,7 +553,10 @@ function GraphicEditor() {
 
         setTimeout(() => {
           setLoading(false);
-        },4000)
+
+          setActiveSubMenu("Layers");
+          setLoading(false);
+        }, 4000);
 
         // React.useCallback(
         //   async (data: any) => {

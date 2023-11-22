@@ -92,4 +92,5 @@ export const VIDEO_PANEL_ITEMS = [
 export enum PanelType {
   TEMPLATES = "Templates",
   BACKGROUND = "Background",
+  LAYERS = "Layers",
 }

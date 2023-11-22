@@ -1156,6 +1156,15 @@ function Rotating() {
       }
     }
   };
+    const [sliderValue, setSliderValue] = React.useState(0);
+
+  const handleSliderChange = (event: Event, newValue: number | number[]) => {
+    setSliderValue(newValue as number);
+    console.log(sliderValue);
+    // editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
+    setAngle(newValue);
+                  editor.objects.update({ angle: newValue });
+  };
   return (
     <StatefulPopover
       showArrow={true}
@@ -1209,7 +1218,7 @@ function Rotating() {
             </Block>
 
             <Block>
-              <Slider
+              {/* <SliderBox
                 overrides={{
                   InnerThumb: () => null,
                   ThumbValue: () => null,
@@ -1237,7 +1246,18 @@ function Rotating() {
                   setAngle(value);
                   editor.objects.update({ angle: value });
                 }}
-              />
+              /> */}
+              <SliderBox
+                  aria-label="Volume"
+                  defaultValue={1}
+                  // getAriaValueText={valuetext}
+                  step={1}
+                  marks
+                  min={0}
+                max={360}
+                  onChangeCommitted={handleSliderChange}
+                  valueLabelDisplay="auto"
+                />
             </Block>
           </Block>
         </Block>
@@ -1588,8 +1608,8 @@ function ModifyLength() {
   }
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setSliderValue(newValue as number);
-    console.log(sliderValue);
-    editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
+    console.log(newValue);
+    editor.objects.update({ scaleX: newValue, scaleY: newValue });
   };
   return (
     <>
@@ -1639,7 +1659,7 @@ function ModifyLength() {
                     }}
                     size={SIZE.mini}
                     onChange={() => {}}
-                    value={Math.round(state.lineHeight)}
+                    value={sliderValue}
                   />
                 </Block>
               </Block>
@@ -1653,7 +1673,7 @@ function ModifyLength() {
                   marks
                   min={0}
                   max={2}
-                  onChange={handleSliderChange}
+                  onChangeCommitted={handleSliderChange}
                   valueLabelDisplay="auto"
                 />
               </Block>

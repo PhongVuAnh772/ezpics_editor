@@ -150,8 +150,8 @@ export default function () {
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setSliderValue(newValue as number);
-    console.log(sliderValue);
-    editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
+    console.log(newValue);
+    editor.objects.update({ scaleX: newValue, scaleY: newValue });
   };
   const flipVertically = React.useCallback(() => {
     editor.objects.update({ flipY: !state.flipY });
@@ -497,7 +497,7 @@ export default function () {
                     }}
                     size={SIZE.mini}
                     onChange={() => {}}
-                    value={scale.scaleX}
+                    value={sliderValue}
                   />
                 </Block>
               </Block>
@@ -511,7 +511,7 @@ export default function () {
                   marks
                   min={0}
                   max={10}
-                  onChange={handleSliderChange}
+                  onChangeCommitted={handleSliderChange}
                   valueLabelDisplay="auto"
                 />
               </Block>

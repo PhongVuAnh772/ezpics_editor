@@ -34,7 +34,7 @@ function PanelsList() {
   {
     id: "graphics",
     name: "Graphics",
-  },
+  },  
   {
     id: "text",
     name: "Text",

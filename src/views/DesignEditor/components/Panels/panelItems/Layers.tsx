@@ -88,12 +88,15 @@ export default function () {
                 gridTemplateColumns: "1fr 90px",
                 fontSize: "14px",
                 alignItems: "center",
+                cursor: "pointer",
                 ":hover": {
                   background: "rgb(245,246,247)",
                 },
                 paddingTop: "15px",
               }}
               key={object.id}
+                                onClick={() => editor.objects.select(object.id)}
+
             >
               {object.name === "StaticText" ? (
                 <Block

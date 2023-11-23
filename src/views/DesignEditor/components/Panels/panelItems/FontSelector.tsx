@@ -16,13 +16,14 @@ import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useFont } from "@react-hooks-library/core";
-import { useAppSelector } from "~/hooks/hook";
+import { useAppSelector,useAppDispatch } from "~/hooks/hook";
+import { REPLACE_font } from "~/store/slices/font/fontSlice";
 
 export default function () {
   const [query, setQuery] = React.useState("");
   const { setActiveSubMenu } = useAppContext();
   const setIsSidebarOpen = useSetIsSidebarOpen();
-
+  const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
   const [searchedFonts, setSearchedFonts] = React.useState(commonFonts);
@@ -30,6 +31,7 @@ export default function () {
   const [css] = useStyletron();
   const editor = useEditor();
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
+  const listFont = useAppSelector((state) => state.newFont.font)
   useEffect(() => {
     const fetchFonts = async () => {
       console.log(networkAPI);
@@ -40,6 +42,7 @@ export default function () {
         const data = response.data.data;
         if (data) {
           setCommonFonts(data);
+          dispatch(REPLACE_font(data))
           response.data.data.map(async (font: any) => {
             handleLoadFont(font);
           });

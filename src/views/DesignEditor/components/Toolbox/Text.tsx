@@ -41,6 +41,8 @@ interface TextState {
   styleOptions: StyleOptions;
   boldURL: BoldURL;
 }
+import { Canvas } from "@layerhub-io/react";
+
 
 interface StyleOptions {
   hasItalic: boolean;
@@ -79,6 +81,7 @@ export default function () {
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
   const token = useAppSelector((state) => state.token.token);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const listFont = useAppSelector(state => state.newFont.font)
   const handleLoadFont = async (x: any) => {
     if (editor) {
       let selectedFont = null;
@@ -120,43 +123,7 @@ export default function () {
       }
     }
   };
-  // React.useEffect(() => {
-  //   const fetchFonts = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const response = await axios.post(`${networkAPI}/listFont`, {
-  //         token: token,
-  //       });
-  //       const data = response?.data?.data;
 
-  //       setLoading(false);
-  //       if (data) {
-  //         // commonFonts.map(async (font) => {
-  //         //   handleLoadFont(font);
-  //         // });
-  //         await fetchFonts();
-  //       } else {
-  //         setCommonFonts(data);
-  //         console.log(commonFonts);
-  //       }
-  //     } catch (error) {
-  //       setLoading(false);
-  //       console.error("Error fetching fonts:", error);
-  //       toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-  //         position: "top-left",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "dark",
-  //       });
-  //     }
-  //   };
-
-  //   fetchFonts();
-  // }, []);
   React.useEffect(() => {
     if (activeObject && activeObject.type === "StaticText") {
       const textProperties = getTextPropertiesClone(activeObject, commonFonts);
@@ -177,6 +144,8 @@ export default function () {
       }
     };
     if (editor) {
+          console.log(listFont)
+
       editor.on("history:changed", watcher);
     }
     return () => {
@@ -187,186 +156,12 @@ export default function () {
   }, [editor, activeObject]);
 
   const makeBold = React.useCallback(async () => {
-    const textProperties = getTextPropertiesClone(activeObject, commonFonts);
-    console.log(textProperties, activeObject, commonFonts);
-
-    if (state.bold) {
-      let desiredFont;
-
-      if (state.italic) {
-        // desiredFont = state.styleOptions.options.find((option) => {
-        //   console.log(option);
-
-        //   const postscript_names = option.postscript_name.split("-");
-        //   return postscript_names[postscript_names.length - 1].match(
-        //     /^Italic$/
-        //   );
-        // });
-        if (activeObject && activeObject.type === "StaticText") {
-          const textProperties = getTextPropertiesClone(
-            activeObject,
-            commonFonts
-          );
-          console.log(textProperties, activeObject, commonFonts);
-        }
-      } else {
-        if (activeObject && activeObject.type === "StaticText") {
-          const textProperties = getTextPropertiesClone(
-            activeObject,
-            commonFonts
-          );
-          console.log(textProperties, activeObject, commonFonts);
-        }
-
-        // desiredFont = state.styleOptions.options.find((option) => {
-        //   const postscript_names = option.postscript_name.split("-");
-        //   console.log(option);
-
-        //   return postscript_names[postscript_names.length - 1].match(
-        //     /^Regular$/
-        //   );
-        // });
-      }
-      // const font = {
-      //   name: textProperties.BoldURL.URL[0].name,
-      //   url: textProperties.BoldURL.URL?.font_otf || textProperties.BoldURL.URL.font_woff2 ||,
-      // };
-      // await loadFonts([font]);
-
-      editor.objects.update({
-        fontFamily: textProperties.BoldURL.URL[0].name,
-        fontURL:
-          textProperties.BoldURL.URL?.font_otf ||
-          textProperties.BoldURL.URL.font_woff2 ||
-          textProperties.BoldURL.URL.font_ttf ||
-          textProperties.BoldURL.URL.font,
-      });
-      console.log(textProperties.BoldURL.URL[0].name);
-      setState({ ...state, bold: false });
-    } else {
-      let desiredFont;
-      if (state.italic) {
-        // look for bold italic
-        // desiredFont = state.styleOptions.options.find((option) => {
-        //   const postscript_names = option.postscript_name.split("-");
-        //   return postscript_names[postscript_names.length - 1].match(
-        //     /^BoldItalic$/
-        //   );
-        // });
-        if (activeObject && activeObject.type === "StaticText") {
-          const textProperties = getTextPropertiesClone(
-            activeObject,
-            commonFonts
-          );
-          console.log(textProperties, activeObject, commonFonts);
-        }
-      } else {
-        // look for bold
-        // desiredFont = state.styleOptions.options.find((option) => {
-        //   const postscript_names = option.postscript_name.split("-");
-        //   return postscript_names[postscript_names.length - 1].match(/^Bold$/);
-        // });
-        if (activeObject && activeObject.type === "StaticText") {
-          const textProperties = getTextPropertiesClone(
-            activeObject,
-            commonFonts
-          );
-          console.log(textProperties, activeObject, commonFonts);
-        }
-      }
-
-      // const font = {
-      //   name: textProperties.BoldURL.URL[0].name,
-      //   url: textProperties.BoldURL.URL?.font_otf || .font_woff2 ||,
-      // };
-      // await loadFonts([font]);
-
-      editor.objects.update({
-        fontFamily: textProperties.BoldURL.URL[0].name,
-        fontURL:
-          textProperties.BoldURL.URL?.font_otf ||
-          textProperties.BoldURL.URL.font_woff2 ||
-          textProperties.BoldURL.URL.font_ttf ||
-          textProperties.BoldURL.URL.font,
-      });
-      console.log(textProperties.BoldURL.URL[0].name);
-    }
+   editor.objects.canvas._originalCanvasStyle.fontSize = "100px"
+    console.log(editor.objects.canvas)
   }, [editor, state]);
 
   const makeItalic = React.useCallback(async () => {
-    const textProperties = getTextPropertiesClone(activeObject, commonFonts);
-
-    if (state.italic) {
-      // let desiredFont;
-      // if (state.bold) {
-      //   // Search bold regular
-      //   desiredFont = state.styleOptions.options.find((option) => {
-      //     const postscript_names = option.postscript_name.split("-");
-      //     return postscript_names[postscript_names.length - 1].match(/^Bold$/);
-      //   });
-      // } else {
-      //   // Search regular
-      //   desiredFont = state.styleOptions.options.find((option) => {
-      //     const postscript_names = option.postscript_name.split("-");
-      //     return postscript_names[postscript_names.length - 1].match(
-      //       /^Regular$/
-      //     );
-      //   });
-      // }
-
-      // const font = {
-      //   name: textProperties.BoldURL.URL[0].name,
-      //   url: textProperties.BoldURL.URL?.font_otf || textProperties.BoldURL.URL.font_woff2 || textProperties.BoldURL.URL.font || textProperties.BoldURL.URL.font_ttf,
-      // };
-      // await loadFonts([font]);
-
-      editor.objects.update({
-        fontFamily: textProperties.BoldURL.URL[0].name,
-        fontURL:
-          textProperties.BoldURL.URL?.font_otf ||
-          textProperties.BoldURL.URL.font_woff2 ||
-          textProperties.BoldURL.URL.font_ttf ||
-          textProperties.BoldURL.URL.font,
-      });
-      console.log(textProperties.BoldURL.URL[0].name);
-    } else {
-      let desiredFont;
-
-      // if (state.bold) {
-      //   // search italic bold
-      //   desiredFont = state.styleOptions.options.find((option) => {
-      //     const postscript_names = option.postscript_name.split("-");
-      //     return postscript_names[postscript_names.length - 1].match(
-      //       /^BoldItalic$/
-      //     );
-      //   });
-      // } else {
-      //   // search regular italic
-      //   desiredFont = state.styleOptions.options.find((option) => {
-      //     const postscript_names = option.postscript_name.split("-");
-      //     return postscript_names[postscript_names.length - 1].match(
-      //       /^Italic$/
-      //     );
-      //   });
-      // }
-
-      // const font = {
-      //   name: textProperties.BoldURL.URL[0].name,
-      //   url: textProperties.BoldURL.URL?.font_otf || textProperties.BoldURL.URL.font_woff2 ||textProperties.BoldURL.URL.font_ttf || textProperties.BoldURL.URL.font,
-      // };
-      // await loadFonts([font]);
-
-      editor.objects.update({
-        fontFamily: textProperties.BoldURL.URL[0].name,
-        fontURL:
-          textProperties.BoldURL.URL?.font_otf ||
-          textProperties.BoldURL.URL.font_woff2 ||
-          textProperties.BoldURL.URL.font_ttf ||
-          textProperties.BoldURL.URL.font,
-      });
-      console.log(textProperties.BoldURL.URL[0].name);
-      setState({ ...state, italic: true });
-    }
+    editor.objects.update({underline: true})
   }, [editor, state]);
 
   const makeUnderline = React.useCallback(() => {
@@ -374,7 +169,7 @@ export default function () {
       underline: !state.underline,
     });
     setState({ ...state, underline: !state.underline });
-  }, [editor, state]);
+  }, [editor, state,commonFonts]);
   return (
     <>
       <Block

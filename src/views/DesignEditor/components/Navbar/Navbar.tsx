@@ -379,7 +379,7 @@ export default function () {
               ref={inputFileRef}
               style={{ display: "none" }}
             />
-            {/* <Button
+            <Button
               size="compact"
               onClick={handleInputFileRefClick}
               kind={KIND.tertiary}
@@ -407,7 +407,7 @@ export default function () {
               }}
             >
               Xuất dữ liệu JSON
-            </Button> */}
+            </Button>
             {/* <Button
             size="mini"
             onClick={}

@@ -466,43 +466,46 @@ function GraphicEditor() {
     [scenes, currentScene, currentDesign]
   );
   let convertData;
-  useEffect(() => {
-    const fetchFonts = async () => {
-      console.log(networkAPI);
-      try {
-        const response = await axios.post(`${networkAPI}/listFont`, {
-          token: token,
-        });
-        // const data = response.data.data;
-        if (response.data.data) {
-          setCommonFonts(response.data.data);
-          response.data.data.map(async (font: any) => {
-            handleLoadFont(font);
-          });
-        }
+  const currentListFont = useAppSelector(state => state.newFont.font)
+  // useEffect(() => {
+  //   const fetchFonts = async () => {
+  //     console.log(networkAPI);
+      
+  //     try {
+  //       const response = await axios.post(`${networkAPI}/listFont`, {
+  //         token: token,
+  //       });
+  //       // const data = response.data.data;
+  //       if (response.data.data) {
+  //         setCommonFonts(response.data.data);
+  //         dispatch(REPLACE_font(response.data.data));
+  //         response.data.data.map(async (font: any) => {
+  //           handleLoadFont(font);
+  //         });
+  //       }
 
-        // if (commonFonts.length > 0) {
-        //   commonFonts.map(async (font) => {
-        //     handleLoadFont(font);
-        //   });
-        // }
-      } catch (error) {
-        console.error("Error fetching fonts:", error);
-        toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      }
-    };
+  //       // if (commonFonts.length > 0) {
+  //       //   commonFonts.map(async (font) => {
+  //       //     handleLoadFont(font);
+  //       //   });
+  //       // }
+  //     } catch (error) {
+  //       console.error("Error fetching fonts:", error);
+  //       toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
+  //         position: "top-left",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //         theme: "dark",
+  //       });
+  //     }
+  //   };
 
-    fetchFonts();
-  }, []);
+  //   fetchFonts();
+  // }, []);
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
@@ -556,6 +559,7 @@ function GraphicEditor() {
 
           setActiveSubMenu("Layers");
           setLoading(false);
+          console.log(currentListFont)
         }, 4000);
 
         // React.useCallback(

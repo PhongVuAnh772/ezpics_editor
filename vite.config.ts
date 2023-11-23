@@ -22,12 +22,17 @@ export default defineConfig({
   //   port:  80,
   //   https: true
   // },
+  // resolve: {
+  //   alias: {
+  //     fs: 'fs/',
+  //   },
+  // },
   server: {
     // 
         // host: 'editor.ezpics.vn',
 
     host: 'editor.ezpics.vn',
     port:  5173,
-    https: false
+    https: false,
   },
 })

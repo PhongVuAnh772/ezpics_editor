@@ -45,7 +45,7 @@ export default function () {
           padding: "1.5rem",
         }}
       >
-        <Block>Text Fill</Block>
+        <Block>Màu</Block>
 
         <Block $style={{ cursor: "pointer", display: "flex" }}>
           <Delete size={24} />
@@ -55,7 +55,7 @@ export default function () {
         <Block padding={"0 1.5rem"}>
           <HexColorPicker onChange={updateObjectFill} style={{ width: "100%" }} />
           <Block>
-            <Block $style={{ padding: "0.75rem 0", fontWeight: 500, fontSize: "14px" }}>Preset colors</Block>
+            <Block $style={{ padding: "0.75rem 0", fontWeight: 500, fontSize: "14px" }}>Đổi màu</Block>
             <Block $style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr", gap: "0.25rem" }}>
               {PRESET_COLORS.map((color, index) => (
                 <Block

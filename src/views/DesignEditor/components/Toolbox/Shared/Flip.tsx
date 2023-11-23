@@ -12,6 +12,7 @@ import Box from "@mui/material/Box";
 import SliderBox from "@mui/material/Slider";
 import axios from "axios";
 import { useAppSelector } from "~/hooks/hook";
+import fs from "fs";
 
 export default function () {
   const editor = useEditor();
@@ -123,28 +124,70 @@ export default function () {
     //   });
     urlToImageFile(srcAttributeValue, "image-local.png").then(
       async (imageFile: File | null) => {
-        if (imageFile) {
-          console.log("Image File:", imageFile);
-          const response = await axios.post<any>(
+        if (imageFile && token) {
+          const formData = new FormData();
+          formData.append("image", imageFile); // Assuming 'image' is the key expected by the server for the image file
+          formData.append("token", token);
+          const headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+            "Content-Type": "multipart/form-data",
+            // Add any other headers if needed
+          };
+
+          const config = {
+            headers: headers,
+          };
+
+          const response = await axios.post(
             `${networkAPI}/removeBackgroundImageAPI`,
-            {
-              token: token,
-              image: imageFile,
-              headers: {
-                // "Access-Control-Allow-Origin": "*",
-                // Accept: "application/json",
-
-                "Content-Type": "multipart/form-data",
-              },
-            }
+            formData,
+            config
           );
-
           console.log(response.data);
+          editor.objects.update({src: response.data?.linkOnline},activeObject.id)
+          // editor.objects.remove()
+          editor.objects.updateContextObjects()
+          console.log(editor.objects.updateContextObjects())
+          // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
         } else {
           console.log("Failed to create the image file.");
         }
       }
     );
+    //    try {
+    //   // Read the file into a FormData object
+    //   const formData = new FormData();
+    //   // formData.append('image', await fs.readFile(filePath));
+    //   formData.append("token", token);
+
+    //   // Create the Fetch request
+    //   fetch(`${networkAPI}/removeBackgroundImageAPI`, {
+    //     method: "POST",
+    //     // 'Content-Type': 'multipart/form-data' is set automatically by FormData
+    //     // 'Access-Control-Allow-Origin': 'POST', // This should be set on the server, not here
+    //     body: formData,
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data;application/x-www-form-urlencoded;application/json',
+    //       // 'Content-Type': ''
+    //     }
+    //     // mode: "no-cors", // Set the mode to 'no-cors' if needed
+    //   })
+    //     .then((response) => {
+    //       if (response.ok || response.status === 0) {
+    //         // You won't be able to log the response details directly in 'no-cors' mode
+    //         console.log("Request sent successfully");
+    //       } else {
+    //         console.error("Request failed");
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       // Handle errors
+    //       console.error("Error:", error);
+    //     });
+    // } catch (error) {
+    //   console.error(error);
+    // }
   };
   const [sliderValue, setSliderValue] = React.useState(0.00000005);
 
@@ -179,7 +222,7 @@ export default function () {
     console.log(sliderValue);
     // editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
     setAngle(newValue);
-                  editor.objects.update({ angle: newValue });
+    editor.objects.update({ angle: newValue });
   };
   return (
     <StatefulPopover placement={PLACEMENT.bottom}>
@@ -582,7 +625,7 @@ export default function () {
                   step={1}
                   marks
                   min={0}
-                max={360}
+                  max={360}
                   onChangeCommitted={handleSliderChanged}
                   valueLabelDisplay="auto"
                 />

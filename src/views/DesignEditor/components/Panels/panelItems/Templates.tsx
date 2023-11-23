@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useEditor } from "@layerhub-io/react";
+import { useEditor, useActiveObject } from "@layerhub-io/react";
 import { Block } from "baseui/block";
 import { loadFonts } from "~/utils/fonts";
 import Scrollable from "~/components/Scrollable";
@@ -118,10 +118,7 @@ export default function () {
     setCurrentItem(null);
   };
 
-  const openModal = (
-    event: React.MouseEvent<HTMLDivElement>,
-    item: any
-  ) => {
+  const openModal = (event: React.MouseEvent<HTMLDivElement>, item: any) => {
     setModalOpen(true);
     setCurrentItem(item);
     setPosition({
@@ -159,8 +156,7 @@ export default function () {
     };
   }, []);
 
-  
-  const  handleImage = async (item: any) => {
+  const handleImage = async (item: any) => {
     const res = await axios.post(
       `${network}/addLayerImageUrlAPI`,
       {
@@ -186,10 +182,10 @@ export default function () {
         type: "StaticImage",
         src: res.data.data.content.banner,
         id: res.data.data.id,
-        
       };
+
       // editor.objects.add(options);
-      addObject(item.link, item.width, item.height);
+      addObject(item.link, item.width, item.height, res.data.data.id);
     }
   };
   const handleContextMenu = (
@@ -206,12 +202,12 @@ export default function () {
       top: event.clientY,
       left: event.clientX,
     });
-    setCurrentItem(item)
+    setCurrentItem(item);
   };
-   const [modalisopen, setmodalisopen] = React.useState(false);
-   const [modaldata, setmodaldata] = React.useState(null); 
+  const [modalisopen, setmodalisopen] = React.useState(false);
+  const [modaldata, setmodaldata] = React.useState(null);
   const addObject = React.useCallback(
-    (url: string, width: string, height: string) => {
+    (url: string, width: string, height: string, id: any) => {
       if (editor) {
         const options = {
           type: "StaticImage",
@@ -219,55 +215,52 @@ export default function () {
           width: width,
           height: height,
           lock: true,
+          id: id,
         };
         editor.objects.add(options);
       }
     },
     [editor]
   );
-    const addObjectd = async () => {
-    
-      setLoading(true);
-      const res = await axios.post(
-        `${network}/addLayerImageUrlAPI`,
-        {
-          idproduct: idProduct,
-          token: token,
-          imageUrl:
-            "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+  const addObjectd = async () => {
+    setLoading(true);
+    const res = await axios.post(
+      `${network}/addLayerImageUrlAPI`,
+      {
+        idproduct: idProduct,
+        token: token,
+        imageUrl:
+          "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+      },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
-          },
-        }
-      );
-      console.log(res);
-
-      if (res.data.code === 1) {
-        
-        const options = {
-          id: res?.data?.data.id,
-          name: "StaticImage",
-          src: "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
-          width: 206,
-          height: 206,
-          metadata: {
-            naturalWidth: 206,
-            naturalHeight: 206,
-            initialHeight: 206,
-            initialWidth: 206,
-
-            lock: false,
-            
-          },
-        };
-        editor.objects.add(options);
-        setLoading(false);
       }
+    );
+    console.log(res);
+
+    if (res.data.code === 1) {
+      const options = {
+        id: res?.data?.data.id,
+        name: "StaticImage",
+        src: "https://apis.ezpics.vn/plugins/ezpics_api/view/image/default-thumbnail-vuong.jpg",
+        width: 206,
+        height: 206,
+        metadata: {
+          naturalWidth: 206,
+          naturalHeight: 206,
+          initialHeight: 206,
+          initialWidth: 206,
+
+          lock: false,
+        },
+      };
+      editor.objects.add(options);
+      setLoading(false);
     }
-    
-  
+  };
+
   const addImageToCanvas = (url: string) => {
     const options = {
       type: "StaticImage",
@@ -382,7 +375,7 @@ export default function () {
                 />
               );
             })} */}
-            
+
               {templates.map((item, index) => {
                 return (
                   <ImageItem
@@ -392,26 +385,26 @@ export default function () {
                     onContextMenu={(event) => handleContextMenu(event, item)} // Thêm sự kiện onContextMenuƠ
                     item={item}
                     // isopen={modalisopen}
-                    
                   />
                 );
               })}
               {modalOpen && (
-        <Modal
-          onClose={closeModal}
-          // item={item}
-          position={position}
-          // onClick={onClick}
-          currentItem={currentItem}
-          onClick={() => handleImage(currentItem)}
-        />
-      )}
+                <Modal
+                  onClose={closeModal}
+                  // item={item}
+                  position={position}
+                  // onClick={onClick}
+                  currentItem={currentItem}
+                  onClick={() => handleImage(currentItem)}
+                />
+              )}
             </div>
           </div>
         </Scrollable>
       </Block>
       {loading && (
-        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+        <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000}}>
+          <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
           <div className="ldio-4qpid53rus9">
             <div></div>
             <div>
@@ -429,6 +422,7 @@ export default function () {
             src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
           />
         </div>
+        </div>
       )}
     </>
   );
@@ -439,17 +433,13 @@ function ImageItem({
   onClick,
   onContextMenu,
   item,
-  
 }: {
   preview: any;
   onClick?: (option: any) => void;
   onContextMenu?: (event: React.MouseEvent<HTMLDivElement>) => void;
   item: any;
 }) {
-  
   const [css] = useStyletron();
-
-
 
   return (
     <>
@@ -511,15 +501,13 @@ function ImageItem({
           })}
         />
       </div>
-      
     </>
   );
 }
 
-const Modal = ({ onClose, position, currentItem ,onClick}) => {
+const Modal = ({ onClose, position, currentItem, onClick }) => {
   // const [css] = useStyletron();
   // const editor = useEditor();
-
 
   // // Update the position when the modal is clicked
   const downloadImage = async (fileName: any) => {
@@ -544,7 +532,143 @@ const Modal = ({ onClose, position, currentItem ,onClick}) => {
   if (!currentItem) {
     return null;
   }
+  // const activeObject = use
+  const token = useAppSelector((state) => state.token.token);
+  const networkAPI = useAppSelector((state) => state.network.ipv4Address);
+  const editor = useEditor();
+  const activeObject = useActiveObject() as any;
+  const idProduct = useAppSelector((state) => state.token.id);
+  async function urlToImageFile(imageUrl: string, fileName: string) {
+    try {
+      const response = await fetch(imageUrl);
+      const blob = await response.blob();
 
+      const imageFile = new File([blob], fileName, { type: blob.type });
+
+      return imageFile;
+    } catch (error) {
+      console.error("Error: ", error);
+      return null;
+    }
+  }
+  const addObject = React.useCallback(
+    (url: string, width: string, height: string, id: any) => {
+      if (editor) {
+        const options = {
+          type: "StaticImage",
+          src: url,
+          width: width,
+          height: height,
+          lock: true,
+          id: id,
+        };
+        editor.objects.add(options);
+      }
+    },
+    [editor]
+  );
+  const removeBackground = async (storageKey: string) => {
+    const srcAttributeValue = currentItem.link;
+    // setLoading
+    urlToImageFile(srcAttributeValue, "image-local.png").then(
+      async (imageFile: File | null) => {
+        if (imageFile && token) {
+          const formData = new FormData();
+          formData.append("image", imageFile); // Assuming 'image' is the key expected by the server for the image file
+          formData.append("token", token);
+          const headers = {
+            "Access-Control-Allow-Origin": "*",
+            "Access-Control-Allow-Headers": "*",
+            "Content-Type": "multipart/form-data",
+            // Add any other headers if needed
+          };
+
+          const config = {
+            headers: headers,
+          };
+
+          const response = await axios.post(
+            `${networkAPI}/removeBackgroundImageAPI`,
+            formData,
+            config
+          );
+          console.log(response.data);
+          // editor.objects.add({})
+          if (response) {
+            const res = await axios.post(
+              `${networkAPI}/addLayerImageUrlAPI`,
+              {
+                idproduct: idProduct,
+                token: token,
+                imageUrl: response.data.linkOnline,
+              },
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+            console.log(res.data);
+
+            if (res.data.code === 1) {
+              const upload = {
+                id: res.data.data.id,
+                url: res.data.data.content.banner,
+              };
+
+              const options = {
+                type: "StaticImage",
+                src: res.data.data.content.banner,
+                id: res.data.data.id,
+              };
+
+              // editor.objects.add(options);
+              addObject(response.data.linkOnline, currentItem.width, currentItem.height, res.data.data.id);
+              // console.log(currentItem.link, currentItem.width, currentItem.height, res.data.data.id)
+            }
+          }
+          // editor.objects.remove()
+          // editor.objects.
+          // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
+        } else {
+          console.log("Failed to create the image file.");
+        }
+      }
+    );
+    //    try {
+    //   // Read the file into a FormData object
+    //   const formData = new FormData();
+    //   // formData.append('image', await fs.readFile(filePath));
+    //   formData.append("token", token);
+
+    //   // Create the Fetch request
+    //   fetch(`${networkAPI}/removeBackgroundImageAPI`, {
+    //     method: "POST",
+    //     // 'Content-Type': 'multipart/form-data' is set automatically by FormData
+    //     // 'Access-Control-Allow-Origin': 'POST', // This should be set on the server, not here
+    //     body: formData,
+    //     headers: {
+    //       'Content-Type': 'multipart/form-data;application/x-www-form-urlencoded;application/json',
+    //       // 'Content-Type': ''
+    //     }
+    //     // mode: "no-cors", // Set the mode to 'no-cors' if needed
+    //   })
+    //     .then((response) => {
+    //       if (response.ok || response.status === 0) {
+    //         // You won't be able to log the response details directly in 'no-cors' mode
+    //         console.log("Request sent successfully");
+    //       } else {
+    //         console.error("Request failed");
+    //       }
+    //     })
+    //     .catch((error) => {
+    //       // Handle errors
+    //       console.error("Error:", error);
+    //     });
+    // } catch (error) {
+    //   console.error(error);
+    // }
+  };
   // Use ReactDOM.createPortal to render the modal outside the main component tree
   return ReactDOM.createPortal(
     <div
@@ -568,12 +692,12 @@ const Modal = ({ onClose, position, currentItem ,onClick}) => {
         <img src={check} alt="" style={{ width: 15, height: 15 }} />
         {"\u00A0"}Sử dụng
       </div>
-{/*  */}
-      <div className="my-div" onClick={() => console.log(currentItem)} >
+      {/*  */}
+      <div className="my-div" onClick={() => removeBackground("storageKey")}>
         <img src={remove} alt="" style={{ width: 15, height: 15 }} />
         {"\u00A0"}Xóa nền
       </div>
-{/* onClick={() => downloadImage("download.png")} */}
+      {/* onClick={() => downloadImage("download.png")} */}
       <div className="my-div" onClick={() => downloadImage("download.png")}>
         <img
           src="https://cdn-icons-png.flaticon.com/512/2550/2550221.png"

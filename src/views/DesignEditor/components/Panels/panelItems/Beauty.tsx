@@ -169,6 +169,8 @@ export default function () {
         </Scrollable>
       </Block>
       {isLoading && (
+                <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000}}>
+
         <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
           <div className="ldio-4qpid53rus9">
             <div></div>
@@ -178,6 +180,7 @@ export default function () {
           </div>
                                 <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
 
+        </div>
         </div>
       )}
     </>

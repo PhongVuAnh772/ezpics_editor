@@ -83,45 +83,6 @@ export default function () {
   const removeBackground = async (storageKey: string) => {
     // console.log(activeObject);
     const srcAttributeValue = activeObject._element.getAttribute("src");
-
-    // fetch(srcAttributeValue)
-    //   .then((response) => response.blob())
-    //   .then((blob) => {
-    //     return new Promise<any>((resolve, reject) => {
-    //       const reader = new FileReader();
-    //       reader.onload = () => resolve(reader.result);
-    //       reader.onerror = reject;
-    //       reader.readAsDataURL(blob);
-    //     });
-    //   })
-    //   .then(async (base64Data) => {
-    //     localStorage.setItem(storageKey, base64Data);
-    //     console.log(
-    //       "Hình ảnh đã được lưu vào local storage với khóa: " + storageKey
-    //     );
-    //     console.log(token);
-    //     console.log(base64Data);
-    //     const response = await axios.post<any>(
-    //       `${networkAPI}/removeBackgroundImageAPI`,
-    //       {
-    //         token: token,
-    //         image: base64Data,
-    //       }
-    //       // {
-    //       //   headers: {
-    //       //     "Access-Control-Allow-Origin": "*",
-    //       //     "Access-Control-Allow-Methods": "*",
-    //       //     "Access-Control-Allow-Headers": "*",
-    //       //     "Content-Type": "application/json",
-    //       //   },
-    //       // }
-    //     );
-
-    //     console.log(response.data);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Lỗi xảy ra: ", error);
-    //   });
     urlToImageFile(srcAttributeValue, "image-local.png").then(
       async (imageFile: File | null) => {
         if (imageFile && token) {
@@ -147,8 +108,7 @@ export default function () {
           console.log(response.data);
           editor.objects.update({src: response.data?.linkOnline},activeObject.id)
           // editor.objects.remove()
-          editor.objects.updateContextObjects()
-          console.log(editor.objects.updateContextObjects())
+          // editor.objects.
           // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
         } else {
           console.log("Failed to create the image file.");

@@ -16,7 +16,7 @@ import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { useFont } from "@react-hooks-library/core";
-import { useAppSelector,useAppDispatch } from "~/hooks/hook";
+import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import { REPLACE_font } from "~/store/slices/font/fontSlice";
 
 export default function () {
@@ -31,10 +31,13 @@ export default function () {
   const [css] = useStyletron();
   const editor = useEditor();
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
-  const listFont = useAppSelector((state) => state.newFont.font)
+  const listFont = useAppSelector((state) => state.newFont.font);
+  const [isLoading, setIsLoading] = React.useState(true);
+
   useEffect(() => {
     const fetchFonts = async () => {
       console.log(networkAPI);
+      setIsLoading(true);
       try {
         const response = await axios.post(`${networkAPI}/listFont`, {
           token: token,
@@ -42,10 +45,11 @@ export default function () {
         const data = response.data.data;
         if (data) {
           setCommonFonts(data);
-          dispatch(REPLACE_font(data))
+          dispatch(REPLACE_font(data));
           response.data.data.map(async (font: any) => {
             handleLoadFont(font);
           });
+          setIsLoading(false);
         }
         console.log(response);
         // if (commonFonts.length > 0) {
@@ -66,6 +70,7 @@ export default function () {
           progress: undefined,
           theme: "dark",
         });
+        setIsLoading(false);
       }
     };
 
@@ -142,85 +147,117 @@ export default function () {
   };
 
   return (
-    <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
-      <Block
-        $style={{
-          display: "flex",
-          alignItems: "center",
-          fontWeight: 500,
-          justifyContent: "space-between",
-          padding: "1.5rem",
-        }}
-      >
+    <>
+      <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
         <Block
-          $style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
-          onClick={() => setActiveSubMenu("Text")}
-        >
-          <ArrowBackOutline size={24} />
-          <Block>Chọn kiểu chữ</Block>
-        </Block>
-        <Block
-          onClick={() => setIsSidebarOpen(false)}
-          $style={{ cursor: "pointer", display: "flex" }}
-        >
-          <AngleDoubleLeft size={18} />
-        </Block>
-      </Block>
-
-      <Block $style={{ padding: "0 1.5rem 1rem" }}>
-        <Input
-          overrides={{
-            Root: {
-              style: {
-                paddingLeft: "8px",
-              },
-            },
+          $style={{
+            display: "flex",
+            alignItems: "center",
+            fontWeight: 500,
+            justifyContent: "space-between",
+            padding: "1.5rem",
           }}
-          clearable
-          onChange={(e) => setQuery((e.target as any).value)}
-          placeholder="Tìm kiếm"
-          size={SIZE.compact}
-          startEnhancer={<Search size={16} />}
-        />
-      </Block>
+        >
+          <Block
+            $style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}
+            onClick={() => setActiveSubMenu("Text")}
+          >
+            <ArrowBackOutline size={24} />
+            <Block>Chọn kiểu chữ</Block>
+          </Block>
+          <Block
+            onClick={() => setIsSidebarOpen(false)}
+            $style={{ cursor: "pointer", display: "flex" }}
+          >
+            <AngleDoubleLeft size={18} />
+          </Block>
+        </Block>
 
-      <Scrollable>
-        <div style={{ padding: "0 1.5rem", display: "grid", gap: "0.2rem" }}>
-          {commonFonts.map((font, index) => {
-            return (
-              <div
-                key={index}
-                onClick={() => handleFontFamilyChange(font)}
-                className={css({
-                  height: "40px",
-                  display: "flex",
-                  alignItems: "center",
-                  cursor: "pointer",
-                  fontSize: "14px",
-                  paddingBottom: "10px",
-                  ":hover": {
-                    backgroundColor: "rgb(245,246,247)",
-                  },
-                })}
-                id={font.id}
-              >
-                <h3
-                  // className={css({
+        <Block $style={{ padding: "0 1.5rem 1rem" }}>
+          <Input
+            overrides={{
+              Root: {
+                style: {
+                  paddingLeft: "8px",
+                },
+              },
+            }}
+            clearable
+            onChange={(e) => setQuery((e.target as any).value)}
+            placeholder="Tìm kiếm"
+            size={SIZE.compact}
+            startEnhancer={<Search size={16} />}
+          />
+        </Block>
 
-                  // })}
-                  style={{
-                    fontFamily: font.name, // Use useFont here
-                    fontWeight: font.weight,
-                  }}
+        <Scrollable>
+          <div style={{ padding: "0 1.5rem", display: "grid", gap: "0.2rem" }}>
+            {commonFonts.map((font, index) => {
+              return (
+                <div
+                  key={index}
+                  onClick={() => handleFontFamilyChange(font)}
+                  className={css({
+                    height: "40px",
+                    display: "flex",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    fontSize: "14px",
+                    paddingBottom: "10px",
+                    ":hover": {
+                      backgroundColor: "rgb(245,246,247)",
+                    },
+                  })}
+                  id={font.id}
                 >
-                  {font.name} - Dùng là thích
-                </h3>
-                {/* {font.} */}
+                  <h3
+                    // className={css({
+
+                    // })}
+                    style={{
+                      fontFamily: font.name, // Use useFont here
+                      fontWeight: font.weight,
+                    }}
+                  >
+                    {font.name} - Dùng là thích
+                  </h3>
+                  {/* {font.} */}
+                </div>
+              );
+            })}
+          </div>
+        </Scrollable>
+      </Block>
+      {isLoading && (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            position: "absolute",
+            zIndex: 20000000000,
+          }}
+        >
+          <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+            <div className="ldio-4qpid53rus9">
+              <div></div>
+              <div>
+                <div></div>
               </div>
-            );
-          })}
+            </div>
+            <img
+              style={{
+                position: "absolute",
+                top: "12%",
+                left: "16%",
+                width: 40,
+                height: 40,
+              }}
+              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+            />
+          </div>
         </div>
-      </Scrollable>
-    </Block>
+      )}
+    </>
   );
 }

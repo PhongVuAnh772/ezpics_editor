@@ -628,6 +628,8 @@ function GraphicEditor() {
           </div>
         )}
         {loading && (
+                  <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.9)',position: 'absolute',zIndex: 20000000000}}>
+
           <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
             <div className="ldio-4qpid53rus92">
               <div></div>
@@ -645,6 +647,7 @@ function GraphicEditor() {
                 src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
               />
             </div>
+          </div>
           </div>
         )}
       </EditorContainer>

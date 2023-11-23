@@ -37,8 +37,6 @@ export default function () {
     setLoading(true);
     const file = files[0];
     const url = URL.createObjectURL(file);
-    // let blob = await fetch(url).then(r => r.blob());
-    // Kiểm tra đuôi file
     if (!/(png|jpg|jpeg)$/i.test(file.name)) {
       toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
       setLoading(false);
@@ -204,6 +202,7 @@ export default function () {
     });
     setCurrentItem(item);
   };
+  
   const [modalisopen, setmodalisopen] = React.useState(false);
   const [modaldata, setmodaldata] = React.useState(null);
   const addObject = React.useCallback(
@@ -396,6 +395,11 @@ export default function () {
                   // onClick={onClick}
                   currentItem={currentItem}
                   onClick={() => handleImage(currentItem)}
+                  loadingTrue = {() => setLoading(true)}
+                                    loadingFalse = {() => setLoading(false)}
+
+        //           setIsLoading(false);
+        // setLoading(false);
                 />
               )}
             </div>
@@ -505,12 +509,15 @@ function ImageItem({
   );
 }
 
-const Modal = ({ onClose, position, currentItem, onClick }) => {
+const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFalse }) => {
   // const [css] = useStyletron();
   // const editor = useEditor();
 
+
   // // Update the position when the modal is clicked
+  const proUser = useAppSelector(state => state.token.proUser)
   const downloadImage = async (fileName: any) => {
+    loadingTrue()
     try {
       // Fetch the image data
       const response = await fetch(currentItem.link);
@@ -524,8 +531,11 @@ const Modal = ({ onClose, position, currentItem, onClick }) => {
 
       // Release the object URL to free up resources
       window.URL.revokeObjectURL(link.href);
+      loadingFalse()
     } catch (error) {
       console.error("Error downloading image:", error);
+            loadingFalse()
+
     }
   };
 
@@ -568,8 +578,11 @@ const Modal = ({ onClose, position, currentItem, onClick }) => {
     [editor]
   );
   const removeBackground = async (storageKey: string) => {
-    const srcAttributeValue = currentItem.link;
+    if (proUser) {
+      const srcAttributeValue = currentItem.link;
     // setLoading
+        loadingTrue()
+
     urlToImageFile(srcAttributeValue, "image-local.png").then(
       async (imageFile: File | null) => {
         if (imageFile && token) {
@@ -621,6 +634,7 @@ const Modal = ({ onClose, position, currentItem, onClick }) => {
                 src: res.data.data.content.banner,
                 id: res.data.data.id,
               };
+            loadingFalse()
 
               // editor.objects.add(options);
               addObject(response.data.linkOnline, currentItem.width, currentItem.height, res.data.data.id);
@@ -632,9 +646,24 @@ const Modal = ({ onClose, position, currentItem, onClick }) => {
           // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
         } else {
           console.log("Failed to create the image file.");
+                      loadingFalse()
+
         }
       }
     );
+    }
+    else {
+      toast.error("Bạn chưa là tài khoản PRO nên không được truy cập, hãy nâng cấp để dùng nhé !", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+    }
     //    try {
     //   // Read the file into a FormData object
     //   const formData = new FormData();
@@ -696,6 +725,8 @@ const Modal = ({ onClose, position, currentItem, onClick }) => {
       <div className="my-div" onClick={() => removeBackground("storageKey")}>
         <img src={remove} alt="" style={{ width: 15, height: 15 }} />
         {"\u00A0"}Xóa nền
+        <img src="../../../../../../assets/premium.png" style={{width: 15,height: 15, resize: 'block',marginBottom: '10%',marginLeft: '3'}} />
+
       </div>
       {/* onClick={() => downloadImage("download.png")} */}
       <div className="my-div" onClick={() => downloadImage("download.png")}>

@@ -13,6 +13,7 @@ import SliderBox from "@mui/material/Slider";
 import axios from "axios";
 import { useAppSelector } from "~/hooks/hook";
 import fs from "fs";
+import { toast } from "react-toastify";
 
 export default function () {
   const editor = useEditor();
@@ -21,6 +22,7 @@ export default function () {
   const [stated, setStated] = React.useState({ opacity: 1 });
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const [angle, setAngle] = React.useState(0);
+  
   const [sizeInitial, setSizeInitial] = React.useState({
     width: 0,
     height: 0,
@@ -62,6 +64,7 @@ export default function () {
   // var imageUrl = 'URL_CUA_IMAGE_BLOB';
   // var storageKey = 'ten_khoa_luu';
   // saveBlobImageToLocal(imageUrl, storageKey);
+    const proUser = useAppSelector(state => state.token.proUser)
 
   const flipHorizontally = React.useCallback(() => {
     editor.objects.update({ flipX: !state.flipX });
@@ -82,7 +85,8 @@ export default function () {
   }
   const removeBackground = async (storageKey: string) => {
     // console.log(activeObject);
-    const srcAttributeValue = activeObject._element.getAttribute("src");
+    if (proUser) {
+      const srcAttributeValue = activeObject._element.getAttribute("src");
     urlToImageFile(srcAttributeValue, "image-local.png").then(
       async (imageFile: File | null) => {
         if (imageFile && token) {
@@ -115,6 +119,19 @@ export default function () {
         }
       }
     );
+    }
+    else {
+      toast.error("Bạn chưa là tài khoản PRO nên không được truy cập, hãy nâng cấp để dùng nhé !", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+    }
     //    try {
     //   // Read the file into a FormData object
     //   const formData = new FormData();
@@ -222,9 +239,13 @@ export default function () {
             size={SIZE.compact}
             kind={KIND.tertiary}
             onClick={() => removeBackground("storageKey")}
+            style={{paddingRight:5}}
           >
             Xóa nền
+            <img src="../../../../../../assets/premium.png" style={{width: 15,height: 15, resize: 'block',marginBottom: '20%',marginLeft: '3'}} />
+
           </Button>
+
         </StatefulTooltip>
         <StatefulPopover
           placement={PLACEMENT.bottomLeft}

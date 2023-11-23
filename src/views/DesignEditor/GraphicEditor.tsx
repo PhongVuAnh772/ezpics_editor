@@ -24,6 +24,7 @@ import { REPLACE_font } from "~/store/slices/font/fontSlice";
 import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
+import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
 
 function GraphicEditor() {
   const dispatch = useAppDispatch();
@@ -467,45 +468,34 @@ function GraphicEditor() {
   );
   let convertData;
   const currentListFont = useAppSelector(state => state.newFont.font)
-  // useEffect(() => {
-  //   const fetchFonts = async () => {
-  //     console.log(networkAPI);
+  useEffect(() => {
+    const fetchProUser = async () => {
       
-  //     try {
-  //       const response = await axios.post(`${networkAPI}/listFont`, {
-  //         token: token,
-  //       });
-  //       // const data = response.data.data;
-  //       if (response.data.data) {
-  //         setCommonFonts(response.data.data);
-  //         dispatch(REPLACE_font(response.data.data));
-  //         response.data.data.map(async (font: any) => {
-  //           handleLoadFont(font);
-  //         });
-  //       }
+      try {
+        const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
+          token: token,
+        });
+        if (response.data.data) {
+          dispatch(REPLACE_PRO_USER(response.data?.data?.member_pro === 1 ? true : false));
+          
+        }
 
-  //       // if (commonFonts.length > 0) {
-  //       //   commonFonts.map(async (font) => {
-  //       //     handleLoadFont(font);
-  //       //   });
-  //       // }
-  //     } catch (error) {
-  //       console.error("Error fetching fonts:", error);
-  //       toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-  //         position: "top-left",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "dark",
-  //       });
-  //     }
-  //   };
+      } catch (error) {
+        toast.error("Lỗi lấy thông tin khách hàng", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }
+    };
 
-  //   fetchFonts();
-  // }, []);
+    fetchProUser();
+  }, []);
   useEffect(() => {
     const fetchDataBanks = async () => {
       try {
@@ -628,8 +618,7 @@ function GraphicEditor() {
           </div>
         )}
         {loading && (
-                  <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.9)',position: 'absolute',zIndex: 20000000000}}>
-
+        <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.9)',position: 'absolute',zIndex: 20000000000}}>
           <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
             <div className="ldio-4qpid53rus92">
               <div></div>
@@ -646,8 +635,8 @@ function GraphicEditor() {
                 }}
                 src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
               />
+              </div>
             </div>
-          </div>
           </div>
         )}
       </EditorContainer>

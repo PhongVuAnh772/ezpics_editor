@@ -1,6 +1,6 @@
 export const generateToServer = (datas: any) => {
   const initialData: any = [];
-  // console.log(datas)
+  console.log(datas)
   const layers = datas.layers;
   layers.splice(0, 2);
   console.log(datas);
@@ -46,7 +46,9 @@ export const generateToServer = (datas: any) => {
           lat_anh: 0, //
           naturalWidth: data.metadata.naturalWidth,
           naturalHeight: data.metadata.naturalHeight,
-          image_svg: ""
+          image_svg: "",
+          page: data.metadata.page,
+          
         },
         sort: index + 1,
       });
@@ -82,7 +84,7 @@ export const generateToServer = (datas: any) => {
           height: "0vh", //
           gradient: 0,
           gradient_color: [],
-         variable: data.metadata.variable,
+          variable: data.metadata.variable,
           variableLabel: data.metadata.variableLabel,
           lock: data.metadata.lock,
           lat_anh: 0,

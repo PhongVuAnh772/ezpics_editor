@@ -350,11 +350,10 @@ export default function () {
       reader.onerror = (err) => {
         console.log(err);
       };
-
       reader.readAsText(file);
     }
   };
-
+  
   return (
     // @ts-ignore
     <>

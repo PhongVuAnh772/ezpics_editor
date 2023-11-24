@@ -219,8 +219,8 @@ export default function () {
             }}
           >
             <div
-              // onClick={addScene}
-              onClick={handleAdd}
+              onClick={addScene}
+              // onClick={handleAdd}
               className={css({
                 width: "100px",
                 height: "56px",

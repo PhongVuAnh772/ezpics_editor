@@ -58,7 +58,7 @@ function Container({ children }: { children: React.ReactNode }) {
       .then((res) => {
         res.forEach((uniqueFont) => {
           //  && uniqueFont.name
-          console.log(uniqueFont)
+          // console.log(uniqueFont)
           if (uniqueFont) {
             document.fonts.add(uniqueFont)
           }

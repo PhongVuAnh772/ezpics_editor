@@ -42,6 +42,7 @@ function GraphicEditor() {
     currentScene,
     scenes,
     currentDesign,
+    setScenes,
     setCurrentDesign,
   } = useDesignEditorContext();
 
@@ -118,312 +119,160 @@ function GraphicEditor() {
         progress: undefined,
         theme: "dark",
       });
-      // setError(true)
+      // setError(true
+      setLoading(false);
     }
   };
-  const generateText = (id: string, detail: any) => {
-    getDataFontTextInitial(detail.content.font);
-    return {
-      id: uuidv4(),
-      name: "StaticText",
-      angle: 0,
-      stroke: null,
-      strokeWidth: 0,
-      left: detail.content.postion_left,
-      top: detail.content.postion_top,
-      opacity: 1,
-      originX: "left",
-      originY: "top",
-      scaleX: 1,
-      scaleY: 1,
-      type: "StaticText",
-      flipX: false,
-      flipY: false,
-      skewX: 0,
-      skewY: 0,
-      visible: true,
-      shadow: null,
-      charSpacing: 0,
-      fill: detail.content.color,
-      fontFamily: detail.content.font,
-      fontSize: 80,
-      lineHeight: 1.16,
-      text: detail.content.text,
-      textAlign: "center",
-      fontURL: fontURLInitial,
-      metadata: {},
-    };
-  };
-
-  const generateImage = (id: string, detail: any) => {
-    return {
-      id: uuidv4(),
-      name: "StaticImage",
-      angle: 0,
-      stroke: null,
-      strokeWidth: 0,
-      left: detail.content.postion_left,
-      top: detail.content.postion_top,
-      // width: 926,
-      // height: 1003,
-      opacity: 1,
-      originX: "left",
-      originY: "top",
-      scaleX: 0.36,
-      scaleY: 0.36,
-      type: "StaticImage",
-      flipX: false,
-      flipY: false,
-      skewX: 0,
-      skewY: 0,
-      visible: true,
-      shadow: null,
-      src: detail.content.banner,
-      cropX: 0,
-      cropY: 0,
-      metadata: {
-        variable: "",
-        variableLabel: "",
-      },
-    };
-  };
-
+  
   const editor = useEditor();
   const [dataRes, setDataRes] = useState<any>(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
     const scenes = [];
-    // const { scenes: scns, ...design } = payload;
-    const scns = payload.scenes;
-
+    const { scenes: scns, ...design } = payload;
+    console.log("payload" + payload);
     for (const scn of scns) {
       const scene: IScene = {
-        name: payload.name,
+        name: scn.name,
         frame: payload.frame,
-        id: payload.id,
+        id: scn.id,
         layers: scn.layers,
         metadata: {},
       };
+      console.log("scns" + scene);
+
       const loadedScene = await loadVideoEditorAssets(scene);
-      await loadTemplateFonts(loadedScene);
 
       const preview = (await editor.renderer.render(loadedScene)) as string;
       scenes.push({ ...loadedScene, preview });
     }
 
-    return { scenes };
+    return { scenes, design };
   };
+  const handleImportTemplate = React.useCallback(
+    async (data: any) => {
+      let template;
+          // const { scenes: scns, ...design } = data;
 
+      template = await loadGraphicTemplate(data);
+      console.log(template);
+      //   @ts-ignore
+      setScenes(template.scenes);
+      //   @ts-ignore
+      setCurrentDesign(template.design);
+    },
+    [editor]
+  );
   const dataFunction = (data: any) => {
     const dataString = {
-      id: uuidv4(),
-      name: "Untitled Design",
-      frame: {
-        width: data.width,
-        height: data.height,
-      },
-      layers: [
-        {
-          id: "background",
-          name: "Initial Frame",
-          angle: 0,
-          stroke: null,
-          strokeWidth: 0,
-          // left: 0,
-          // top: 0,
-          // width: data.width,
-          // height: data.height,
-          opacity: 1,
-          originX: "left",
-          originY: "top",
-          scaleX: 1,
-          scaleY: 1,
-          type: "Background",
-          flipX: false,
-          flipY: false,
-          skewX: 0,
-          skewY: 0,
-          visible: true,
-          shadow: {
-            color: "#fcfcfc",
-            blur: 4,
-            offsetX: 0,
-            offsetY: 0,
-            affectStroke: false,
-            nonScaling: false,
-          },
-          fill: "#FFFFFF",
-          metadata: {
-            lock: false,
-            variable: "",
-            variableLabel: "",
-            uppercase: "",
-          },
-        },
-        {
-          id: data.id,
-          name: "StaticImage",
-          angle: 0,
-          stroke: null,
-          strokeWidth: 0,
-          // left: 0,
-          // top: 0,
-          // width: data.width,
-          // height: data.height,
-          opacity: 1,
-          originX: "left",
-          originY: "top",
-          scaleX: 1,
-          scaleY: 1,
-          type: "StaticImage",
-          flipX: false,
-          flipY: false,
-          brightness: 0,
-          borderRadius: 0,
-          skewX: 0,
-          skewY: 0,
-          visible: true,
-          shadow: null,
-          src: data.thumn,
-          cropX: 0,
-          cropY: 0,
-          image_svg: "",
-          metadata: {
-            brightness: 20,
-            naturalWidth: 0,
-            naturalHeight: 0,
-            initialHeight: 0,
-            initialWidth: 0,
-            lock: false,
-            variable: "",
-            variableLabel: "",
-          },
-        },
-      ],
-
-      metadata: {},
-      preview: "",
+      frame: { initialWidth: data.width, initialHeight: data.height },
+      content: [] as any,
     };
 
     if (data.productDetail) {
-      data.productDetail.forEach(
-        async (detail: any, index: number) => {
-          if (detail.content.type == "text") {
-            // getDataFontTextInitial()
-            // console.log(detail);
-            let stringMerged;
-            stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
-            dataString.layers.push({
-              id: detail.id,
-              name: "StaticText",
-              angle: 0,
-              stroke: null,
-              strokeWidth: 0,
-              left: (detail.content.postion_left / 100) * data.width,
-              top: (detail.content.postion_top / 100) * data.height,
-              opacity: detail.content.opacity,
-              originX: "left",
-              originY: "top",
-              // scaleX: (parseInt(detail.content.width, 10) / data.width) * 100,
-              // scaleY: (parseInt(detail.content.width, 10) / data.width) * 100,
-              type: "StaticText",
-              flipX: false,
-              flipY: false,
-              skewX: 0,
-              skewY: 0,
-              visible: true,
-              shadow: null,
-              charSpacing: 0,
-              fill:
-                detail.content.gradient === 1
-                  ? detail.content.gradient_color[0]?.color
-                  : detail.content.color,
-              // fill: 'white',
-              width:
-                (parseInt(detail.content.width.replace(/vw/g, "")) *
-                  data.width) /
-                100,
-              // height: null,
-              // fontFamily: detail.content.font,
-              fontFamily: detail.content.font,
-              fontSize:
-                (parseInt(detail.content.size.replace(/vw/g, "")) *
-                  data.width) /
-                100,
-              // (parseInt(detail.content.width, 10) / data.width) * 10000
-              lineHeight: parseInt(detail.content.gianchu),
-              text: stringMerged,
-              textAlign: detail.content.text_align,
-              // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
-              // fontURLInitial
-              metadata: {
-                lock: detail.content.lock === 0 ? false : true,
-                variable: detail.content.variable,
-                variableLabel: detail.content.variableLabel,
-                uppercase: detail.content.typeShowTextVariable,
-              },
-            });
-          } else if (detail.content.type == "image") {
-            // getMeta(detail.content.banner).then((img) => {
-            //   if (img.naturalHeight && img.naturalWidth) {
-            // console.log(detail);
-
-            dataString.layers.push({
-              id: detail.id,
-              name: "StaticImage",
-              angle: 0,
-              stroke: null,
-              strokeWidth: 0,
-              left: (detail.content.postion_left / 100) * data.width,
-              top: (detail.content.postion_top / 100) * data.height,
-              opacity: detail.content.opacity,
-              originX: "left",
-              originY: "top",
-              scaleX:
-                (parseInt(detail.content.width.replace(/vw/g, "")) *
-                  data.width) /
-                100 /
-                detail.content.naturalWidth,
-              // img.naturalWidth,
-              scaleY:
-                (parseInt(detail.content.width.replace(/vw/g, "")) *
-                  data.width) /
-                100 /
-                detail.content.naturalWidth,
-              // img.naturalWidth,
-              // data.width,
-              type: "StaticImage",
-              flipX: detail.content.lat_anh,
-              flipY: false,
-              skewX: 0,
-              skewY: 0,
-              visible: true,
-              shadow: null,
-              src: detail.content.banner,
-              cropX: 0,
-              cropY: 0,
-              image_svg: "",
-              metadata: {
-                naturalWidth: detail.content.naturalWidth,
-                naturalHeight: detail.content.naturalHeight,
-                initialHeight: detail.content.height,
-                initialWidth: detail.content.width,
-                lock: detail.content.lock ? false : true,
-                variable: detail.content.variable,
-                variableLabel: detail.content.variableLabel,
-                brightness: 0,
-              },
-            });
-            // }
-            // else {
-            //   console.warn("Đợi tí")
-            // }
-            // });
-          }
+      data.productDetail.forEach(async (detail: any, index: number) => {
+        if (detail.content.type == "text") {
+          let stringMerged;
+          stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
+          dataString.content.push({
+            id: detail.id,
+            name: "StaticText",
+            angle: 0,
+            stroke: null,
+            strokeWidth: 0,
+            left: (detail.content.postion_left / 100) * data.width,
+            top: (detail.content.postion_top / 100) * data.height,
+            opacity: detail.content.opacity,
+            originX: "left",
+            originY: "top",
+            type: "StaticText",
+            flipX: false,
+            flipY: false,
+            skewX: 0,
+            skewY: 0,
+            visible: true,
+            shadow: null,
+            charSpacing: 0,
+            fill:
+              detail.content.gradient === 1
+                ? detail.content.gradient_color[0]?.color
+                : detail.content.color,
+            width:
+              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+              100,
+            // height: null,
+            // fontFamily: detail.content.font,
+            fontFamily: detail.content.font,
+            fontSize:
+              (parseInt(detail.content.size.replace(/vw/g, "")) * data.width) /
+              100,
+            // (parseInt(detail.content.width, 10) / data.width) * 10000
+            lineHeight: parseInt(detail.content.gianchu),
+            text: stringMerged,
+            textAlign: detail.content.text_align,
+            // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
+            // fontURLInitial
+            metadata: {
+              lock: detail.content.lock === 0 ? false : true,
+              variable: detail.content.variable,
+              variableLabel: detail.content.variableLabel,
+              uppercase: detail.content.typeShowTextVariable,
+              sort: detail.sort,
+              page: detail.content.page,
+              srcBackground: data.thumn,
+              idBackground: data?.id,
+            },
+          });
+        } else if (detail.content.type == "image") {
+          dataString.content.push({
+            id: detail.id,
+            name: "StaticImage",
+            angle: 0,
+            stroke: null,
+            strokeWidth: 0,
+            left: (detail.content.postion_left / 100) * data.width,
+            top: (detail.content.postion_top / 100) * data.height,
+            opacity: detail.content.opacity,
+            originX: "left",
+            originY: "top",
+            scaleX:
+              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+              100 /
+              detail.content.naturalWidth,
+            // img.naturalWidth,
+            scaleY:
+              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+              100 /
+              detail.content.naturalWidth,
+            // img.naturalWidth,
+            // data.width,
+            type: "StaticImage",
+            flipX: detail.content.lat_anh,
+            flipY: false,
+            skewX: 0,
+            skewY: 0,
+            visible: true,
+            shadow: null,
+            src: detail.content.banner,
+            cropX: 0,
+            cropY: 0,
+            image_svg: "",
+            metadata: {
+              naturalWidth: detail.content.naturalWidth,
+              naturalHeight: detail.content.naturalHeight,
+              initialHeight: detail.content.height,
+              initialWidth: detail.content.width,
+              lock: detail.content.lock ? false : true,
+              variable: detail.content.variable,
+              variableLabel: detail.content.variableLabel,
+              brightness: 0,
+              sort: detail.sort,
+              page: detail.content.page,
+              srcBackground: data?.thumn,
+              idBackground: data?.id,
+            },
+          });
         }
-        //  (
-        //   generateLayer(layerId, detail.content.type, detail)
-        // );
-      );
+      });
     }
     console.log(dataString);
 
@@ -437,6 +286,134 @@ function GraphicEditor() {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));
   }
+
+  const dataScenes = (data: any) => {
+    console.log(data);
+    const dataString = {
+      id: uuidv4(),
+      name: "Untitled Design",
+      frame: {
+        width: data.frame.initialWidth,
+        height: data.frame.initialHeight,
+      },
+      scenes: [] as any[], // Explicitly define the type here
+      metadata: {},
+      preview: "",
+      type: "GRAPHIC",
+    };
+
+    if (data) {
+      const maxPage = Math.max(
+        ...data.content.map(
+          (detail: any) => (detail.metadata.page as number) || 0
+        )
+      );
+      console.log(maxPage);
+
+      const scenesArray: any[] = Array.from(
+        { length: maxPage + 1 },
+        (_, index) => {
+          const matchingDetails = data.content.filter(
+            (detail: any) => detail.metadata.page === index
+          );
+
+          // Sử dụng cú pháp [newElement, ...array] để thêm một phần tử vào đầu mảng matchingDetails
+          const updatedMatchingDetails = [
+            {
+              id: "background",
+              name: "Initial Frame",
+              angle: 0,
+              stroke: null,
+              strokeWidth: 0,
+              opacity: 1,
+              originX: "left",
+              originY: "top",
+              scaleX: 1,
+              scaleY: 1,
+              type: "Background",
+              flipX: false,
+              flipY: false,
+              skewX: 0,
+              skewY: 0,
+              visible: true,
+              shadow: {
+                color: "#fcfcfc",
+                blur: 4,
+                offsetX: 0,
+                offsetY: 0,
+                affectStroke: false,
+                nonScaling: false,
+              },
+              fill: "#FFFFFF",
+              metadata: {
+                lock: false,
+                variable: "",
+                variableLabel: "",
+                uppercase: "",
+                sort: 0,
+              },
+            },
+            {
+              id: data.content[0]?.metadata?.idBackground,
+              name: "StaticImage",
+              angle: 0,
+              stroke: null,
+              strokeWidth: 0,
+              // left: 0,
+              // top: 0,
+              // width: data.width,
+              // height: data.height,
+              opacity: 1,
+              originX: "left",
+              originY: "top",
+              scaleX: 1,
+              scaleY: 1,
+              type: "StaticImage",
+              flipX: false,
+              flipY: false,
+              brightness: 0,
+              borderRadius: 0,
+              skewX: 0,
+              skewY: 0,
+              visible: true,
+              shadow: null,
+              src: data.content[0]?.metadata?.srcBackground,
+              cropX: 0,
+              cropY: 0,
+              image_svg: "",
+              metadata: {
+                brightness: 20,
+                naturalWidth: 0,
+                naturalHeight: 0,
+                initialHeight: 0,
+                initialWidth: 0,
+                lock: false,
+                variable: "",
+                variableLabel: "",
+                sort: 0,
+                page: 0,
+              },
+            },
+            ...matchingDetails,
+          ];
+
+          console.log(updatedMatchingDetails);
+
+          return updatedMatchingDetails.length > 0
+            ? {
+                id: uuidv4(),
+                layers: updatedMatchingDetails,
+                name: "Untitled Design",
+              }
+            : null;
+        }
+      );
+
+      dataString.scenes = scenesArray.filter((scene) => scene !== null);
+    }
+
+    return dataString;
+  };
 
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const loadTemplate = React.useCallback(
@@ -452,34 +429,28 @@ function GraphicEditor() {
             });
           }
         });
-        // const filteredFonts = fonts.filter((f) => !!f.url);
-        // if (filteredFonts.length > 0) {
-        //   await loadFonts(filteredFonts);
-        // }
-        // setCurrentScene
-        // setCurrentScene({ ...template, id: currentScene?.id });
-        // scenes.push({ ...template, id: currentScene?.id });
         setCurrentScene({ ...template, id: currentScene?.id });
-        // setCurrentDesign({...template, id: currentScene?.id });
       }
     },
     // editor,
     [scenes, currentScene, currentDesign]
   );
+
   let convertData;
-  const currentListFont = useAppSelector(state => state.newFont.font)
+  const currentListFont = useAppSelector((state) => state.newFont.font);
   useEffect(() => {
     const fetchProUser = async () => {
-      
       try {
         const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
           token: token,
         });
         if (response.data.data) {
-          dispatch(REPLACE_PRO_USER(response.data?.data?.member_pro === 1 ? true : false));
-          
+          dispatch(
+            REPLACE_PRO_USER(
+              response.data?.data?.member_pro === 1 ? true : false
+            )
+          );
         }
-
       } catch (error) {
         toast.error("Lỗi lấy thông tin khách hàng", {
           position: "top-left",
@@ -491,6 +462,7 @@ function GraphicEditor() {
           progress: undefined,
           theme: "dark",
         });
+        setLoading(false);
       }
     };
 
@@ -511,6 +483,7 @@ function GraphicEditor() {
           console.log(response.data.data);
         } else {
           setError(true);
+          setLoading(false);
         }
       } catch (error) {
         toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
@@ -524,6 +497,7 @@ function GraphicEditor() {
           theme: "dark",
         });
         setError(true);
+        setLoading(false);
       }
     };
     fetchDataBanks();
@@ -531,43 +505,36 @@ function GraphicEditor() {
   useEffect(() => {
     setActiveSubMenu("FontSelector");
   }, []);
-
+  useEffect(() => {
+    if (errorMessage) {
+      setLoading(false);
+    }
+  });
   useEffect(() => {
     const fetchDataBanks = async () => {
       setLoading(true);
-
       try {
-        console.log(dataRes);
+        // console.log(dataRes);
         dispatch(REPLACE_TYPE_USER(dataRes?.type));
 
-        const dataRender = dataFunction(dataRes);
-        // console.log(dataRender)
-        await loadTemplate(dataRender);
+        if (dataRes) {
+          const dataRender = dataFunction(dataRes);
+          if (dataRender) {
+            console.log(dataRender);
+            const dataSceneImport = dataScenes(dataRender);
+            // await loadTemplate(dataRender);
+            if (dataSceneImport) {
+              await handleImportTemplate(dataSceneImport);
+            }
+            setTimeout(() => {
+              setLoading(false);
+              console.log(dataSceneImport);
 
-        setTimeout(() => {
-          setLoading(false);
+              setActiveSubMenu("Layers");
+            }, 4000);
+          }
+        }
 
-          setActiveSubMenu("Layers");
-          setLoading(false);
-          console.log(currentListFont)
-        }, 4000);
-
-        // React.useCallback(
-        //   async (data: any) => {
-        //     let template;
-        //     if (data.type === "GRAPHIC") {
-
-        //       template = await loadGraphicTemplate(convertData);
-        //     }
-        //     //   @ts-ignore
-        //     setScenes(template.scenes);
-        //     //   @ts-ignore
-        //     setCurrentDesign(template.design);
-        //   },
-        //   [editor]
-        // );
-        // let template = await loadGraphicTemplate(convertData);
-        // setScenes(template.scenes);
         // //   @ts-ignore
       } catch (error) {
         console.log(error);
@@ -618,23 +585,31 @@ function GraphicEditor() {
           </div>
         )}
         {loading && (
-        <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.9)',position: 'absolute',zIndex: 20000000000}}>
-          <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
-            <div className="ldio-4qpid53rus92">
-              <div></div>
-              <div>
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.9)",
+              position: "absolute",
+              zIndex: 20000000000,
+            }}
+          >
+            <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+              <div className="ldio-4qpid53rus92">
                 <div></div>
-              </div>
-              <img
-                style={{
-                  position: "absolute",
-                  top: "12%",
-                  left: "16%",
-                  width: 40,
-                  height: 40,
-                }}
-                src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
-              />
+                <div>
+                  <div></div>
+                </div>
+                <img
+                  style={{
+                    position: "absolute",
+                    top: "12%",
+                    left: "16%",
+                    width: 40,
+                    height: 40,
+                  }}
+                  src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+                />
               </div>
             </div>
           </div>

@@ -250,13 +250,14 @@ export default function () {
   const handleImportTemplate = React.useCallback(
     async (data: any) => {
       let template;
-      if (data.type === "GRAPHIC") {
-        template = await loadGraphicTemplate(data);
-      } else if (data.type === "PRESENTATION") {
-        template = await loadPresentationTemplate(data);
-      } else if (data.type === "VIDEO") {
-        template = await loadVideoTemplate(data);
-      }
+      // if (data.type === "GRAPHIC") {
+      // } else if (data.type === "PRESENTATION") {
+      //   template = await loadPresentationTemplate(data);
+      // } else if (data.type === "VIDEO") {
+      //   template = await loadVideoTemplate(data);
+      // }
+              template = await loadGraphicTemplate(data);
+
       //   @ts-ignore
       setScenes(template.scenes);
       //   @ts-ignore

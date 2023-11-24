@@ -1,6 +1,6 @@
 export const generateToServer = (datas: any) => {
   const initialData: any = [];
-  console.log(datas)
+  // console.log(datas)
   const layers = datas.layers;
   layers.splice(0, 2);
   console.log(datas);

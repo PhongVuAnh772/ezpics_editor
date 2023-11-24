@@ -22,7 +22,7 @@ export default function () {
   const [stated, setStated] = React.useState({ opacity: 1 });
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
   const [angle, setAngle] = React.useState(0);
-  
+
   const [sizeInitial, setSizeInitial] = React.useState({
     width: 0,
     height: 0,
@@ -64,7 +64,7 @@ export default function () {
   // var imageUrl = 'URL_CUA_IMAGE_BLOB';
   // var storageKey = 'ten_khoa_luu';
   // saveBlobImageToLocal(imageUrl, storageKey);
-    const proUser = useAppSelector(state => state.token.proUser)
+  const proUser = useAppSelector((state) => state.token.proUser);
 
   const flipHorizontally = React.useCallback(() => {
     editor.objects.update({ flipX: !state.flipX });
@@ -84,44 +84,86 @@ export default function () {
     }
   }
   const removeBackground = async (storageKey: string) => {
-    // console.log(activeObject);
     if (proUser) {
-      const srcAttributeValue = activeObject._element.getAttribute("src");
-    urlToImageFile(srcAttributeValue, "image-local.png").then(
-      async (imageFile: File | null) => {
-        if (imageFile && token) {
-          const formData = new FormData();
-          formData.append("image", imageFile); // Assuming 'image' is the key expected by the server for the image file
-          formData.append("token", token);
-          const headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Content-Type": "multipart/form-data",
-            // Add any other headers if needed
-          };
+      const srcAttributeValue = activeObject._element.getAttribute("src") === "" ? activeObject._element.getAttribute("currentSrc"): activeObject._element.getAttribute("src");
+      console.log(srcAttributeValue)
+      urlToImageFile(srcAttributeValue, "image-local.png").then(
+        async (imageFile: File | null) => {
+          if (imageFile && token) {
+            const formData = new FormData();
+            formData.append("image", imageFile); 
+            formData.append("token", token);
+            const headers = {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers": "*",
+              "Content-Type": "multipart/form-data",
+              // Add any other headers if needed
+            };
 
-          const config = {
-            headers: headers,
-          };
+            const config = {
+              headers: headers,
+            };
 
-          const response = await axios.post(
-            `${networkAPI}/removeBackgroundImageAPI`,
-            formData,
-            config
-          );
-          console.log(response.data);
-          editor.objects.update({src: response.data?.linkOnline},activeObject.id)
-          // editor.objects.remove()
-          // editor.objects.
-          // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
-        } else {
-          console.log("Failed to create the image file.");
+            const response = await axios.post(
+              `${networkAPI}/removeBackgroundImageAPI`,
+              formData,
+              config
+            );
+            const newOptions = {
+              id: activeObject.id,
+              name: "StaticImage",
+              angle: activeObject.angle,
+              stroke: activeObject.stroke,
+              strokeWidth: activeObject.strokeWidth,
+              left: activeObject.left,
+              top: activeObject.top,
+              opacity: activeObject.opacity,
+              originX: activeObject.originX,
+              originY: activeObject.originY,
+              scaleX: activeObject.scaleX,
+              // img.naturalWidth,
+              scaleY: activeObject.scaleY,
+              // img.naturalWidth,
+              // data.width,
+              type: "StaticImage",
+              flipX: activeObject.flipX,
+              flipY: activeObject.flipY,
+              skewX: activeObject.skewX,
+              skewY: activeObject.skewY,
+              visible: activeObject.visible,
+              shadow: activeObject.shadow,
+              src: response.data?.linkOnline,
+              cropX: activeObject.cropX,
+              cropY: activeObject.cropY,
+              image_svg: "",
+              metadata: {
+                naturalWidth: activeObject.metadata.naturalWidth,
+                naturalHeight: activeObject.metadata.naturalHeight,
+                initialHeight: activeObject.metadata.initialHeight,
+                initialWidth: activeObject.metadata.initialWidth,
+                lock: activeObject.metadata.lock,
+                variable: activeObject.metadata.variable,
+                variableLabel: activeObject.metadata.variableLabel,
+                brightness: activeObject.metadata.brightness,
+                sort: activeObject.metadata.sort,
+              },
+            };
+            console.log(srcAttributeValue)
+            console.log(activeObject);
+            console.log(response.data?.linkOnline);
+            // newOptions
+            // editor.objects.remove()
+            // editor.objects.add(newOptions);
+          } else {
+            console.log("Failed to create the image file.");
+            
+          }
         }
-      }
-    );
-    }
-    else {
-      toast.error("Bạn chưa là tài khoản PRO nên không được truy cập, hãy nâng cấp để dùng nhé !", {
+      );
+    } else {
+      toast.error(
+        "Bạn chưa là tài khoản PRO nên không được truy cập, hãy nâng cấp để dùng nhé !",
+        {
           position: "top-left",
           autoClose: 5000,
           hideProgressBar: false,
@@ -130,7 +172,8 @@ export default function () {
           draggable: true,
           progress: undefined,
           theme: "dark",
-        });
+        }
+      );
     }
     //    try {
     //   // Read the file into a FormData object
@@ -239,13 +282,20 @@ export default function () {
             size={SIZE.compact}
             kind={KIND.tertiary}
             onClick={() => removeBackground("storageKey")}
-            style={{paddingRight:5}}
+            style={{ paddingRight: 5 }}
           >
             Xóa nền
-            <img src="../../../../../../assets/premium.png" style={{width: 15,height: 15, resize: 'block',marginBottom: '20%',marginLeft: '3'}} />
-
+            <img
+              src="../../../../../../assets/premium.png"
+              style={{
+                width: 15,
+                height: 15,
+                resize: "block",
+                marginBottom: "20%",
+                marginLeft: "3",
+              }}
+            />
           </Button>
-
         </StatefulTooltip>
         <StatefulPopover
           placement={PLACEMENT.bottomLeft}

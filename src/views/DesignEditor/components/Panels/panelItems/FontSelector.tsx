@@ -51,7 +51,10 @@ export default function () {
           });
           setIsLoading(false);
         }
-        console.log(response);
+        // console.log(response);
+        setTimeout(() => {
+          setIsLoading(false);
+        },3000)
         // if (commonFonts.length > 0) {
         //   commonFonts.map(async (font) => {
         //     handleLoadFont(font);
@@ -95,7 +98,7 @@ export default function () {
         name: x.name,
         url: selectedFont,
       };
-      console.log(font);
+      // console.log(font);
       await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({
@@ -134,7 +137,7 @@ export default function () {
           url: x.font_ttf,
         };
       }
-
+      // console.log(selectedFont);
       if (selectedFont) {
         await loadFonts([selectedFont]);
         // @ts-ignore
@@ -233,9 +236,9 @@ export default function () {
           style={{
             width: "100%",
             height: "100%",
-            backgroundColor: "rgba(0,0,0,0.7)",
+            // backgroundColor: "rgba(0,0,0,0.1)",
             position: "absolute",
-            zIndex: 20000000000,
+            zIndex: 20000000000
           }}
         >
           <div className="loadingio-spinner-dual-ring-hz44svgc0ld">

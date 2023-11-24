@@ -144,7 +144,7 @@ export default function () {
       }
     };
     if (editor) {
-          console.log(listFont)
+          // console.log(listFont)
 
       editor.on("history:changed", watcher);
     }

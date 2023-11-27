@@ -13,6 +13,7 @@ import Scrollable from "~/components/Scrollable";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import axios from "axios";
 import { useAppSelector } from "~/hooks/hook";
+import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 
 export default function () {
   const editor = useEditor();
@@ -23,7 +24,68 @@ export default function () {
   const [allText, setAllText] = useState<any[]>([]);
   const [css] = useStyletron();
   const [loading, setLoading] = React.useState(false);
+  const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
+  function findIndexById(arr: any, targetId: any) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === targetId) {
+        return i;
+      }
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+  }
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
 
+    console.log(currentScene);
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    if (currentDesign) {
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+      console.log(resultIndex);
+      console.log(graphicTemplate.scenes);
+      console.log(currentScene.id);
+      return resultIndex;
+
+      // makeDownload(graphicTemplate);
+      // const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
+      // console.log(graphicTemplate)
+      // const newDesign = generateToServer(allLayers);
+      // console.log(newDesign)
+      // let newArr : any=[];
+      // console.log(newArr)
+    } else {
+      console.log("NO CURRENT DESIGN");
+    }
+  };
   const addObject = async () => {
     if (editor) {
       const font: FontItem = {
@@ -38,6 +100,7 @@ export default function () {
         color: "#333333",
         size: 92,
         font: font.name,
+        page: Number(parseGraphicJSON()),
       });
       if (res.data.code === 1) {
         console.log(res.data);
@@ -52,9 +115,19 @@ export default function () {
           fontStyle: "normal",
           fontURL: font.url,
           fill: "#000000",
-          metadata: {},
+          metadata: {
+            idBackground: 0,
+            lock: false,
+            page: Number(parseGraphicJSON()),
+
+            // sort: 1,
+            srcBackground: "",
+            uppercase: "",
+            variable: "",
+            variableLabel: "",
+          },
         };
-        editor.objects.add<IStaticText>(options);
+        editor.objects.add<any>(options);
       }
     }
   };
@@ -73,6 +146,7 @@ export default function () {
         color: item.content.color,
         size: 200,
         font: item.content.font,
+        page: Number(parseGraphicJSON()),
       });
       if (response && response.data) {
         const options = {
@@ -86,9 +160,11 @@ export default function () {
           fontStyle: item.content.indam === "normal" ? "bold" : "400",
           // fontURL: font.url,
           fill: item.content.color,
-          metadata: {},
+          metadata: {
+            page: Number(parseGraphicJSON()),
+          },
         };
-        editor.objects.add<IStaticText>(options);
+        editor.objects.add<any>(options);
       }
     }
   };
@@ -233,26 +309,33 @@ export default function () {
         </Scrollable>
       </Block>
       {loading && (
-                <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000}}>
-
-        <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
-          <div className="ldio-4qpid53rus9">
-            <div></div>
-            <div>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            position: "absolute",
+            zIndex: 20000000000,
+          }}
+        >
+          <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+            <div className="ldio-4qpid53rus9">
               <div></div>
+              <div>
+                <div></div>
+              </div>
             </div>
+            <img
+              style={{
+                position: "absolute",
+                top: "12%",
+                left: "16%",
+                width: 40,
+                height: 40,
+              }}
+              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+            />
           </div>
-          <img
-            style={{
-              position: "absolute",
-              top: "12%",
-              left: "16%",
-              width: 40,
-              height: 40,
-            }}
-            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
-          />
-        </div>
         </div>
       )}
     </>

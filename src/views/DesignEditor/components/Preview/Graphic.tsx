@@ -24,6 +24,7 @@ export default function () {
     if (editor) {
       const template = editor.scene.exportToJSON();
       const image = (await editor.renderer.render(template)) as string;
+      console.log(template,image)
       setLoading(false);
       if (image) {
         const res = await axios.post(`${network}/addListLayerAPI`, {
@@ -34,8 +35,7 @@ export default function () {
         if (res.data.code === 1) {
           downloadImage(image, "preview.png");
           setState({ image });
-
-          console.log(res);
+          
           console.log(generateToServer(template));
           toast("Xuất ảnh thành công !! 🦄", {
             position: "top-left",

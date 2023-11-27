@@ -25,7 +25,7 @@ import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
-
+ 
 function GraphicEditor() {
   const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
@@ -314,7 +314,7 @@ function GraphicEditor() {
         { length: maxPage + 1 },
         (_, index) => {
           const matchingDetails = data.content.filter(
-            (detail: any) => detail.metadata.page === index
+            (detail: any) => Number(detail.metadata.page) === index
           );
 
           // Sử dụng cú pháp [newElement, ...array] để thêm một phần tử vào đầu mảng matchingDetails
@@ -397,7 +397,8 @@ function GraphicEditor() {
             ...matchingDetails,
           ];
 
-          console.log(updatedMatchingDetails);
+          // console.log(data.content.metadata);
+          // console.log()
 
           return updatedMatchingDetails.length > 0
             ? {
@@ -411,6 +412,14 @@ function GraphicEditor() {
 
       dataString.scenes = scenesArray.filter((scene) => scene !== null);
     }
+    dataString.scenes.forEach((data:any,index:any) => {
+      if (data[index] > 0) {
+        data.layers.forEach((layer:any,index:any) => {
+          layer[1].src = ""
+        })
+      }
+    })
+        console.log(dataString);
 
     return dataString;
   };

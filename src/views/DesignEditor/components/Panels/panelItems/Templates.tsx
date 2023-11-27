@@ -23,7 +23,6 @@ import remove from "./magic-wand (1).png";
 export default function () {
   const inputFileRef = React.useRef<HTMLInputElement>(null);
   const [uploads, setUploads] = React.useState<any[]>([]);
-  const { currentDesign, setCurrentDesign } = useDesignEditorContext();
   const dispatch = useAppDispatch();
   const network = useAppSelector((state) => state.network.ipv4Address);
   const token = useAppSelector((state) => state.token.token);
@@ -32,7 +31,60 @@ export default function () {
   const [isLoading, setIsLoading] = useState(true);
   const [loading, setLoading] = React.useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
+  function findIndexById(arr: any, targetId: any) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === targetId) {
+        return i;
+      }
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+  }
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
 
+    console.log(currentScene);
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    if (currentDesign) {
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+      console.log(resultIndex);
+    
+      return resultIndex;
+
+    } else {
+      console.log("NO CURRENT DESIGN");
+    }
+  };
   const handleDropFiles = async (files: FileList) => {
     setLoading(true);
     const file = files[0];
@@ -50,6 +102,7 @@ export default function () {
         idproduct: idProduct,
         token: token,
         file: file,
+        page: Number(parseGraphicJSON()),
       },
       {
         headers: {
@@ -61,9 +114,21 @@ export default function () {
     console.log(files);
 
     if (res.data.code === 1) {
+      console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
       const upload = {
         id: res.data.data.id,
         url: res.data.data.content.banner,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
       };
 
       setUploads([...uploads, upload]);
@@ -71,6 +136,17 @@ export default function () {
         type: "StaticImage",
         src: res.data.data.content.banner,
         id: res.data.data.id,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
       };
       editor.objects.add(options);
       setLoading(false);
@@ -161,6 +237,7 @@ export default function () {
         idproduct: idProduct,
         token: token,
         imageUrl: item.link,
+        page: Number(parseGraphicJSON()),
       },
       {
         headers: {
@@ -171,19 +248,26 @@ export default function () {
     console.log(res.data);
 
     if (res.data.code === 1) {
-      const upload = {
-        id: res.data.data.id,
-        url: res.data.data.content.banner,
-      };
-
       const options = {
         type: "StaticImage",
         src: res.data.data.content.banner,
         id: res.data.data.id,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        }
       };
+      console.log(options)
 
-      // editor.objects.add(options);
-      addObject(item.link, item.width, item.height, res.data.data.id);
+      editor.objects.add(options);
+      // addObject(item.link, item.width, item.height, res.data.data.id);
     }
   };
   const handleContextMenu = (
@@ -202,9 +286,10 @@ export default function () {
     });
     setCurrentItem(item);
   };
-  
+
   const [modalisopen, setmodalisopen] = React.useState(false);
   const [modaldata, setmodaldata] = React.useState(null);
+
   const addObject = React.useCallback(
     (url: string, width: string, height: string, id: any) => {
       if (editor) {
@@ -215,12 +300,16 @@ export default function () {
           height: height,
           lock: true,
           id: id,
+          metadata: {
+            page: Number(res.data.data.content.page),
+          },
         };
         editor.objects.add(options);
       }
     },
     [editor]
   );
+
   const addObjectd = async () => {
     setLoading(true);
     const res = await axios.post(
@@ -264,6 +353,9 @@ export default function () {
     const options = {
       type: "StaticImage",
       src: url,
+      metadata: {
+        // page: pageId()
+      },
     };
     editor.objects.add(options);
   };
@@ -395,11 +487,11 @@ export default function () {
                   // onClick={onClick}
                   currentItem={currentItem}
                   onClick={() => handleImage(currentItem)}
-                  loadingTrue = {() => setLoading(true)}
-                                    loadingFalse = {() => setLoading(false)}
-
-        //           setIsLoading(false);
-        // setLoading(false);
+                  loadingTrue={() => setLoading(true)}
+                  loadingFalse={() => setLoading(false)}
+                  pageId={() => parseGraphicJSON()}
+                  //           setIsLoading(false);
+                  // setLoading(false);
                 />
               )}
             </div>
@@ -407,25 +499,33 @@ export default function () {
         </Scrollable>
       </Block>
       {loading && (
-        <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000}}>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            position: "absolute",
+            zIndex: 20000000000,
+          }}
+        >
           <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
-          <div className="ldio-4qpid53rus9">
-            <div></div>
-            <div>
+            <div className="ldio-4qpid53rus9">
               <div></div>
+              <div>
+                <div></div>
+              </div>
             </div>
+            <img
+              style={{
+                position: "absolute",
+                top: "12%",
+                left: "16%",
+                width: 40,
+                height: 40,
+              }}
+              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+            />
           </div>
-          <img
-            style={{
-              position: "absolute",
-              top: "12%",
-              left: "16%",
-              width: 40,
-              height: 40,
-            }}
-            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
-          />
-        </div>
         </div>
       )}
     </>
@@ -509,15 +609,22 @@ function ImageItem({
   );
 }
 
-const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFalse }) => {
+const Modal = ({
+  onClose,
+  position,
+  currentItem,
+  onClick,
+  loadingTrue,
+  loadingFalse,
+  pageId,
+}) => {
   // const [css] = useStyletron();
   // const editor = useEditor();
 
-
   // // Update the position when the modal is clicked
-  const proUser = useAppSelector(state => state.token.proUser)
+  const proUser = useAppSelector((state) => state.token.proUser);
   const downloadImage = async (fileName: any) => {
-    loadingTrue()
+    loadingTrue();
     try {
       // Fetch the image data
       const response = await fetch(currentItem.link);
@@ -531,11 +638,10 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
 
       // Release the object URL to free up resources
       window.URL.revokeObjectURL(link.href);
-      loadingFalse()
+      loadingFalse();
     } catch (error) {
       console.error("Error downloading image:", error);
-            loadingFalse()
-
+      loadingFalse();
     }
   };
 
@@ -548,6 +654,11 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
   const editor = useEditor();
   const activeObject = useActiveObject() as any;
   const idProduct = useAppSelector((state) => state.token.id);
+  const {
+    setScenes,
+
+    scenes,
+  } = useDesignEditorContext();
   async function urlToImageFile(imageUrl: string, fileName: string) {
     try {
       const response = await fetch(imageUrl);
@@ -561,6 +672,7 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
       return null;
     }
   }
+
   const addObject = React.useCallback(
     (url: string, width: string, height: string, id: any) => {
       if (editor) {
@@ -571,6 +683,9 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
           height: height,
           lock: true,
           id: id,
+          metadata: {
+            page: pageId(),
+          },
         };
         editor.objects.add(options);
       }
@@ -580,80 +695,85 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
   const removeBackground = async (storageKey: string) => {
     if (proUser) {
       const srcAttributeValue = currentItem.link;
-    // setLoading
-        loadingTrue()
+      // setLoading
+      loadingTrue();
 
-    urlToImageFile(srcAttributeValue, "image-local.png").then(
-      async (imageFile: File | null) => {
-        if (imageFile && token) {
-          const formData = new FormData();
-          formData.append("image", imageFile); // Assuming 'image' is the key expected by the server for the image file
-          formData.append("token", token);
-          const headers = {
-            "Access-Control-Allow-Origin": "*",
-            "Access-Control-Allow-Headers": "*",
-            "Content-Type": "multipart/form-data",
-            // Add any other headers if needed
-          };
+      urlToImageFile(srcAttributeValue, "image-local.png").then(
+        async (imageFile: File | null) => {
+          if (imageFile && token) {
+            const formData = new FormData();
+            formData.append("image", imageFile); // Assuming 'image' is the key expected by the server for the image file
+            formData.append("token", token);
+            const headers = {
+              "Access-Control-Allow-Origin": "*",
+              "Access-Control-Allow-Headers": "*",
+              "Content-Type": "multipart/form-data",
+              // Add any other headers if needed
+            };
 
-          const config = {
-            headers: headers,
-          };
+            const config = {
+              headers: headers,
+            };
 
-          const response = await axios.post(
-            `${networkAPI}/removeBackgroundImageAPI`,
-            formData,
-            config
-          );
-          console.log(response.data);
-          // editor.objects.add({})
-          if (response) {
-            const res = await axios.post(
-              `${networkAPI}/addLayerImageUrlAPI`,
-              {
-                idproduct: idProduct,
-                token: token,
-                imageUrl: response.data.linkOnline,
-              },
-              {
-                headers: {
-                  "Content-Type": "multipart/form-data",
-                },
-              }
+            const response = await axios.post(
+              `${networkAPI}/removeBackgroundImageAPI`,
+              formData,
+              config
             );
-            console.log(res.data);
+            console.log(response.data);
+            // editor.objects.add({})
+            if (response) {
+              const res = await axios.post(
+                `${networkAPI}/addLayerImageUrlAPI`,
+                {
+                  idproduct: idProduct,
+                  token: token,
+                  imageUrl: response.data.linkOnline,
+                },
+                {
+                  headers: {
+                    "Content-Type": "multipart/form-data",
+                  },
+                }
+              );
+              console.log(res.data);
 
-            if (res.data.code === 1) {
-              const upload = {
-                id: res.data.data.id,
-                url: res.data.data.content.banner,
-              };
+              if (res.data.code === 1) {
+                const upload = {
+                  id: res.data.data.id,
+                  url: res.data.data.content.banner,
+                };
 
-              const options = {
-                type: "StaticImage",
-                src: res.data.data.content.banner,
-                id: res.data.data.id,
-              };
-            loadingFalse()
+                const options = {
+                  type: "StaticImage",
+                  src: res.data.data.content.banner,
+                  id: res.data.data.id,
+                };
+                loadingFalse();
 
-              // editor.objects.add(options);
-              addObject(response.data.linkOnline, currentItem.width, currentItem.height, res.data.data.id);
-              // console.log(currentItem.link, currentItem.width, currentItem.height, res.data.data.id)
+                // editor.objects.add(options);
+                addObject(
+                  response.data.linkOnline,
+                  currentItem.width,
+                  currentItem.height,
+                  res.data.data.id
+                );
+                // console.log(currentItem.link, currentItem.width, currentItem.height, res.data.data.id)
+              }
             }
+            // editor.objects.remove()
+            // editor.objects.
+            // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
+          } else {
+            console.log("Failed to create the image file.");
+            loadingFalse();
           }
-          // editor.objects.remove()
-          // editor.objects.
-          // editor.canvasId.replace(activeObject.id, editor.objects.update({src: response.data?.linkOnline,id: activeObject.id}))
-        } else {
-          console.log("Failed to create the image file.");
-                      loadingFalse()
-
         }
-      }
-    );
-    }
-    else {
-      toast.error("Bạn chưa là tài khoản PRO nên không được truy cập, hãy nâng cấp để dùng nhé !", {
+      );
+    } else {
+      toast.error(
+        "Bạn chưa là tài khoản PRO nên không được truy cập, hãy nâng cấp để dùng nhé !",
+        {
           position: "top-left",
           autoClose: 5000,
           hideProgressBar: false,
@@ -662,7 +782,8 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
           draggable: true,
           progress: undefined,
           theme: "dark",
-        });
+        }
+      );
     }
     //    try {
     //   // Read the file into a FormData object
@@ -725,8 +846,16 @@ const Modal = ({ onClose, position, currentItem, onClick,loadingTrue,loadingFals
       <div className="my-div" onClick={() => removeBackground("storageKey")}>
         <img src={remove} alt="" style={{ width: 15, height: 15 }} />
         {"\u00A0"}Xóa nền
-        <img src="../../../../../../assets/premium.png" style={{width: 15,height: 15, resize: 'block',marginBottom: '10%',marginLeft: '3'}} />
-
+        <img
+          src="../../../../../../assets/premium.png"
+          style={{
+            width: 15,
+            height: 15,
+            resize: "block",
+            marginBottom: "10%",
+            marginLeft: "3",
+          }}
+        />
       </div>
       {/* onClick={() => downloadImage("download.png")} */}
       <div className="my-div" onClick={() => downloadImage("download.png")}>

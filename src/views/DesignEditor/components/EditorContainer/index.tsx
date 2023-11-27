@@ -8,7 +8,7 @@ import { useEditor } from "@layerhub-io/react";
 import { useAppSelector } from "~/hooks/hook";
 import { generateToServerSaving } from "~/api/gererateToServer";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
-import '../../../../../src/components/Resizable/loading.css'
+import "../../../../../src/components/Resizable/loading.css";
 // window.addEventListener("online", () => getValueOnline());
 // window.addEventListener("offline", () => handleOffline());
 export default function ({ children }: { children: React.ReactNode }) {
@@ -44,8 +44,8 @@ export default function ({ children }: { children: React.ReactNode }) {
       if (retrievedData) {
         const dataParsed = JSON.parse(retrievedData);
         const template = editor.scene.exportToJSON();
-        console.log(dataParsed)
-        console.log(generateToServerSaving(dataParsed))
+        console.log(dataParsed);
+        console.log(generateToServerSaving(dataParsed));
         try {
           const res = await axios.post(`${network}/addListLayerAPI`, {
             idProduct: idProduct,
@@ -206,15 +206,23 @@ export default function ({ children }: { children: React.ReactNode }) {
       document.cookie = `data-ezpics=${jsonString}`;
     }
   };
+  // const handleReload = (e) => {
+  //   e.preventDefault();
+  //   con
+  // }
   useEffect(() => {
     window.addEventListener("online", getValueOnline);
     window.addEventListener("offline", handleOffline);
+    // window.addEventListener("beforeunload", handleOffline);
 
     return () => {
       window.removeEventListener("online", getValueOnline);
-      window.removeEventListener("offline", handleOffline);
     };
   }, [editor]);
+  // window.addEventListener("beforeunload", (event) => {
+  //   event.preventDefault();
+  //   console.log("reset");
+  // });
   return (
     <Block
       $style={{

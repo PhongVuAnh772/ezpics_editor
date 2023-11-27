@@ -55,7 +55,6 @@ export default function () {
 
   const parseGraphicJSON = () => {
     const currentScene = editor.scene.exportToJSON();
-
     const updatedScenes = scenes.map((scn) => {
       if (scn.id === currentScene.id) {
         return {
@@ -71,8 +70,7 @@ export default function () {
       };
     });
 
-    if (currentDesign) {
-      const graphicTemplate: IDesign = {
+      const graphicTemplate: any = {
         id: currentDesign.id,
         type: "GRAPHIC",
         name: currentDesign.name,
@@ -81,11 +79,32 @@ export default function () {
         metadata: {},
         preview: "",
       };
-      makeDownload(graphicTemplate);
-      generateToServer(graphicTemplate);
-    } else {
-      console.log("NO CURRENT DESIGN");
-    }
+      function findIndexById(arr: any, targetId: any) {
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].id === targetId) {
+            return i;
+          }
+        }
+        return -1; // Trả về -1 nếu không tìm thấy
+      }
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+
+      // console.log(resultIndex);
+      // console.log(graphicTemplate.scenes)
+      // console.log(currentScene.id)
+      // makeDownload(graphicTemplate);
+      const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
+      console.log(graphicTemplate)
+      console.log(currentDesign.frame,allLayers)
+      const newDesign = generateToServer({
+        frame: currentDesign.frame,
+        data:allLayers
+      });
+      console.log(newDesign)
+      return newDesign;
+      // let newArr : any=[];
+      // console.log(newArr)
+    
   };
 
   const parsePresentationJSON = () => {
@@ -168,16 +187,10 @@ export default function () {
     a.click();
   };
 
-  const makeDownloadTemplate = async () => {
-    if (editor) {
-      if (editorType === "GRAPHIC") {
-        return parseGraphicJSON();
-      } else if (editorType === "PRESENTATION") {
-        return parsePresentationJSON();
-      } else {
-        return parseVideoJSON();
-      }
-    }
+  const makeDownloadTemplate =  () => {
+    
+        return  parseGraphicJSON();
+     
   };
 
   const loadGraphicTemplate = async (payload: IDesign) => {
@@ -256,7 +269,7 @@ export default function () {
       // } else if (data.type === "VIDEO") {
       //   template = await loadVideoTemplate(data);
       // }
-              template = await loadGraphicTemplate(data);
+      template = await loadGraphicTemplate(data);
 
       //   @ts-ignore
       setScenes(template.scenes);
@@ -271,12 +284,10 @@ export default function () {
     link.download = fileName;
     link.click();
   };
-  const makePreview = React.useCallback(async () => {
-    if (editor) {
-      const template = editor.scene.exportToJSON();
-      const image = (await editor.renderer.render(template)) as string;
-      setState({ image });
-      if (image) {
+
+  const makePreview = async () => {
+    
+      
         // downloadImage(image, "preview.png");
         setLoading(true);
 
@@ -284,13 +295,14 @@ export default function () {
           const res = await axios.post(`${network}/addListLayerAPI`, {
             idProduct: idProduct,
             token: token,
-            listLayer: JSON.stringify(generateToServer(template)),
+            listLayer: JSON.stringify(parseGraphicJSON()),
           });
-          if (res.data.code === 1) {
-            setState({ image });
 
-            console.log(res);
-            console.log(generateToServer(template));
+          if (res.data.code === 1) {
+            
+
+            // console.log(res);
+            // console.log(generateToServer(template));
             toast("Lưu mẫu thiết kế thành công !! 🦄", {
               position: "top-left",
               autoClose: 2000,
@@ -329,9 +341,9 @@ export default function () {
           console.log(error);
           setLoading(false);
         }
-      }
-    }
-  }, [editor]);
+      
+    
+  };
   const handleInputFileRefClick = () => {
     inputFileRef.current?.click();
   };
@@ -353,7 +365,7 @@ export default function () {
       reader.readAsText(file);
     }
   };
-  
+
   return (
     // @ts-ignore
     <>
@@ -422,7 +434,7 @@ export default function () {
           </Button> */}
             <Button
               size="compact"
-              onClick={() => makePreview()}
+              onClick={makePreview}
               kind={KIND.tertiary}
               overrides={{
                 StartEnhancer: {
@@ -437,7 +449,7 @@ export default function () {
             >
               <img
                 src={imageIcon}
-                style={{ width: 15, height: 15, marginRight: 10, }}
+                style={{ width: 15, height: 15, marginRight: 10 }}
               />
               Lưu mẫu thiết kế
             </Button>
@@ -464,27 +476,35 @@ export default function () {
         </Container>
       </ThemeProvider>
       {loading && (
-        <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000}}>
-        <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
-          <div className="ldio-4qpid53rus92">
-            <div></div>
-            <div>
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            position: "absolute",
+            zIndex: 20000000000,
+          }}
+        >
+          <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+            <div className="ldio-4qpid53rus92">
               <div></div>
+              <div>
+                <div></div>
+              </div>
             </div>
+            <img
+              style={{
+                position: "absolute",
+                top: 10,
+                left: 17,
+                width: 40,
+                height: 40,
+                // alignSelf: 'center',
+                zIndex: 999999,
+              }}
+              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+            />
           </div>
-          <img
-            style={{
-              position: "absolute",
-              top: 10,
-              left: 17,
-              width: 40,
-              height: 40,
-              // alignSelf: 'center',
-              zIndex: 999999,
-            }}
-            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
-          />
-        </div>
         </div>
       )}
     </>

@@ -206,10 +206,19 @@ export default function ({ children }: { children: React.ReactNode }) {
       document.cookie = `data-ezpics=${jsonString}`;
     }
   };
-  // const handleReload = (e) => {
-  //   e.preventDefault();
-  //   con
-  // }
+  useEffect(() => {
+    window.addEventListener("beforeunload", alertUser);
+
+    return () => {
+      window.removeEventListener("beforeunload", alertUser);
+
+    };
+  }, []);
+  const alertUser = (e:any) => {
+    e.preventDefault();
+    // return e.returnValue = "Are you sure you want to leave the page?";
+     return "Data will be lost if you leave the page, are you sure?";
+  };
   useEffect(() => {
     window.addEventListener("online", getValueOnline);
     window.addEventListener("offline", handleOffline);

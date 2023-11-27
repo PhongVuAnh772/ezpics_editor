@@ -267,21 +267,17 @@ export default function () {
 
             <div
               style={{
-                // display: "grid",
-                // gap: "0.5rem",
-                // gridTemplateColumns: "1fr 1fr",
+                display: "grid",
+                gap: "0.5rem",
+                gridTemplateColumns: "1fr 1fr",
                 width: "100%",
-                height: "100%",
-                marginTop: "0.5rem",
               }}
             >
-              {/* {allText && */}
               {allText.map((text, index) => (
                 <div
-                  key={text.id} // Use a unique key for each element
+                  key={text.id}
                   style={{
-                    width: "50%",
-                    height: 80,
+                    height: 100,
                     border: "1px solid gray",
                     display: "flex",
                     alignItems: "center",
@@ -297,7 +293,7 @@ export default function () {
                       textAlign: "center",
                       fontWeight:
                         text.content.indam === "normal" ? "bold" : "400",
-                      fontSize: 40,
+                      fontSize: 25,
                     }}
                   >
                     {text.content.text}

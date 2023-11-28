@@ -79,16 +79,6 @@ export default function () {
         metadata: {},
         preview: "",
       };
-      function findIndexById(arr: any, targetId: any) {
-        for (let i = 0; i < arr.length; i++) {
-          if (arr[i].id === targetId) {
-            return i;
-          }
-        }
-        return -1; // Trả về -1 nếu không tìm thấy
-      }
-      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
-
       // console.log(resultIndex);
       // console.log(graphicTemplate.scenes)
       // console.log(currentScene.id)

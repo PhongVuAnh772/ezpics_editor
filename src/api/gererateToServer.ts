@@ -120,7 +120,7 @@ export const generateToServer = (datas: any) => {
   datas.data.forEach((data: any) => {
     const indexToRemove = data.findIndex((element: any) => element.id === 'background');
     if (indexToRemove !== -1) {
-      data.splice(indexToRemove, 2);
+      data.splice(indexToRemove, 1);
     }
   });
 

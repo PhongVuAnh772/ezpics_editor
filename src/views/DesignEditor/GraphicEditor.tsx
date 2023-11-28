@@ -408,14 +408,22 @@ function GraphicEditor() {
       dataString.scenes = scenesArray.filter((scene) => scene !== null);
     }
     dataString.scenes.forEach((data, index) => {
-      if (index > 0) {
-        if (data.layers[1].metadata.backgroundLayer) {
-          data.layers.splice(1, 1);
-        }
-      } else {
-        console.log(data + " vế phụ");
-      }
-    });
+  let shouldRemove = false; // Biến cờ để xác định xem có nên xóa hay không
+
+  if (index > 0) {
+    if (data.layers[1].metadata.backgroundLayer) {
+      shouldRemove = true;
+    }
+  } else {
+    console.log(data + " vế phụ");
+  }
+
+  // Xóa phần tử nếu biến cờ là true
+  if (shouldRemove) {
+    data.layers.splice(1, 1);
+  }
+});
+
 
     return dataString;
   };

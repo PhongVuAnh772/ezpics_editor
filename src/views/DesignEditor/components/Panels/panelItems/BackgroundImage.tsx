@@ -14,7 +14,6 @@ import axios from "axios";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import useAppContext from "~/hooks/useAppContext";
 export default function () {
-  const { currentDesign, setCurrentDesign } = useDesignEditorContext();
 
   const [data, setData] = useState<any>(null);
   const [templates, setTemplates] = useState<any[]>([]);
@@ -42,6 +41,13 @@ export default function () {
 
     fetchData();
   }, []);
+  const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
   const editor = useEditor();
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const { setCurrentScene, currentScene } = useDesignEditorContext();
@@ -108,7 +114,112 @@ export default function () {
     },
     [editor]
   );
+  function findIndexById(arr: any, targetId: any) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === targetId) {
+        return i;
+      }
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+  }
+    const [loading, setLoading] = React.useState(false);
 
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
+
+    console.log(currentScene);
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    if (currentDesign) {
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+      console.log(resultIndex);
+    
+      return resultIndex;
+
+    } else {
+      console.log("NO CURRENT DESIGN");
+    }
+  };
+  const idProduct = useAppSelector(state => state.token.id)
+  const handleImage = async (item: any) => {
+    console.log(item);
+    const res = await axios.post(
+      `${network}/addLayerImageUrlAPI`,
+      {
+        idproduct: idProduct,
+        token: token,
+        imageUrl: item.image,
+        page: Number(parseGraphicJSON()),
+      },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (res.data.code === 1) {
+      console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
+      const upload = {
+        id: res.data.data.id,
+        url: res.data.data.content.banner,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
+      };
+
+      const options = {
+        type: "StaticImage",
+        src: res.data.data.content.banner,
+        id: res.data.data.id,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
+      };
+      console.log(options);
+      editor.objects.add(options);
+      setLoading(false);
+    }
+  };
   return (
     <>
       <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
@@ -159,7 +270,7 @@ export default function () {
                 // .filter((item) => item.keyword === "Ảnh nền")
                 .map((item, index) => (
                   <ImageItem
-                    onClick={() => addObject(item.image)}
+                    onClick={() => handleImage(item)}
                     key={index}
                     preview={`${item.image}`}
                   />

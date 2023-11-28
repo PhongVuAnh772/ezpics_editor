@@ -9,6 +9,8 @@ import { useAppSelector } from "~/hooks/hook";
 import { generateToServerSaving } from "~/api/gererateToServer";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import "../../../../../src/components/Resizable/loading.css";
+import { generateToServer,generateToServerInternet } from "~/api/gererateToServer";
+
 // window.addEventListener("online", () => getValueOnline());
 // window.addEventListener("offline", () => handleOffline());
 export default function ({ children }: { children: React.ReactNode }) {
@@ -16,6 +18,9 @@ export default function ({ children }: { children: React.ReactNode }) {
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
+  
+    const [loading, setLoading] = React.useState(false);
+
   const {
     setCurrentScene,
     currentScene,
@@ -41,19 +46,20 @@ export default function ({ children }: { children: React.ReactNode }) {
   const handleSave = async () => {
     if (editor) {
       const retrievedData = localStorage.getItem("data-ezpics");
-      if (retrievedData) {
         const dataParsed = JSON.parse(retrievedData);
-        const template = editor.scene.exportToJSON();
-        console.log(dataParsed);
-        console.log(generateToServerSaving(dataParsed));
+        setLoading(true);
+
         try {
           const res = await axios.post(`${network}/addListLayerAPI`, {
             idProduct: idProduct,
             token: token,
-            listLayer: JSON.stringify(generateToServerSaving(dataParsed)),
+            listLayer: JSON.stringify(parseGraphicJSON(dataParsed)),
           });
+
           if (res.data.code === 1) {
-            console.log(res);
+            
+
+          
             toast("Lưu mẫu thiết kế thành công !! 🦄", {
               position: "top-left",
               autoClose: 2000,
@@ -64,9 +70,7 @@ export default function ({ children }: { children: React.ReactNode }) {
               progress: undefined,
               theme: "dark",
             });
-            document.cookie =
-              "data-ezpics=; expires=Thu, 31 Dec 2099 23:59:59 GMT; path=/";
-            localStorage.removeItem("data-ezpics");
+            setLoading(false);
           } else {
             toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
               position: "top-left",
@@ -78,6 +82,7 @@ export default function ({ children }: { children: React.ReactNode }) {
               progress: undefined,
               theme: "dark",
             });
+            setLoading(false);
           }
         } catch (error) {
           toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
@@ -90,8 +95,8 @@ export default function ({ children }: { children: React.ReactNode }) {
             progress: undefined,
             theme: "dark",
           });
-          console.log(error);
-        }
+          setLoading(false);
+        
       }
     }
   };
@@ -127,20 +132,29 @@ export default function ({ children }: { children: React.ReactNode }) {
   );
 
   const options = {
-    title: "Có mạng",
+    title: "Đã có mạng trở lại",
     message: "Bạn có muốn lưu dữ liệu cũ không ?",
     buttons: [
       {
         label: "Không",
         onClick: async () => await loadTemplate(),
         style: {
-          display:"none"
+          backgroundColor: "white",
+          color: "black",
+          width:'50%',
+          border: "1px solid gray",
+          
         }
       },
-      {
+      { 
         
         label: "Có",
         onClick: async () => await handleSave(),
+        style: {
+          
+          width:'50%',
+          
+        }
       }
     ],
     closeOnEscape: true,
@@ -157,7 +171,6 @@ export default function ({ children }: { children: React.ReactNode }) {
     let dataCookie = getCookie("data-ezpics");
     const retrievedData = localStorage.getItem("data-ezpics");
 
-    console.log(dataCookie == "");
 
     if (retrievedData === null) {
       toast("Dữ liệu trống", {
@@ -172,7 +185,6 @@ export default function ({ children }: { children: React.ReactNode }) {
       });
     } else {
       const dataParsed = JSON.parse(retrievedData);
-      console.log("Có dữ liệu" + dataParsed);
       confirmAlert(options);
       toast("Có mạng !! 🦄", {
         position: "top-left",
@@ -188,6 +200,17 @@ export default function ({ children }: { children: React.ReactNode }) {
       // const response = await axios.post()
     }
   };
+  const parseGraphicJSON = (data:any) => {
+    
+      
+      const newDesign = generateToServer({
+        frame: currentDesign.frame,
+        data:data
+      });
+      return newDesign;
+      // let newArr : any=[];
+    
+  };
   const handleOffline = () => {
     if (editor) {
       const template = editor.scene.exportToJSON();
@@ -202,11 +225,50 @@ export default function ({ children }: { children: React.ReactNode }) {
         progress: undefined,
         theme: "dark",
       });
-      const jsonString = JSON.stringify(template);
+      const currentScene = editor.scene.exportToJSON();
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+      function findIndexById(arr: any, targetId: any) {
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].id === targetId) {
+            return i;
+          }
+        }
+        return -1; // Trả về -1 nếu không tìm thấy
+      }
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+
+ 
+      // makeDownload(graphicTemplate);
+      const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
+      const jsonString = JSON.stringify(allLayers);
       // const jsonString = "okkk";
+ 
       localStorage.setItem("data-ezpics", jsonString);
 
-      console.log(jsonString);
+
       document.cookie = `data-ezpics=${jsonString}`;
     }
   };
@@ -234,7 +296,6 @@ export default function ({ children }: { children: React.ReactNode }) {
   }, [editor]);
   // window.addEventListener("beforeunload", (event) => {
   //   event.preventDefault();
-  //   console.log("reset");
   // });
   return (
     <Block

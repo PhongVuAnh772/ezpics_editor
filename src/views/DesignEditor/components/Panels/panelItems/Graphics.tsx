@@ -15,7 +15,6 @@ import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import useAppContext from "~/hooks/useAppContext";
 import "../../Preview/newloading.css";
 export default function () {
-  const { currentDesign, setCurrentDesign } = useDesignEditorContext();
 
   const [data, setData] = useState<any>(null);
   const [templates, setTemplates] = useState<any[]>([]);
@@ -86,6 +85,54 @@ export default function () {
   //   },
   //   [editor, currentScene]
   // );
+  
+
+  // const loadTemplate = React.useCallback(
+  //   async (template: any) => {
+  //     if (editor) {
+  //       const fonts: any[] = [];
+  //       template.layers.forEach((object: any) => {
+  //         if (object.type === "StaticText" || object.type === "DynamicText") {
+  //           fonts.push({
+  //             name: object.fontFamily,
+  //             url: object.fontURL,
+  //             options: { style: "normal", weight: 400 },
+  //           });
+  //         } else if (object.type === "StaticImage") {
+  //           const image = new Image();
+  //           image.src = object.src;
+  //           const brightnessValue = object.brightness;
+  //           image.onload = () => {
+  //                           image.style.filter = `-moz-filter: brightness(50%);`;
+
+  //             image.style.filter = `brightness(${200}%)`;
+
+  //             image.style.filter = `-webkit-filter: brightness(200%);`;
+
+  //             console.log(image);
+  //                                 image.style.borderRadius = '50%';
+
+  //           };
+
+  //         }
+  //       });
+  //       const filteredFonts = fonts.filter((f) => !!f.url);
+  //       if (filteredFonts.length > 0) {
+  //         await loadFonts(filteredFonts);
+  //       }
+
+  //       setCurrentScene({ ...template, id: currentScene?.id });
+  //     }
+  //   },
+  //   [editor, currentScene]
+  // );
+  const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
   const addObject = React.useCallback(
     (url: string) => {
       if (editor) {
@@ -109,6 +156,112 @@ export default function () {
     },
     [editor]
   );
+  function findIndexById(arr: any, targetId: any) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === targetId) {
+        return i;
+      }
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+  }
+    const [loading, setLoading] = React.useState(false);
+
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
+
+    console.log(currentScene);
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    if (currentDesign) {
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+      console.log(resultIndex);
+    
+      return resultIndex;
+
+    } else {
+      console.log("NO CURRENT DESIGN");
+    }
+  };
+  const idProduct = useAppSelector(state => state.token.id)
+  const handleImage = async (item: any) => {
+    console.log(item);
+    const res = await axios.post(
+      `${network}/addLayerImageUrlAPI`,
+      {
+        idproduct: idProduct,
+        token: token,
+        imageUrl: item.image,
+        page: Number(parseGraphicJSON()),
+      },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+
+    if (res.data.code === 1) {
+      console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
+      const upload = {
+        id: res.data.data.id,
+        url: res.data.data.content.banner,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
+      };
+
+      const options = {
+        type: "StaticImage",
+        src: res.data.data.content.banner,
+        id: res.data.data.id,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
+      };
+      console.log(options);
+      editor.objects.add(options);
+      setLoading(false);
+    }
+  };
 
   return (
     <>
@@ -179,7 +332,7 @@ export default function () {
                 .slice(0, 3)
                 .map((item, index) => (
                   <ImageItem
-                    onClick={() => addObject(item.image)}
+                    onClick={() => handleImage(item)}
                     key={index}
                     preview={`${item.image}`}
                   />
@@ -224,7 +377,7 @@ export default function () {
                 .slice(0, 3)
                 .map((item, index) => (
                   <ImageItem
-                    onClick={() => addObject(item.image)}
+                    onClick={() => handleImage(item)}
                     key={index}
                     preview={`${item.image}`}
                   />
@@ -269,7 +422,7 @@ export default function () {
                 .slice(0, 3)
                 .map((item, index) => (
                   <ImageItem
-                    onClick={() => addObject(item.image)}
+                    onClick={() => handleImage(item)}
                     key={index}
                     preview={`${item.image}`}
                   />

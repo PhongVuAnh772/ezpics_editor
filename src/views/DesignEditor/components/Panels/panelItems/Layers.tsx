@@ -289,7 +289,7 @@ const parseGraphicJSON = () => {
             >
               {object.name === "StaticText" ? (
                 <Block
-                  $style={{ cursor: "pointer" }}
+                  $style={{ cursor: "pointer",fontFamily: "Helvetica, Arial, sans-serif",fontWeight: "500" }}
                   onClick={() => editor.objects.select(object.id)}
                 >
                   {object.text}

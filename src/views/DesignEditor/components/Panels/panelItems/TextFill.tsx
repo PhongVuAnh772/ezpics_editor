@@ -1,12 +1,14 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { Block } from "baseui/block";
 import Scrollable from "~/components/Scrollable";
 import { HexColorPicker, HexColorInput } from "react-colorful";
 import { Delete } from "baseui/icon";
 import { throttle } from "lodash";
 import { useActiveObject, useEditor } from "@layerhub-io/react";
-import { REPLACE_color,ADD_COLOR } from "~/store/slices/color/colorSlice";
-import { useAppSelector,useAppDispatch } from "~/hooks/hook";
+import { REPLACE_color, ADD_COLOR } from "~/store/slices/color/colorSlice";
+import { useAppSelector, useAppDispatch } from "~/hooks/hook";
+import { Button } from "baseui/button";
+import useAppContext from "~/hooks/useAppContext";
 
 const PRESET_COLORS = [
   "#f44336",
@@ -24,18 +26,33 @@ const PRESET_COLORS = [
 ];
 
 export default function () {
+    const { setActiveSubMenu } = useAppContext();
+
+  const dispatch = useAppDispatch();
   const [color, setColor] = React.useState("#b32aa9");
   const activeObject = useActiveObject();
   const editor = useEditor();
-  const colorList = useAppSelector(state => state.color.colorList)
-  const updateObjectFill = throttle((color: string) => {
+  const colorList = useAppSelector((state) => state.color.colorList);
+  const updateObjectFill = throttle((color: any) => {
+      setColor(color);
+  }, 1);
+  const addObjectFill = throttle((color: any) => {
     if (activeObject) {
       editor.objects.update({ fill: color });
     }
-
-    setColor(color);
+    dispatch(ADD_COLOR(color))
   }, 1);
-
+  useEffect(() => {
+    const getColorCurrentActive = () => {
+      if (activeObject) {
+      // editor.objects.
+      setColor(activeObject?.fill)
+      console.log(activeObject?.fill)
+      }
+    }
+    getColorCurrentActive()
+  }, [])
+  
   return (
     <Block $style={{ flex: 1, display: "flex", flexDirection: "column" }}>
       <Block
@@ -44,50 +61,86 @@ export default function () {
           alignItems: "center",
           fontWeight: 500,
           justifyContent: "space-between",
-          padding: "1.5rem",
+          paddingRight: "1.5rem",
+                    paddingLeft: "1.5rem",
+
         }}
       >
-        <Block>Màu</Block>
+        <h4 style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                Màu
+              </h4>
 
-        <Block $style={{ cursor: "pointer", display: "flex" }}>
+        <Block $style={{ cursor: "pointer", display: "flex" }} onClick={() => setActiveSubMenu("Graphics")}>
           <Delete size={24} />
         </Block>
       </Block>
       <Scrollable>
         <Block padding={"1rem 1.5rem"}>
-          
-          <input type="color" style={{ width: "100%" }} onChange={(e) => updateObjectFill(e.target.value)} />
-          {/* <HexColorInput color={color} onChange={updateObjectFill} style={{marginTop: '1rem'}}/> */}
+          <Button style={{display: 'flex',flexDirection:"row",justifyContent:"space-between",alignItems: 'center',border:"1px solid gray",width: '100%',height: 50,backgroundColor: color}}>
+             <h4>Chọn màu</h4>
+             <input
+            type="color"
+            style={{
+              width: 30,
+              height: 30,
+              appearance: "none",
 
-          <Block>
-            <Block
+              background: "none",
+              border: 0,
+              cursor: "pointer",
+              // height: "15em",
+              padding: 0,
+            }}
+            value={color}
+            onChange={(e) => updateObjectFill(e.target.value)}
+            onBlur={(e) => addObjectFill(e.target.value)}
+          />
+          </Button>
+          <Block
               $style={{
-                padding: "0.75rem ",
-                fontWeight: 500,
+                paddingTop: "0.75rem",
+                fontWeight: "600",
                 fontSize: "14px",
+                fontFamily: "Arial",
               }}
             >
-              Màu mặc định
+              Màu đã dùng
             </Block>
-            <Block
+          {/* <HexColorInput color={color} onChange={updateObjectFill} style={{marginTop: '1rem'}}/> */}
+            <Block padding={"1rem 0rem"}><Block
               $style={{
                 display: "grid",
                 gridTemplateColumns: "1fr 1fr 1fr 1fr 1fr 1fr",
                 gap: "0.25rem",
               }}
             >
-              {colorList.length > 0 && colorList.map((color, index) => (
-                <Block
-                  $style={{
-                    cursor: "pointer",
-                  }}
-                  onClick={() => updateObjectFill(color)}
-                  backgroundColor={color}
-                  height={"38px"}
-                  key={index}
-                ></Block>
-              ))}
+              {colorList.length > 0 &&
+                colorList.slice(-3).map((color, index) => (
+                  <Block
+                    $style={{
+                      cursor: "pointer",
+                    }}
+                    onClick={() => updateObjectFill(color)}
+                    backgroundColor={color}
+                    height={"38px"}
+                    key={index}
+                  ></Block>
+                ))}
+            </Block></Block>
+          <Block>
+            
+            <Block
+              $style={{
+                paddingTop: "0.75rem",
+                paddingBlock: "0.75rem",
+                fontWeight: "600",
+                fontSize: "14px",
+                fontFamily: "Arial",
+              }}
+            >
+              Màu cơ bản
             </Block>
+            
             <Block
               $style={{
                 display: "grid",
@@ -107,7 +160,6 @@ export default function () {
                 ></Block>
               ))}
             </Block>
-
           </Block>
         </Block>
       </Scrollable>

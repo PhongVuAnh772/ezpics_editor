@@ -119,7 +119,7 @@ export const generateToServer = (datas: any) => {
   datas.data.forEach((data: any) => {
     const indexToRemove = data.findIndex((element: any) => element.id === 'background');
     if (indexToRemove !== -1) {
-      data.splice(indexToRemove, 1);
+      data.splice(indexToRemove, 2);
     }
   });
 
@@ -200,10 +200,10 @@ export const generateToServer = (datas: any) => {
           border: 0, //
           rotate: "0deg", //
           banner: "",
-          gianchu: "normal", //
-          giandong: "normal", //
+          gianchu: "normal", 
+          giandong: "normal", 
           width: ((data.width * 100) / datas?.frame?.width).toString() + 'vw', 
-          height: "0vh", //
+          height: "0vh", 
           gradient: 0,
           gradient_color: [],
           variable: data.metadata.variable,
@@ -219,7 +219,6 @@ export const generateToServer = (datas: any) => {
       });
     }
   });
-  // console.log(initialData)
   return initialData;
 };
 
@@ -232,8 +231,6 @@ export const generateToServerSaving = (datas: any) => {
   console.log(datas);
 
   layers.forEach((data: any, index: number) => {
-    // console.log(data, index)
-
     if (data.type === "StaticImage") {
       console.log(data, index);
       initialData.push({

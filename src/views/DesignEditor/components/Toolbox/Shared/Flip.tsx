@@ -659,6 +659,7 @@ export default function () {
                   max={360}
                   onChangeCommitted={handleSliderChanged}
                   valueLabelDisplay="auto"
+                  // value={}
                 />
               </Block>
             </Block>

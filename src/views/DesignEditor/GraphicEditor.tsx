@@ -25,7 +25,7 @@ import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
- 
+
 function GraphicEditor() {
   const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
@@ -97,7 +97,6 @@ function GraphicEditor() {
       const data = response.data.data;
       setCommonFonts(data);
       dispatch(REPLACE_font(data));
-      console.log(fontInitial);
       if (response.data.data) {
         response.data.data.map(function (font: any) {
           if (font.name.includes(fontInitial)) {
@@ -123,13 +122,12 @@ function GraphicEditor() {
       setLoading(false);
     }
   };
-  
+
   const editor = useEditor();
   const [dataRes, setDataRes] = useState<any>(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
     const scenes = [];
     const { scenes: scns, ...design } = payload;
-    console.log("payload" + payload);
     for (const scn of scns) {
       const scene: IScene = {
         name: scn.name,
@@ -138,7 +136,6 @@ function GraphicEditor() {
         layers: scn.layers,
         metadata: {},
       };
-      console.log("scns" + scene);
 
       const loadedScene = await loadVideoEditorAssets(scene);
 
@@ -151,10 +148,9 @@ function GraphicEditor() {
   const handleImportTemplate = React.useCallback(
     async (data: any) => {
       let template;
-          // const { scenes: scns, ...design } = data;
+      // const { scenes: scns, ...design } = data;
 
       template = await loadGraphicTemplate(data);
-      console.log(template);
       //   @ts-ignore
       setScenes(template.scenes);
       //   @ts-ignore
@@ -212,6 +208,8 @@ function GraphicEditor() {
             // fontURL: "https://apis.ezpics.vn/upload/admin/files/UTM%20AvoBold.ttf",
             // fontURLInitial
             metadata: {
+              backgroundLayer: false,
+
               lock: detail.content.lock === 0 ? false : true,
               variable: detail.content.variable,
               variableLabel: detail.content.variableLabel,
@@ -257,6 +255,8 @@ function GraphicEditor() {
             cropY: 0,
             image_svg: "",
             metadata: {
+              backgroundLayer: false,
+
               naturalWidth: detail.content.naturalWidth,
               naturalHeight: detail.content.naturalHeight,
               initialHeight: detail.content.height,
@@ -274,7 +274,6 @@ function GraphicEditor() {
         }
       });
     }
-    console.log(dataString);
 
     return dataString;
   };
@@ -288,7 +287,6 @@ function GraphicEditor() {
   }
 
   const dataScenes = (data: any) => {
-    console.log(data);
     const dataString = {
       id: uuidv4(),
       name: "Untitled Design",
@@ -308,7 +306,6 @@ function GraphicEditor() {
           (detail: any) => (detail.metadata.page as number) || 0
         )
       );
-      console.log(maxPage);
 
       const scenesArray: any[] = Array.from(
         { length: maxPage + 1 },
@@ -382,6 +379,7 @@ function GraphicEditor() {
               cropY: 0,
               image_svg: "",
               metadata: {
+                backgroundLayer: true,
                 brightness: 20,
                 naturalWidth: 0,
                 naturalHeight: 0,
@@ -397,9 +395,6 @@ function GraphicEditor() {
             ...matchingDetails,
           ];
 
-          // console.log(data.content.metadata);
-          // console.log()
-
           return updatedMatchingDetails.length > 0
             ? {
                 id: uuidv4(),
@@ -412,14 +407,15 @@ function GraphicEditor() {
 
       dataString.scenes = scenesArray.filter((scene) => scene !== null);
     }
-    dataString.scenes.forEach((data:any,index:any) => {
-      if (data[index] > 0) {
-        data.layers.forEach((layer:any,index:any) => {
-          layer[1].src = ""
-        })
+    dataString.scenes.forEach((data, index) => {
+      if (index > 0) {
+        if (data.layers[1].metadata.backgroundLayer) {
+          data.layers.splice(1, 1);
+        }
+      } else {
+        console.log(data + " vế phụ");
       }
-    })
-        console.log(dataString);
+    });
 
     return dataString;
   };
@@ -489,7 +485,6 @@ function GraphicEditor() {
 
         if (response && response.data.code === 1) {
           setDataRes(response.data.data);
-          console.log(response.data.data);
         } else {
           setError(true);
           setLoading(false);
@@ -523,13 +518,11 @@ function GraphicEditor() {
     const fetchDataBanks = async () => {
       setLoading(true);
       try {
-        // console.log(dataRes);
         dispatch(REPLACE_TYPE_USER(dataRes?.type));
 
         if (dataRes) {
           const dataRender = dataFunction(dataRes);
           if (dataRender) {
-            console.log(dataRender);
             const dataSceneImport = dataScenes(dataRender);
             // await loadTemplate(dataRender);
             if (dataSceneImport) {
@@ -537,7 +530,6 @@ function GraphicEditor() {
             }
             setTimeout(() => {
               setLoading(false);
-              console.log(dataSceneImport);
 
               setActiveSubMenu("Layers");
             }, 4000);
@@ -546,7 +538,6 @@ function GraphicEditor() {
 
         // //   @ts-ignore
       } catch (error) {
-        console.log(error);
         setLoading(false);
       }
     };

@@ -8,6 +8,7 @@ import networkReducer from "./slices/network/networkSlice";
 import fontReducer from "./slices/font/fontSlice";
 import typeUserReducer from './slices/type/typeSlice'
 import variableReducer from "./slices/variable/variableSlice";
+import colorReducer from "./slices/color/colorSlice";
 
 const rootReducer = combineReducers({
   designEditor: designEditorReducer,
@@ -18,7 +19,8 @@ const rootReducer = combineReducers({
   network: networkReducer,
   newFont: fontReducer,
   typeUser: typeUserReducer,
-  variable: variableReducer
+  variable: variableReducer,
+  color: colorReducer
 
 });
 

@@ -5,12 +5,73 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import { useAppSelector } from "~/hooks/hook";
 import { generateToServer } from "~/api/gererateToServer";
+import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 export default function () {
   const editor = useEditor();
   const [loading, setLoading] = React.useState(true);
+  const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
   const [state, setState] = React.useState({
     image: "",
   });
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+      function findIndexById(arr: any, targetId: any) {
+        for (let i = 0; i < arr.length; i++) {
+          if (arr[i].id === targetId) {
+            return i;
+          }
+        }
+        return -1; // Trả về -1 nếu không tìm thấy
+      }
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+
+      // console.log(resultIndex);
+      // console.log(graphicTemplate.scenes)
+      // console.log(currentScene.id)
+      // makeDownload(graphicTemplate);
+      const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
+      console.log(graphicTemplate)
+      console.log(currentDesign.frame,allLayers)
+      const newDesign = generateToServer({
+        frame: currentDesign.frame,
+        data:allLayers
+      });
+      console.log(newDesign)
+      return newDesign;
+      // let newArr : any=[];
+      // console.log(newArr)
+    
+  };
   const network = useAppSelector((state) => state.network.ipv4Address);
   const downloadImage = (imageData: any, fileName: any) => {
     const link = document.createElement("a");
@@ -24,19 +85,17 @@ export default function () {
     if (editor) {
       const template = editor.scene.exportToJSON();
       const image = (await editor.renderer.render(template)) as string;
-      console.log(template,image)
       setLoading(false);
       if (image) {
         const res = await axios.post(`${network}/addListLayerAPI`, {
           idProduct: idProduct,
           token: token,
-          listLayer: JSON.stringify(generateToServer(template)),
+          listLayer: JSON.stringify(parseGraphicJSON()),
         });
         if (res.data.code === 1) {
           downloadImage(image, "preview.png");
           setState({ image });
           
-          console.log(generateToServer(template));
           toast("Xuất ảnh thành công !! 🦄", {
             position: "top-left",
             autoClose: 2000,

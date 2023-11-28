@@ -110,8 +110,6 @@ export default function () {
         },
       }
     );
-    console.log(res.data);
-    console.log(files);
 
     if (res.data.code === 1) {
       console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
@@ -148,6 +146,7 @@ export default function () {
           page:  Number(res.data.data.content.page),
         },
       };
+      console.log(options);
       editor.objects.add(options);
       setLoading(false);
     }
@@ -231,6 +230,7 @@ export default function () {
   }, []);
 
   const handleImage = async (item: any) => {
+    console.log(item);
     const res = await axios.post(
       `${network}/addLayerImageUrlAPI`,
       {
@@ -245,9 +245,25 @@ export default function () {
         },
       }
     );
-    console.log(res.data);
 
     if (res.data.code === 1) {
+      console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
+      const upload = {
+        id: res.data.data.id,
+        url: res.data.data.content.banner,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
+      };
+
       const options = {
         type: "StaticImage",
         src: res.data.data.content.banner,
@@ -262,12 +278,11 @@ export default function () {
           variable: res.data.data.content.variable,
           variableLabel: res.data.data.content.variableLabel,
           page:  Number(res.data.data.content.page),
-        }
+        },
       };
-      console.log(options)
-
+      console.log(options);
       editor.objects.add(options);
-      // addObject(item.link, item.width, item.height, res.data.data.id);
+      setLoading(false);
     }
   };
   const handleContextMenu = (
@@ -290,25 +305,7 @@ export default function () {
   const [modalisopen, setmodalisopen] = React.useState(false);
   const [modaldata, setmodaldata] = React.useState(null);
 
-  const addObject = React.useCallback(
-    (url: string, width: string, height: string, id: any) => {
-      if (editor) {
-        const options = {
-          type: "StaticImage",
-          src: url,
-          width: width,
-          height: height,
-          lock: true,
-          id: id,
-          metadata: {
-            page: Number(res.data.data.content.page),
-          },
-        };
-        editor.objects.add(options);
-      }
-    },
-    [editor]
-  );
+ 
 
   const addObjectd = async () => {
     setLoading(true);

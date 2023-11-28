@@ -127,17 +127,21 @@ export default function ({ children }: { children: React.ReactNode }) {
   );
 
   const options = {
-    title: "Có mạng trở lại",
+    title: "Có mạng",
     message: "Bạn có muốn lưu dữ liệu cũ không ?",
     buttons: [
       {
-        label: "Có",
-        onClick: async () => await handleSave(),
-      },
-      {
         label: "Không",
         onClick: async () => await loadTemplate(),
+        style: {
+          display:"none"
+        }
       },
+      {
+        
+        label: "Có",
+        onClick: async () => await handleSave(),
+      }
     ],
     closeOnEscape: true,
     closeOnClickOutside: true,

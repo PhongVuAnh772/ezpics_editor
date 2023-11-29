@@ -534,6 +534,7 @@ function GraphicEditor() {
             const dataSceneImport = dataScenes(dataRender);
             // await loadTemplate(dataRender);
             if (dataSceneImport) {
+              console.log(dataSceneImport)
               await handleImportTemplate(dataSceneImport);
             }
             setTimeout(() => {

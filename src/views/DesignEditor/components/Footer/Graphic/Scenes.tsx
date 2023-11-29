@@ -9,7 +9,11 @@ import { useEditor } from "@layerhub-io/react";
 import { IScene } from "@layerhub-io/types";
 import { Block } from "baseui/block";
 import { ToastContainer, toast } from "react-toastify";
-
+import { FaTrash } from "react-icons/fa";
+import { IDesign } from "~/interfaces/DesignEditor";
+import { loadTemplateFonts } from "~/utils/fonts";
+import { loadVideoEditorAssets } from "~/utils/video";
+import '../../../../DesignEditor/components/Preview/newloading.css'
 export default function () {
   const scenes = useDesignEditorPages();
   const {
@@ -19,6 +23,8 @@ export default function () {
     setCurrentDesign,
     currentDesign,
   } = React.useContext(DesignEditorContext);
+    const [loading, setLoading] = React.useState(false);
+
   const editor = useEditor();
   const [css] = useStyletron();
   const [currentPreview, setCurrentPreview] = React.useState("");
@@ -33,6 +39,7 @@ export default function () {
       }
     }
   }, [editor, scenes, currentScene]);
+  const [hoveredPage, setHoveredPage] = React.useState(null);
 
   React.useEffect(() => {
     let watcher = async () => {
@@ -77,6 +84,7 @@ export default function () {
             editor.renderer.render(initialDesign).then((data) => {
               setCurrentScene({ ...initialDesign, preview: data });
               setScenes([{ ...initialDesign, preview: data }]);
+              console.log(data);
             });
           })
           .catch(console.log);
@@ -92,7 +100,30 @@ export default function () {
     },
     [editor, currentScene]
   );
+  const loadGraphicTemplate = async (payload: any) => {
+    const scenes = [];
+    const { scenes: scns, ...design } = payload;
+    for (const scn of scns) {
+          console.log(scns)
 
+      const scene: IScene = {
+        name: payload.name,
+        frame: payload.frame,
+        id: payload.id,
+        layers: scn.layers,
+        metadata: {},
+      };
+      console.log("scns" + scene);
+
+      const loadedScene = await loadVideoEditorAssets(scene);
+      await loadTemplateFonts(loadedScene);
+
+      const preview = (await editor.renderer.render(loadedScene)) as string;
+      scenes.push({ ...loadedScene, preview });
+    }
+
+    return { scenes, design };
+  };
   const addScene = React.useCallback(async () => {
     setCurrentPreview("");
 
@@ -114,9 +145,74 @@ export default function () {
       preview: newPreview,
     } as any;
     const newPages = [...updatedPages, newPage] as any[];
+
     setScenes(newPages);
     setCurrentScene(newPage);
+    console.log(currentScene);
   }, [scenes, currentDesign]);
+  const handleImportTemplate = React.useCallback(
+    async (data: any) => {
+      let template;
+     
+      template = await loadGraphicTemplate(data);
+
+      //   @ts-ignore
+      setScenes(template.scenes);
+      //   @ts-ignore
+      setCurrentDesign(template.design);
+    },
+    [editor]
+  );
+  
+  const handleDelete = React.useCallback(
+    async (pageIdToDelete: any) => {
+      setLoading(true)
+      // setCurrentPreview(""); // Assuming setCurrentPreview is a state updater function
+
+      const updatedTemplate = editor.scene.exportToJSON();
+      const updatedPreview = await editor.renderer.render(updatedTemplate);
+
+      const updatedPages = scenes.map((p) => {
+        if (p.id === updatedTemplate.id) {
+          return { ...updatedTemplate, preview: updatedPreview };
+        }
+        return p;
+      });
+
+      const newPages = scenes.map((p) => {
+        return p.id === updatedTemplate.id
+          ? { ...updatedTemplate, preview: updatedPreview }
+          : p;
+      });
+
+      const otherPage = newPages.filter((p) => {
+        return p.id !== pageIdToDelete.id;
+      });
+      const newPagess = [...otherPage] as any[];
+
+      console.log(newPagess);
+
+      const designer = {
+        frame: { width: 1080, height: 1920 },
+        id: "ZYYkWRWKCB2EwIdp-f1Iw",
+        metadata: {},
+        name: "Untitled Design",
+        preview: "",
+        scenes: newPagess,
+        type: "GRAPHIC",
+      };
+            // handleImportTemplate(designer)
+            setScenes(newPagess)
+            setCurrentDesign(designer);
+            setCurrentScene(newPagess[0])
+            setTimeout(() =>{
+              setLoading(false);
+            },1000)
+
+    },
+    [scenes, currentDesign]
+  );
+
   const handleAdd = () => {
     toast("Tính năng này đang được cập nhật, hãy chờ nhé !! 🦄", {
       position: "top-left",
@@ -129,6 +225,7 @@ export default function () {
       theme: "dark",
     });
   };
+
   const changePage = React.useCallback(
     async (page: any) => {
       setCurrentPreview("");
@@ -159,7 +256,7 @@ export default function () {
         }}
       >
         <Block $style={{ display: "flex", alignItems: "center" }}>
-          {scenes.map((page, index) => (
+          {scenes.map((page: any, index: any) => (
             <div
               style={{
                 background:
@@ -167,9 +264,11 @@ export default function () {
                 padding: "1rem 0.5rem",
               }}
               key={index}
+              onMouseEnter={() => setHoveredPage(page)}
+              onMouseLeave={() => setHoveredPage(null)}
             >
               <div
-                onClick={() => changePage(page)}
+                // onClick={() => changePage(page)}
                 className={css({
                   cursor: "pointer",
                   position: "relative",
@@ -191,6 +290,28 @@ export default function () {
                       : page.preview
                   }
                 />
+                {hoveredPage === page && (
+                  <div
+                    onClick={() => handleDelete(page)} // Add your delete logic here
+                    className={css({
+                      position: "absolute",
+                      top: "4px",
+                      right: "4px",
+                      background: "rgba(255,0,0,0.7)",
+                      color: "#fff",
+                      fontSize: "16px",
+                      borderRadius: "50%",
+                      height: "24px",
+                      width: "24px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                    })}
+                  >
+                    <FaTrash />
+                  </div>
+                )}
                 <div
                   className={css({
                     position: "absolute",
@@ -235,7 +356,42 @@ export default function () {
             </div>
           </div>
         </Block>
+        
       </Block>
+      {loading && (
+        <div
+          style={{
+            width: "100%",
+            height: "100%",
+            backgroundColor: "rgba(0,0,0,0.7)",
+            position: "fixed",
+            zIndex: 20000000000,
+            top: 0,
+  right: 0,
+  bottom: 0,
+  left: 0,
+          }}
+        >
+          <div className="loadingio-spinner-dual-ring-hz44svgc0ld">
+            <div className="ldio-4qpid53rus9">
+              <div></div>
+              <div>
+                <div></div>
+              </div>
+            </div>
+            <img
+              style={{
+                position: "absolute",
+                top: "12%",
+                left: "16%",
+                width: 40,
+                height: 40,
+              }}
+              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+            />
+          </div>
+        </div>
+      )}
     </>
   );
 }

@@ -474,8 +474,8 @@ export default function () {
                 size={SIZE.mini}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({ left: distance.left - 20 });
-                  setDistance({ ...distance, left: distance.left - 20 });
+                  editor.objects.update({ left: distance.left - 5 });
+                  setDistance({ ...distance, left: distance.left - 5 });
                 }}
               >
                 <img
@@ -487,8 +487,8 @@ export default function () {
                 // isSelected={state.align === TEXT_ALIGNS[1]}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({ left: distance.left + 20 });
-                  setDistance({ ...distance, left: distance.left + 20 });
+                  editor.objects.update({ left: distance.left + 5 });
+                  setDistance({ ...distance, left: distance.left + 5 });
                 }}
                 kind={KIND.tertiary}
                 size={SIZE.mini}
@@ -502,8 +502,8 @@ export default function () {
                 // isSelected={state.align === TEXT_ALIGNS[2]}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({ top: distance.top + 20 });
-                  setDistance({ ...distance, top: distance.top + 20 });
+                  editor.objects.update({ top: distance.top + 5 });
+                  setDistance({ ...distance, top: distance.top + 5 });
                 }}
                 kind={KIND.tertiary}
                 size={SIZE.mini}
@@ -524,8 +524,8 @@ export default function () {
                 size={SIZE.mini}
                 onClick={() => {
                   // @ts-ignore
-                  editor.objects.update({ top: distance.top - 20 });
-                  setDistance({ ...distance, top: distance.top - 20 });
+                  editor.objects.update({ top: distance.top - 5 });
+                  setDistance({ ...distance, top: distance.top - 5 });
                 }}
               >
                 <img

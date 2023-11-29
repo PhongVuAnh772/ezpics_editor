@@ -47,6 +47,7 @@ export const captureDuration = (video: HTMLVideoElement) => {
 }
 
 export const loadVideoEditorAssets = async (payload: IScene) => {
+  console.log(payload)
   const layers: Partial<ILayer>[] = []
   for (const layer of payload.layers) {
     console.log(payload.layers)

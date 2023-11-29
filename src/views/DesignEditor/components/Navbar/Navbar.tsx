@@ -54,23 +54,25 @@ export default function () {
   const token = useAppSelector((state) => state.token.token);
 
   const parseGraphicJSON = () => {
-    const currentScene = editor.scene.exportToJSON();
+    const currentScene = editor.scene.exportToJSON()
+
     const updatedScenes = scenes.map((scn) => {
       if (scn.id === currentScene.id) {
         return {
           id: currentScene.id,
           layers: currentScene.layers,
           name: currentScene.name,
-        };
+        }
       }
       return {
         id: scn.id,
         layers: scn.layers,
         name: scn.name,
-      };
-    });
+      }
+    })
 
-      const graphicTemplate: any = {
+    if (currentDesign) {
+      const graphicTemplate: IDesign = {
         id: currentDesign.id,
         type: "GRAPHIC",
         name: currentDesign.name,
@@ -78,24 +80,12 @@ export default function () {
         scenes: updatedScenes,
         metadata: {},
         preview: "",
-      };
-      // console.log(resultIndex);
-      // console.log(graphicTemplate.scenes)
-      // console.log(currentScene.id)
-      // makeDownload(graphicTemplate);
-      const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
-      console.log(graphicTemplate)
-      console.log(currentDesign.frame,allLayers)
-      const newDesign = generateToServer({
-        frame: currentDesign.frame,
-        data:allLayers
-      });
-      console.log(newDesign)
-      return newDesign;
-      // let newArr : any=[];
-      // console.log(newArr)
-    
-  };
+      }
+      // makeDownload(graphicTemplate)
+    } else {
+      console.log("NO CURRENT DESIGN")
+    }
+  }
 
   const parsePresentationJSON = () => {
     const currentScene = editor.scene.exportToJSON();
@@ -345,8 +335,8 @@ export default function () {
       reader.onload = (res) => {
         const result = res.target!.result as string;
         const design = JSON.parse(result);
-        console.log(typeof design);
-
+        console.log(design);
+        
         handleImportTemplate(design);
       };
       reader.onerror = (err) => {

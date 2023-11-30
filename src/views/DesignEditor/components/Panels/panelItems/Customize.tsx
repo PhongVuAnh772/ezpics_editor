@@ -629,6 +629,8 @@ export default function () {
 
                   </select> */}
                     <div className="input-group">
+                                            <p style={{ fontFamily: "Arial" }}>Bộ sưu tập</p>
+
                       {dataStorage &&
                         dataStorage.map((item: any, index: any) => (
                           <div key={item.id} style={{ marginBottom: "15px" }}>

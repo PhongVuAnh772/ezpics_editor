@@ -55,22 +55,43 @@ export default function () {
       }
       let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
 
-      // console.log(resultIndex);
-      // console.log(graphicTemplate.scenes)
-      // console.log(currentScene.id)
-      // makeDownload(graphicTemplate);
       const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
-      console.log(graphicTemplate)
-      console.log(currentDesign.frame,allLayers)
+
       const newDesign = generateToServer({
         frame: currentDesign.frame,
         data:allLayers
       });
       console.log(newDesign)
       return newDesign;
-      // let newArr : any=[];
-      // console.log(newArr)
     
+  };
+  const handleConversion = async (base64String:any,filePath:any) => {
+    // Remove the "data:image/png;base64," prefix
+    const base64Data = base64String.split(',')[1];
+
+    // Convert base64 to a Blob
+    const blob = new Blob([atob(base64Data)], { type: 'image/png' });
+
+    // Create a FormData object
+    const formData = new FormData();
+   
+    formData.append('file', blob, filePath);
+    formData.append('idProduct', idProduct);
+    formData.append('token', token);
+
+
+    try {
+      // Make an Axios POST request with the FormData
+      const response = await axios.post(`${network}/saveImageProductAPI`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      console.log('File uploaded successfully:', response.data);
+    } catch (error) {
+      console.error('Error uploading file:', error);
+    }
   };
   const network = useAppSelector((state) => state.network.ipv4Address);
   const downloadImage = (imageData: any, fileName: any) => {
@@ -95,7 +116,7 @@ export default function () {
         if (res.data.code === 1) {
           downloadImage(image, "preview.png");
           setState({ image });
-          
+          await handleConversion(image,"preview.png")
           toast("Xuất ảnh thành công !! 🦄", {
             position: "top-left",
             autoClose: 2000,

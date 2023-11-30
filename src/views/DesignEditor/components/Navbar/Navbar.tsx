@@ -54,38 +54,47 @@ export default function () {
   const token = useAppSelector((state) => state.token.token);
 
   const parseGraphicJSON = () => {
-    const currentScene = editor.scene.exportToJSON()
-
+    const currentScene = editor.scene.exportToJSON();
     const updatedScenes = scenes.map((scn) => {
       if (scn.id === currentScene.id) {
         return {
           id: currentScene.id,
           layers: currentScene.layers,
           name: currentScene.name,
-        }
+        };
       }
       return {
         id: scn.id,
         layers: scn.layers,
         name: scn.name,
-      }
-    })
+      };
+    });
 
-    if (currentDesign) {
-      const graphicTemplate: IDesign = {
-        id: currentDesign.id,
-        type: "GRAPHIC",
-        name: currentDesign.name,
-        frame: currentDesign.frame,
-        scenes: updatedScenes,
-        metadata: {},
-        preview: "",
-      }
-      // makeDownload(graphicTemplate)
-    } else {
-      console.log("NO CURRENT DESIGN")
-    }
-  }
+    const graphicTemplate: any = {
+      id: currentDesign.id,
+      type: "GRAPHIC",
+      name: currentDesign.name,
+      frame: currentDesign.frame,
+      scenes: updatedScenes,
+      metadata: {},
+      preview: "",
+    };
+    // console.log(resultIndex);
+    // console.log(graphicTemplate.scenes)
+    // console.log(currentScene.id)
+    // makeDownload(graphicTemplate);
+    const allLayers = graphicTemplate.scenes.map((scene: any) => scene.layers);
+    console.log(graphicTemplate);
+    console.log(currentDesign.frame, allLayers);
+    const newDesign = generateToServer({
+      frame: currentDesign.frame,
+      data: allLayers,
+    });
+    console.log(newDesign);
+    return newDesign;
+    // let newArr : any=[];
+    // console.log(newArr)
+  };
 
   const parsePresentationJSON = () => {
     const currentScene = editor.scene.exportToJSON();
@@ -167,10 +176,8 @@ export default function () {
     a.click();
   };
 
-  const makeDownloadTemplate =  () => {
-    
-        return  parseGraphicJSON();
-     
+  const makeDownloadTemplate = () => {
+    return parseGraphicJSON();
   };
 
   const loadGraphicTemplate = async (payload: IDesign) => {
@@ -265,64 +272,111 @@ export default function () {
     link.click();
   };
 
-  const makePreview = async () => {
-    
-      
-        // downloadImage(image, "preview.png");
-        setLoading(true);
+  const handleConversion = async (base64String: any, filePath: any) => {
+    // Remove the "data:image/png;base64," prefix
+    const base64Data = base64String.split(",")[1];
 
-        try {
-          const res = await axios.post(`${network}/addListLayerAPI`, {
-            idProduct: idProduct,
-            token: token,
-            listLayer: JSON.stringify(parseGraphicJSON()),
-          });
+    // Convert base64 to a Blob
+    const blob = new Blob([atob(base64Data)], { type: "image/png" });
 
-          if (res.data.code === 1) {
-            
+    // Create a FormData object
+    const formData = new FormData();
 
-            // console.log(res);
-            // console.log(generateToServer(template));
-            toast("Lưu mẫu thiết kế thành công !! 🦄", {
-              position: "top-left",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-            setLoading(false);
-          } else {
-            toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-              position: "top-left",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-            setLoading(false);
-          }
-        } catch (error) {
-          toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-            position: "top-left",
-            autoClose: 2000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: false,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-          });
-          console.log(error);
-          setLoading(false);
+    formData.append("file", blob, filePath);
+    formData.append("idProduct", idProduct);
+    formData.append("token", token);
+
+    try {
+      // Make an Axios POST request with the FormData
+      const response = await axios.post(
+        `${network}/saveImageProductAPI`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
         }
-      
-    
+      );
+      if (response.data.code === 1) {
+        // console.log(res);
+        // console.log(generateToServer(template));
+        toast("Lưu mẫu thiết kế thành công !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      } else {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      }
+      console.log("File uploaded successfully:", response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+  const makePreview = async () => {
+    const template = editor.scene.exportToJSON();
+    const image = (await editor.renderer.render(template)) as string;
+
+    // downloadImage(image, "preview.png");
+    console.log(JSON.stringify(parseGraphicJSON()));
+    setLoading(true);
+
+    try {
+      const res = await axios.post(`${network}/addListLayerAPI`, {
+        idProduct: idProduct,
+        token: token,
+        listLayer: JSON.stringify(parseGraphicJSON()),
+      });
+      if (res.data.code === 1) {
+                  await handleConversion(image,"preview.png")
+
+
+      }
+      else {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setLoading(false);
+      }
+      // console.log(res);
+      // console.log(generateToServer(template));
+    } catch (error) {
+      toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      console.log(error);
+      setLoading(false);
+    }
   };
   const handleInputFileRefClick = () => {
     inputFileRef.current?.click();
@@ -336,7 +390,7 @@ export default function () {
         const result = res.target!.result as string;
         const design = JSON.parse(result);
         console.log(design);
-        
+
         handleImportTemplate(design);
       };
       reader.onerror = (err) => {

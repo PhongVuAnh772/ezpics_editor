@@ -13,7 +13,9 @@ import { FaTrash } from "react-icons/fa";
 import { IDesign } from "~/interfaces/DesignEditor";
 import { loadTemplateFonts } from "~/utils/fonts";
 import { loadVideoEditorAssets } from "~/utils/video";
-import '../../../../DesignEditor/components/Preview/newloading.css'
+import "../../../../DesignEditor/components/Preview/newloading.css";
+import { useAppSelector } from "~/hooks/hook";
+import axios from "axios";
 export default function () {
   const scenes = useDesignEditorPages();
   const {
@@ -23,7 +25,7 @@ export default function () {
     setCurrentDesign,
     currentDesign,
   } = React.useContext(DesignEditorContext);
-    const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(false);
 
   const editor = useEditor();
   const [css] = useStyletron();
@@ -104,7 +106,7 @@ export default function () {
     const scenes = [];
     const { scenes: scns, ...design } = payload;
     for (const scn of scns) {
-          console.log(scns)
+      console.log(scns);
 
       const scene: IScene = {
         name: payload.name,
@@ -153,7 +155,7 @@ export default function () {
   const handleImportTemplate = React.useCallback(
     async (data: any) => {
       let template;
-     
+
       template = await loadGraphicTemplate(data);
 
       //   @ts-ignore
@@ -163,10 +165,58 @@ export default function () {
     },
     [editor]
   );
-  
+  function findIndexById(arr: any, targetId: any) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === targetId) {
+        return i;
+      }
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+  }
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
+
+    console.log(currentScene);
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    if (currentDesign) {
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+      console.log(resultIndex);
+
+      return resultIndex;
+    } else {
+      console.log("NO CURRENT DESIGN");
+    }
+  };
+  const network = useAppSelector((state) => state.network.ipv4Address);
+  const idProduct = useAppSelector((state) => state.token.id);
   const handleDelete = React.useCallback(
-    async (pageIdToDelete: any) => {
-      setLoading(true)
+    async (e: any, pageIdToDelete: any) => {
+      e.stopPropagation();
+      setLoading(true);
       // setCurrentPreview(""); // Assuming setCurrentPreview is a state updater function
 
       const updatedTemplate = editor.scene.exportToJSON();
@@ -201,14 +251,31 @@ export default function () {
         scenes: newPagess,
         type: "GRAPHIC",
       };
-            // handleImportTemplate(designer)
-            setScenes(newPagess)
-            setCurrentDesign(designer);
-            setCurrentScene(newPagess[0])
-            setTimeout(() =>{
-              setLoading(false);
-            },1000)
+      // handleImportTemplate(designer)
 
+      //
+      const res = await axios.post(`${network}/deletePageLayerAPI`, {
+        idProduct: idProduct,
+        page: parseGraphicJSON(),
+      });
+      if (res.data.code === 1) {
+        setScenes(newPagess);
+        setCurrentDesign(designer);
+        setCurrentScene(newPagess[0]);
+        setTimeout(() => {
+          setLoading(false);
+          toast("Xóa thành công !! 🦄", {
+            position: "top-left",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+        }, 1000);
+      }
     },
     [scenes, currentDesign]
   );
@@ -268,7 +335,7 @@ export default function () {
               onMouseLeave={() => setHoveredPage(null)}
             >
               <div
-                // onClick={() => changePage(page)}
+                onClick={() => changePage(page)}
                 className={css({
                   cursor: "pointer",
                   position: "relative",
@@ -292,7 +359,7 @@ export default function () {
                 />
                 {hoveredPage === page && (
                   <div
-                    onClick={() => handleDelete(page)} // Add your delete logic here
+                    onClick={(e) => handleDelete(e, page)} // Add your delete logic here
                     className={css({
                       position: "absolute",
                       top: "4px",
@@ -356,7 +423,6 @@ export default function () {
             </div>
           </div>
         </Block>
-        
       </Block>
       {loading && (
         <div
@@ -367,9 +433,9 @@ export default function () {
             position: "fixed",
             zIndex: 20000000000,
             top: 0,
-  right: 0,
-  bottom: 0,
-  left: 0,
+            right: 0,
+            bottom: 0,
+            left: 0,
           }}
         >
           <div className="loadingio-spinner-dual-ring-hz44svgc0ld">

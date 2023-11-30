@@ -271,10 +271,22 @@ export default function () {
     link.download = fileName;
     link.click();
   };
-
+function base64toFile(base64Data:any, filename:any) {
+    const arr = base64Data.split(',');
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+}
   const handleConversion = async (base64String: any, filePath: any) => {
     // Remove the "data:image/png;base64," prefix
     const base64Data = base64String.split(",")[1];
+    const template = editor.scene.exportToJSON();
+      const image = (await editor.renderer.render(template)) as string;
 
     // Convert base64 to a Blob
     const blob = new Blob([atob(base64Data)], { type: "image/png" });
@@ -282,7 +294,7 @@ export default function () {
     // Create a FormData object
     const formData = new FormData();
 
-    formData.append("file", blob, filePath);
+    formData.append("file", base64toFile(image,'preview.png'));
     formData.append("idProduct", idProduct);
     formData.append("token", token);
 
@@ -344,8 +356,8 @@ export default function () {
         listLayer: JSON.stringify(parseGraphicJSON()),
       });
       if (res.data.code === 1) {
-                  await handleConversion(image,"preview.png")
-
+        const imageGenerate = await handleConversion(image,"preview.png")
+        console.log(imageGenerate)
 
       }
       else {

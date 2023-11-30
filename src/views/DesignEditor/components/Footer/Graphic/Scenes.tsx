@@ -165,6 +165,7 @@ export default function () {
     },
     [editor]
   );
+  const token = useAppSelector((state) => state.token.token);
   function findIndexById(arr: any, targetId: any) {
     for (let i = 0; i < arr.length; i++) {
       if (arr[i].id === targetId) {
@@ -213,10 +214,16 @@ export default function () {
   };
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
+  function findAndSetIndex(pageIdToDelete:any) {
+        // Sử dụng findIndex để tìm index của phần tử trong mảng scenes
+        return scenes.findIndex(
+          (scene) => scene.id === pageIdToDelete.id
+        );
+      }
   const handleDelete = React.useCallback(
     async (e: any, pageIdToDelete: any) => {
       e.stopPropagation();
-      setLoading(true);
+      // setLoading(true);
       // setCurrentPreview(""); // Assuming setCurrentPreview is a state updater function
 
       const updatedTemplate = editor.scene.exportToJSON();
@@ -251,14 +258,13 @@ export default function () {
         scenes: newPagess,
         type: "GRAPHIC",
       };
-      // handleImportTemplate(designer)
-
-      //
+      
       const res = await axios.post(`${network}/deletePageLayerAPI`, {
         idProduct: idProduct,
-        page: parseGraphicJSON(),
+        page: findAndSetIndex(pageIdToDelete),
+        token: token
       });
-      if (res.data.code === 1) {
+      if (res.data.code === 0) {
         setScenes(newPagess);
         setCurrentDesign(designer);
         setCurrentScene(newPagess[0]);

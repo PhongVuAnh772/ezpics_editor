@@ -270,7 +270,7 @@ const parseGraphicJSON = () => {
       </Block>
       <Scrollable>
         <Block padding={"0 1.5rem"}>
-          {layerObjects.length > 0 ? layerObjects.map((object) => (
+      {layerObjects.length > 0 ? layerObjects.map((object) => (
             <Block
               $style={{
                 display: "grid",

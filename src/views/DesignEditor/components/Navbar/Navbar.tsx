@@ -289,7 +289,7 @@ function base64toFile(base64Data:any, filename:any) {
       const image = (await editor.renderer.render(template)) as string;
 
     // Convert base64 to a Blob
-    const blob = new Blob([atob(base64Data)], { type: "image/png" });
+    const blob = new Blob([(base64Data)], { type: "image/png" });
 
     // Create a FormData object
     const formData = new FormData();

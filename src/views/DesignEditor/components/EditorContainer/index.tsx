@@ -9,7 +9,11 @@ import { useAppSelector } from "~/hooks/hook";
 import { generateToServerSaving } from "~/api/gererateToServer";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import "../../../../../src/components/Resizable/loading.css";
-import { generateToServer,generateToServerInternet } from "~/api/gererateToServer";
+import {
+  generateToServer,
+  generateToServerInternet,
+} from "~/api/gererateToServer";
+import { useActiveObject } from "@layerhub-io/react";
 
 // window.addEventListener("online", () => getValueOnline());
 // window.addEventListener("offline", () => handleOffline());
@@ -18,8 +22,10 @@ export default function ({ children }: { children: React.ReactNode }) {
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
-  
-    const [loading, setLoading] = React.useState(false);
+
+  const activeObject = useActiveObject();
+
+  const [loading, setLoading] = React.useState(false);
 
   const {
     setCurrentScene,
@@ -46,45 +52,29 @@ export default function ({ children }: { children: React.ReactNode }) {
   const handleSave = async () => {
     if (editor) {
       const retrievedData = localStorage.getItem("data-ezpics");
-        const dataParsed = JSON.parse(retrievedData);
-        setLoading(true);
+      const dataParsed = JSON.parse(retrievedData);
+      setLoading(true);
 
-        try {
-          const res = await axios.post(`${network}/addListLayerAPI`, {
-            idProduct: idProduct,
-            token: token,
-            listLayer: JSON.stringify(parseGraphicJSON(dataParsed)),
+      try {
+        const res = await axios.post(`${network}/addListLayerAPI`, {
+          idProduct: idProduct,
+          token: token,
+          listLayer: JSON.stringify(parseGraphicJSON(dataParsed)),
+        });
+
+        if (res.data.code === 1) {
+          toast("Lưu mẫu thiết kế thành công !! 🦄", {
+            position: "top-left",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
           });
-
-          if (res.data.code === 1) {
-            
-
-          
-            toast("Lưu mẫu thiết kế thành công !! 🦄", {
-              position: "top-left",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-            setLoading(false);
-          } else {
-            toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-              position: "top-left",
-              autoClose: 2000,
-              hideProgressBar: false,
-              closeOnClick: true,
-              pauseOnHover: false,
-              draggable: true,
-              progress: undefined,
-              theme: "dark",
-            });
-            setLoading(false);
-          }
-        } catch (error) {
+          setLoading(false);
+        } else {
           toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
             position: "top-left",
             autoClose: 2000,
@@ -96,7 +86,19 @@ export default function ({ children }: { children: React.ReactNode }) {
             theme: "dark",
           });
           setLoading(false);
-        
+        }
+      } catch (error) {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
       }
     }
   };
@@ -141,21 +143,17 @@ export default function ({ children }: { children: React.ReactNode }) {
         style: {
           backgroundColor: "white",
           color: "black",
-          width:'50%',
+          width: "50%",
           border: "1px solid gray",
-          
-        }
+        },
       },
-      { 
-        
+      {
         label: "Có",
         onClick: async () => await handleSave(),
         style: {
-          
-          width:'50%',
-          
-        }
-      }
+          width: "50%",
+        },
+      },
     ],
     closeOnEscape: true,
     closeOnClickOutside: true,
@@ -170,7 +168,6 @@ export default function ({ children }: { children: React.ReactNode }) {
   const getValueOnline = async () => {
     let dataCookie = getCookie("data-ezpics");
     const retrievedData = localStorage.getItem("data-ezpics");
-
 
     if (retrievedData === null) {
       toast("Dữ liệu trống", {
@@ -200,16 +197,13 @@ export default function ({ children }: { children: React.ReactNode }) {
       // const response = await axios.post()
     }
   };
-  const parseGraphicJSON = (data:any) => {
-    
-      
-      const newDesign = generateToServer({
-        frame: currentDesign.frame,
-        data:data
-      });
-      return newDesign;
-      // let newArr : any=[];
-    
+  const parseGraphicJSON = (data: any) => {
+    const newDesign = generateToServer({
+      frame: currentDesign.frame,
+      data: data,
+    });
+    return newDesign;
+    // let newArr : any=[];
   };
   const handleOffline = () => {
     if (editor) {
@@ -226,20 +220,20 @@ export default function ({ children }: { children: React.ReactNode }) {
         theme: "dark",
       });
       const currentScene = editor.scene.exportToJSON();
-    const updatedScenes = scenes.map((scn) => {
-      if (scn.id === currentScene.id) {
+      const updatedScenes = scenes.map((scn) => {
+        if (scn.id === currentScene.id) {
+          return {
+            id: currentScene.id,
+            layers: currentScene.layers,
+            name: currentScene.name,
+          };
+        }
         return {
-          id: currentScene.id,
-          layers: currentScene.layers,
-          name: currentScene.name,
+          id: scn.id,
+          layers: scn.layers,
+          name: scn.name,
         };
-      }
-      return {
-        id: scn.id,
-        layers: scn.layers,
-        name: scn.name,
-      };
-    });
+      });
 
       const graphicTemplate: any = {
         id: currentDesign.id,
@@ -260,30 +254,49 @@ export default function ({ children }: { children: React.ReactNode }) {
       }
       let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
 
- 
       // makeDownload(graphicTemplate);
-      const allLayers = graphicTemplate.scenes.map((scene:any) => scene.layers);
+      const allLayers = graphicTemplate.scenes.map(
+        (scene: any) => scene.layers
+      );
       const jsonString = JSON.stringify(allLayers);
       // const jsonString = "okkk";
- 
-      localStorage.setItem("data-ezpics", jsonString);
 
+      localStorage.setItem("data-ezpics", jsonString);
 
       document.cookie = `data-ezpics=${jsonString}`;
     }
   };
+  const handleKeyDown = (e: any) => {
+    if (activeObject) {
+      if (e.key === "ArrowLeft") {
+        console.log("ArrowLeft");
+      } else if (e.key === "ArrowRight") {
+        console.log("ArrowRight");
+      }
+    } 
+  };
+  // const handleKeyUp = (e: any) => {
+  //   if (activeObject) {
+  //     if (e.key === "ArrowLeft") {
+  //       console.log("ArrowLeft");
+  //     } else if (e.key === "ArrowRight") {
+  //       console.log("ArrowRight");
+  //     }
+  //   }
+  // };
   useEffect(() => {
     window.addEventListener("beforeunload", alertUser);
+    // window.addEventListener("keydown", handleKeyDown);
+    // window.addEventListener("keyup", handleKeyUp);
 
     return () => {
       window.removeEventListener("beforeunload", alertUser);
-
     };
   }, []);
-  const alertUser = (e:any) => {
+  const alertUser = (e: any) => {
     e.preventDefault();
     // return e.returnValue = "Are you sure you want to leave the page?";
-     return "Data will be lost if you leave the page, are you sure?";
+    return "Data will be lost if you leave the page, are you sure?";
   };
   useEffect(() => {
     window.addEventListener("online", getValueOnline);

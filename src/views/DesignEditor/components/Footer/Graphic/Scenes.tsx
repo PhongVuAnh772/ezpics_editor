@@ -215,7 +215,6 @@ export default function () {
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
   function findAndSetIndex(pageIdToDelete:any) {
-        // Sử dụng findIndex để tìm index của phần tử trong mảng scenes
         return scenes.findIndex(
           (scene) => scene.id === pageIdToDelete.id
         );

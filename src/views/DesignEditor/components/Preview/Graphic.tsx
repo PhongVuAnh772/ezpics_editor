@@ -134,79 +134,11 @@ export default function () {
     link.href = imageData;
     link.download = fileName;
     link.click();
-    console.log(imageData);
 
     // Now that the file is downloaded, you can use it in the Axios POST request
-
-    const formData = new FormData();
-    formData.append(
-      "file",
-      new File([imageData], fileName, { type: "image/png" })
-    );
-    formData.append("token", token);
-    formData.append("idProduct", idProduct);
-    const headers = {
-      "Access-Control-Allow-Origin": "*",
-      "Access-Control-Allow-Headers": "*",
-      "Content-Type": "multipart/form-data",
-      // Add any other headers if needed
-    };
-
-    const config = {
-      headers: headers,
-    };
-    try {
-      const response = await axios.post(
-        `${network}/saveImageProductAPI`,
-        formData,
-        {
-          headers: headers,
-        }
-      );
-      if (response.data.code === 1) {
-        toast("Lưu mẫu thiết kế thành công !! 🦄", {
-          position: "top-left",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-      } else {
-        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-          position: "top-left",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setLoading(false);
-      }
-      // console.log(res);
-      // console.log(generateToServer(template));
-    } catch (error) {
-      toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-        position: "top-left",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      console.log(error);
-      setLoading(false);
-    }
   };
   async function urlToImageFile(base64String: any, fileName: any) {
     try {
-      // Remove the "data:image/png;base64," prefix from the base64 string
       const base64WithoutPrefix = base64String.replace(
         /^data:[a-z]+\/[a-z]+;base64,/,
         ""
@@ -263,7 +195,6 @@ export default function () {
           listLayer: JSON.stringify(parseGraphicJSON()),
         });
         if (res.data.code === 1) {
-          // downloadImage(image, "preview.png");
           setState({ image });
           // const imageFile = await fetch(image).then((res) => res.blob());
           // await handleConversion(image, "preview.png")
@@ -293,6 +224,10 @@ export default function () {
             );
 
             console.log("File uploaded successfully:", response.data);
+            if (response.data.code === 1) {
+              downloadImage(image, "preview.png");
+            }
+
           } catch (error) {
             console.error("Error uploading file:", error);
           }

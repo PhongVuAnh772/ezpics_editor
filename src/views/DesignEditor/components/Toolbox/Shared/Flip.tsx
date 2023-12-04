@@ -240,9 +240,10 @@ export default function () {
   const handleSliderChanged = (event: Event, newValue: number | number[]) => {
     setSliderValued(newValue as number);
     console.log(sliderValue);
-    // editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
     setAngle(newValue);
-    editor.objects.update({ angle: newValue });
+
+    editor.objects.update({ scaleX: newValue, scaleY: newValue });
+    // editor.objects.update({ angle: newValue });
   };
   return (
     <StatefulPopover placement={PLACEMENT.bottom}>

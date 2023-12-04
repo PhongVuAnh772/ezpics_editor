@@ -220,12 +220,7 @@ export default function () {
     console.log(checkedItems.join(","));
     if (typeUser !== "user_edit") {
       if (
-        name === "" ||
-        description === "" ||
-        Number.isNaN(price) ||
-        Number.isNaN(sessPrice) ||
-        (categoryId === 0 && isNaN(categoryId)) ||
-        selectedOption === ""
+        name === ""
       ) {
         toast.error("Bạn hãy nhập đầy đủ thông tin", {
           position: "top-left",
@@ -240,16 +235,66 @@ export default function () {
         console.log(categoryId);
       } else {
         if (price === 0 || sessPrice === 0) {
-          toast.error("Trường giá không được bằng 0", {
-            position: "top-left",
-            autoClose: 5000,
-            hideProgressBar: false,
-            closeOnClick: true,
-            pauseOnHover: true,
-            draggable: true,
-            progress: undefined,
-            theme: "dark",
-          });
+          setLoading(true);
+
+          try {
+            const formData = new FormData();
+            if (selectedFiles) {
+              formData.append("background", selectedFiles);
+            }
+
+            if (selectedFilesBackground) {
+              formData.append("thumbnail", selectedFilesBackground);
+            }
+            console.log(selectedOption);
+            formData.append("name", name);
+            formData.append("sale_price", price.toString());
+            formData.append("price", sessPrice.toString());
+            formData.append("category_id", categoryId.toString());
+            formData.append("warehouse_id", checkedItems.join(","));
+            formData.append("status", selectedOption === "1" ? true : false);
+            formData.append("description", description);
+            formData.append("token", token);
+            formData.append("idProduct", idProduct.toString());
+
+            const response = await axios.post(
+              `${network}/updateProductAPI`,
+              formData,
+              {
+                headers: {
+                  "Content-Type": "multipart/form-data",
+                },
+              }
+            );
+
+            if (response.data) {
+              console.log(response.data);
+              setLoading(false);
+              toast("Lưu thông tin mẫu thiết kế thành công !! 🦄", {
+                position: "top-left",
+                autoClose: 2000,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: false,
+                draggable: true,
+                progress: undefined,
+                theme: "dark",
+              });
+            }
+          } catch (error) {
+            console.log(error);
+            toast.error("Lỗi khi lưu thông tin mẫu thiết kế", {
+              position: "top-left",
+              autoClose: 5000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+              progress: undefined,
+              theme: "dark",
+            });
+            setLoading(false);
+          }
         } else {
           setLoading(true);
 
@@ -314,7 +359,7 @@ export default function () {
         }
       }
     } else {
-      if (name === "" || description === "") {
+      if (name === "" ) {
         toast.error("Bạn hãy nhập đầy đủ thông tin", {
           position: "top-left",
           autoClose: 5000,

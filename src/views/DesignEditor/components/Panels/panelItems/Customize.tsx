@@ -252,7 +252,7 @@ export default function () {
             formData.append("price", sessPrice.toString());
             formData.append("category_id", categoryId.toString());
             formData.append("warehouse_id", checkedItems.join(","));
-            formData.append("status", selectedOption === "1" ? true : false);
+            formData.append("status", selectedOption === "1" ? 1 : 0);
             formData.append("description", description);
             formData.append("token", token);
             formData.append("idProduct", idProduct.toString());
@@ -313,7 +313,7 @@ export default function () {
             formData.append("price", sessPrice.toString());
             formData.append("category_id", categoryId.toString());
             formData.append("warehouse_id", checkedItems.join(","));
-            formData.append("status", selectedOption === "1" ? true : false);
+            formData.append("status", selectedOption === "1" ? 1 : 0);
             formData.append("description", description);
             formData.append("token", token);
             formData.append("idProduct", idProduct.toString());

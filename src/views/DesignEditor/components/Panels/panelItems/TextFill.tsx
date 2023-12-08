@@ -29,13 +29,14 @@ export default function () {
     const { setActiveSubMenu } = useAppContext();
 
   const dispatch = useAppDispatch();
-  const [color, setColor] = React.useState("#b32aa9");
+  const [color, setColor] = React.useState("");
   const activeObject = useActiveObject();
   const editor = useEditor();
   const colorList = useAppSelector((state) => state.color.colorList);
-  const updateObjectFill = throttle((color: any) => {
-      setColor(color);
-  }, 1);
+   const updateObjectFill = (e:any,color:any) => {
+    setColor(color);
+    addObjectFill(e)
+  };
   const addObjectFill = throttle((e: any) => {
     if (activeObject) {
       editor.objects.update({ fill: e.target.value });
@@ -91,9 +92,9 @@ export default function () {
               // height: "15em",
               padding: 0,
             }}
-            value={color}
-            onChange={(e) => updateObjectFill(e)}
-            onBlur={(e) => addObjectFill(e)}
+            // value={color}
+            // onChange={(e) => updateObjectFill(e)}
+            onBlur={(e) => updateObjectFill(e,e.target.value)}
           />
           </Button>
           <Block

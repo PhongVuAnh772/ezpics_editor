@@ -558,7 +558,7 @@ export default function () {
                   />
                 </div>
 
-                {/* <div className="input-group">
+                <div className="input-group">
                   <p style={{ fontFamily: "Arial" }}>Nội dung chữ</p>
 
                   <input
@@ -567,7 +567,7 @@ export default function () {
                     onChange={(e) => setContentTextVariable(e.target.value)}
                     placeholder="Nội dung chữ"
                   />
-                </div> */}
+                </div>
                 <div className="input-group">
                   <p style={{ fontFamily: "Arial" }}>Kiểu định dạng chữ</p>
 

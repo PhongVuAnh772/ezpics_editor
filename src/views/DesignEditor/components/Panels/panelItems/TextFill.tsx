@@ -36,11 +36,11 @@ export default function () {
   const updateObjectFill = throttle((color: any) => {
       setColor(color);
   }, 1);
-  const addObjectFill = throttle((color: any) => {
+  const addObjectFill = throttle((e: any) => {
     if (activeObject) {
-      editor.objects.update({ fill: color });
+      editor.objects.update({ fill: e.target.value });
     }
-    dispatch(ADD_COLOR(color))
+    dispatch(ADD_COLOR(e.target.value))
   }, 1);
   useEffect(() => {
     const getColorCurrentActive = () => {
@@ -92,8 +92,8 @@ export default function () {
               padding: 0,
             }}
             value={color}
-            onChange={(e) => updateObjectFill(e.target.value)}
-            onBlur={(e) => addObjectFill(e.target.value)}
+            onChange={(e) => updateObjectFill(e)}
+            onBlur={(e) => addObjectFill(e)}
           />
           </Button>
           <Block

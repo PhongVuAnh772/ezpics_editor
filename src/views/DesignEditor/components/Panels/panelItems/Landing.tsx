@@ -21,12 +21,21 @@ import "../../../../../../src/views/DesignEditor/components/Preview/newloading.c
 import useAppContext from "~/hooks/useAppContext";
 import ArrowBackOutline from "~/components/Icons/ArrowBackOutline";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
+import { generateToServer } from "~/api/gererateToServer";
+import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 interface Tab {
   id: number;
   name: string;
   content: string;
 }
 export default function () {
+  const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
   const inputFileRef = React.useRef<HTMLInputElement>(null);
   const [uploads, setUploads] = React.useState<any[]>([]);
   const network = useAppSelector((state) => state.network.ipv4Address);
@@ -44,6 +53,167 @@ export default function () {
   const [nameTextLabel, setNameTextLabel] = React.useState("");
   const [contentTextVariable, setContentTextVariable] = React.useState("");
   const [selectedOption, setSelectedOption] = React.useState("");
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    const graphicTemplate: any = {
+      id: currentDesign.id,
+      type: "GRAPHIC",
+      name: currentDesign.name,
+      frame: currentDesign.frame,
+      scenes: updatedScenes,
+      metadata: {},
+      preview: "",
+    };
+    // console.log(resultIndex);
+    // console.log(graphicTemplate.scenes)
+    // console.log(currentScene.id)
+    // makeDownload(graphicTemplate);
+    const allLayers = graphicTemplate.scenes.map((scene: any) => scene.layers);
+    console.log(graphicTemplate);
+    console.log(currentDesign.frame, allLayers);
+    const newDesign = generateToServer({
+      frame: currentDesign.frame,
+      data: allLayers,
+    });
+    console.log(newDesign);
+    return newDesign;
+    // let newArr : any=[];
+    // console.log(newArr)
+  };
+   function base64toFile(base64Data: any, filename: any) {
+    const arr = base64Data.split(",");
+    const mime = arr[0].match(/:(.*?);/)[1];
+    const bstr = atob(arr[1]);
+    let n = bstr.length;
+    const u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
+  const handleConversion = async (base64String: any, filePath: any) => {
+    // Remove the "data:image/png;base64," prefix
+    const base64Data = base64String.split(",")[1];
+    const template = editor.scene.exportToJSON();
+      const image = (await editor.renderer.render(template)) as string;
+
+    // Convert base64 to a Blob
+    const blob = new Blob([(base64Data)], { type: "image/png" });
+
+    // Create a FormData object
+    const formData = new FormData();
+
+    formData.append("file", base64toFile(image,'preview.png'));
+    formData.append("idProduct", idProduct);
+    formData.append("token", token);
+
+    try {
+      // Make an Axios POST request with the FormData
+      const response = await axios.post(
+        `${network}/saveImageProductAPI`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response.data.code === 1) {
+        // console.log(res);
+        // console.log(generateToServer(template));
+        toast("Lưu mẫu thiết kế thành công !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      } else {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      }
+      console.log("File uploaded successfully:", response.data);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+    }
+  };
+  const makePreview = async () => {
+    const template = editor.scene.exportToJSON();
+    const image = (await editor.renderer.render(template)) as string;
+
+    // downloadImage(image, "preview.png");
+    console.log(JSON.stringify(parseGraphicJSON()));
+    setLoading(true);
+
+    try {
+      const res = await axios.post(`${network}/addListLayerAPI`, {
+        idProduct: idProduct,
+        token: token,
+        listLayer: JSON.stringify(parseGraphicJSON()),
+      });
+      if (res.data.code === 1) {
+        const imageGenerate = await handleConversion(image,"preview.png")
+        console.log(imageGenerate)
+
+      }
+      else {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setLoading(false);
+      }
+      // console.log(res);
+      // console.log(generateToServer(template));
+    } catch (error) {
+      toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      console.log(error);
+      setLoading(false);
+    }
+  };
   const addObjectImage = React.useCallback(
     (res: any) => {
       if (editor) {
@@ -80,7 +250,7 @@ export default function () {
       } else {
         setNameTextVariable(variable?.variable);
         setNameTextLabel(variable?.variableLabel);
-        setContentTextVariable(`%${variable?.variableLabel}%`);
+        setContentTextVariable(`%${variable?.variable}%`);
         // setSelectedOption()
         if (variable?.uppercase === "lower") {
           setSelectedOption("2");
@@ -113,13 +283,14 @@ export default function () {
         theme: "dark",
       });
     } else {
-      // setLoading(true);
       editor.objects.update({
         metadata: {
           variable: nameImageVariable,
           variableLabel: nameImageLabel,
         },
       });
+              await makePreview()
+
     }
   };
 
@@ -140,6 +311,10 @@ export default function () {
         progress: undefined,
         theme: "dark",
       });
+      console.log(selectedOption,
+      nameTextLabel,
+      contentTextVariable,
+      nameTextVariable)
     } else {
       if (editor) {
         // const font: FontItem = {
@@ -197,6 +372,7 @@ export default function () {
             uppercase: contentTextVariable,
           },
         });
+        await makePreview()
       }
     }
   };

@@ -186,7 +186,7 @@ export default function () {
     const file = files[0];
 
     if (!file) {
-      setSelectedFiles(null);
+      setSelectedFilesBackground(null);
       toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
       return;
     }
@@ -240,11 +240,11 @@ export default function () {
           try {
             const formData = new FormData();
             if (selectedFiles) {
-              formData.append("background", selectedFiles);
+              formData.append("background", selectedFilesBackground);
             }
 
             if (selectedFilesBackground) {
-              formData.append("thumbnail", selectedFilesBackground);
+              formData.append("thumbnail", selectedFiles);
             }
             console.log(selectedOption);
             formData.append("name", name);

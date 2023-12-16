@@ -50,8 +50,7 @@
     "styletron-react": "^6.1.1",
     "swiper": "^11.0.5",
     "use-latest": "^1.2.1",
-    "uuidv4": "^6.2.13",
-    "vite-plugin-mkcert": "^1.16.0"
+    "uuidv4": "^6.2.13"
   },
   "devDependencies": {
     "@layerhub-io/types": "^0.2.0",
@@ -62,6 +61,7 @@
     "@vitejs/plugin-react": "^2.0.0",
     "typescript": "^4.6.3",
     "vite": "^3.0.0",
+    "vite-plugin-mkcert": "^1.17.1",
     "vite-tsconfig-paths": "^3.5.0"
   }
 }

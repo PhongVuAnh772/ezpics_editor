@@ -19,6 +19,6 @@ export default defineConfig({
     // },
     port: 5173,
     host: 'ezpics.vn',
-    https: true,
+    https: false,
   },
 });

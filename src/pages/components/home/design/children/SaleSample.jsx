@@ -151,7 +151,7 @@ function PurchaseForm() {
           <div
             key={index}
             style={{
-              flex: `0 0 ${100 / itemsPerRow}%`,
+              flex: `0 0 calc(${100 / itemsPerRow}% - 16px)`,
               marginBottom: "15px",
               boxSizing: "border-box",
               padding: "0 8px",

@@ -21,6 +21,8 @@ import { IStaticText } from "@layerhub-io/types";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import { generateToServer } from "~/api/gererateToServer";
 import "../../../../../../src/views/DesignEditor/components/Preview/newloading.css";
+import ezlogo from './EZPICS (converted)-03.png'
+
 interface Tab {
   id: number;
   name: string;
@@ -663,7 +665,7 @@ export default function () {
                 width: 40,
                 height: 40,
               }}
-              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+              src={ezlogo}
             />
           </div>
         </div>

@@ -10,6 +10,8 @@ import { nanoid } from "nanoid";
 import { toast } from "react-toastify";
 import axios from "axios";
 import "../../../../../components/Loading/Initial.css";
+import ezlogo from './EZPICS (converted)-03.png'
+
 import { NavLink } from "react-router-dom";
 import { Tab, Tabs, TabList, TabPanel } from "react-tabs";
 import "react-tabs/style/react-tabs.css";
@@ -653,7 +655,7 @@ export default function () {
                 width: 40,
                 height: 40,
               }}
-              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+              src={ezlogo}
             />
           </div>
           </div>

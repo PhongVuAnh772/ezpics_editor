@@ -9,6 +9,8 @@ import { SAMPLE_TEMPLATES } from "~/constants/editor";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import useEditorType from "~/hooks/useEditorType";
+import ezlogo from './EZPICS (converted)-03.png'
+
 import { loadVideoEditorAssets } from "~/utils/video";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -520,7 +522,7 @@ export default function () {
                 width: 40,
                 height: 40,
               }}
-              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+              src={ezlogo}
             />
           </div>
         </div>

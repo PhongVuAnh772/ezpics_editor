@@ -8,6 +8,8 @@ import { useStyletron } from "baseui";
 import { SAMPLE_TEMPLATES } from "~/constants/editor";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
+import ezlogo from './EZPICS (converted)-03.png'
+
 import useEditorType from "~/hooks/useEditorType";
 import { loadVideoEditorAssets } from "~/utils/video";
 import axios from "axios";
@@ -441,7 +443,7 @@ export default function () {
               <div></div>
             </div>
           </div>
-                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
+                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src={ezlogo} />
 
         </div>
         </div>

@@ -16,6 +16,7 @@ import { loadVideoEditorAssets } from "~/utils/video";
 import "../../../../DesignEditor/components/Preview/newloading.css";
 import { useAppSelector } from "~/hooks/hook";
 import axios from "axios";
+import logoE from './EZPICS (converted)-03.png'
 export default function () {
   const scenes = useDesignEditorPages();
   const {
@@ -458,7 +459,7 @@ export default function () {
                 width: 40,
                 height: 40,
               }}
-              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+              src={logoE}
             />
           </div>
         </div>

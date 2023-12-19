@@ -11,6 +11,8 @@ import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
 import Scrollable from "~/components/Scrollable";
 import { sampleFrames } from "~/constants/editor";
 import Scrollbar from "@layerhub-io/react-custom-scrollbar";
+import ezlogo from './EZPICS (converted)-03.png'
+
 import SwapHorizontal from "~/components/Icons/SwapHorizontal";
 import { Tabs, Tab } from "baseui/tabs";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
@@ -735,7 +737,7 @@ export default function () {
               width: 40,
               height: 40,
             }}
-            src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+            src={ezlogo}
           />
         </div>
         </div>

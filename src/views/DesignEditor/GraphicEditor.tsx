@@ -26,6 +26,7 @@ import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
 import {useLocation} from 'react-router-dom';
+import ezpiclogo from './EZPICS (converted)-03.png'
 
 
 function GraphicEditor() {
@@ -613,7 +614,7 @@ function GraphicEditor() {
                     width: 40,
                     height: 40,
                   }}
-                  src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+                  src={ezpiclogo}
                 />
               </div>
             </div>

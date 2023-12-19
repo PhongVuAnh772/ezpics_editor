@@ -10,6 +10,8 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import { useEditor } from "@layerhub-io/react";
+import ezpiclogo from './EZPICS (converted)-03.png'
+
 import { IDesign } from "~/interfaces/DesignEditor";
 import { IScene } from "@layerhub-io/types";
 import { loadVideoEditorAssets } from "~/utils/video";
@@ -630,7 +632,7 @@ function GraphicEditor() {
                     width: 40,
                     height: 40,
                   }}
-                  src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+                  src={ezpiclogo}
                 />
               </div>
             </div>

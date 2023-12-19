@@ -13,6 +13,8 @@ import { loadVideoEditorAssets } from "~/utils/video";
 import axios from "axios";
 import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import useAppContext from "~/hooks/useAppContext";
+import ezlogo from './EZPICS (converted)-03.png'
+
 export default function () {
 
   const [data, setData] = useState<any>(null);
@@ -290,7 +292,7 @@ export default function () {
               <div></div>
             </div>
           </div>
-                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png" />
+                                <img style={{position: "absolute",top: '12%',left: '16%',width: 40,height: 40}} src={ezlogo} />
 
         </div>
         </div>

@@ -56,7 +56,7 @@ import magicwand from "./assets/magic-wand1.png";
 import home from "./assets/home.png";
 import folder from "./assets/folder.png";
 import paintPaletted from "./assets/paint-palette.png";
-import officialLogo from "./ezpics-logo.png";
+import officialLogo from "./EZPICS (converted)-03.png";
 import "./Content.scss";
 import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../../store/slice/infoUser";
 import crownPro from "./assets/crown.png";

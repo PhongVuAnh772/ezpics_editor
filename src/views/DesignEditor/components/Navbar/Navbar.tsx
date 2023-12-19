@@ -22,6 +22,11 @@ import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
 import imageIcon from "./save.png";
 import exportIcon from "./Layer 2.png";
 import "../../components/Preview/newloading.css";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box"
+import warning from './warning.png'
+import ezlogo from './EZPICS (converted)-03.png'
+import { useNavigate } from "react-router-dom";
 
 const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
   height: "64px",
@@ -35,6 +40,8 @@ const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
 }));
 
 export default function () {
+    const navigate = useNavigate();
+
   const {
     setDisplayPreview,
     setScenes,
@@ -52,6 +59,7 @@ export default function () {
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
+  const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
 
   const parseGraphicJSON = () => {
     const currentScene = editor.scene.exportToJSON();
@@ -95,7 +103,22 @@ export default function () {
     // let newArr : any=[];
     // console.log(newArr)
   };
+  const styleModalBuyingFree = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "30%",
+    height: "40%",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    paddingTop: "15px",
 
+    borderRadius: "15px",
+  };
   const parsePresentationJSON = () => {
     const currentScene = editor.scene.exportToJSON();
     console.log(currentScene);
@@ -131,7 +154,53 @@ export default function () {
       console.log("NO CURRENT DESIGN");
     }
   };
+  const handleSaveIcon = async() => {
+    const template = editor.scene.exportToJSON();
+    const image = (await editor.renderer.render(template)) as string;
 
+    // downloadImage(image, "preview.png");
+    console.log(JSON.stringify(parseGraphicJSON()));
+    setLoading(true);
+
+    try {
+      const res = await axios.post(`${network}/addListLayerAPI`, {
+        idProduct: idProduct,
+        token: token,
+        listLayer: JSON.stringify(parseGraphicJSON()),
+      });
+      if (res.data.code === 1) {
+        const imageGenerate = await handleConversion(image, "preview.png");
+        console.log(imageGenerate);
+      } else {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      }
+      // console.log(res);
+      // console.log(generateToServer(template));
+    } catch (error) {
+      toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      console.log(error);
+      setLoading(false);
+    }
+  }
   const parseVideoJSON = () => {
     const currentScene = editor.scene.exportToJSON();
     const updatedScenes = scenes.map((scn) => {
@@ -265,12 +334,16 @@ export default function () {
     },
     [editor]
   );
+  const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+
   const downloadImage = (imageData: any, fileName: any) => {
     const link = document.createElement("a");
     link.href = imageData;
     link.download = fileName;
     link.click();
   };
+  const handleCloseModalFree = () => setModalBuyingFree(false);
+
   function base64toFile(base64Data: any, filename: any) {
     const arr = base64Data.split(",");
     const mime = arr[0].match(/:(.*?);/)[1];
@@ -322,6 +395,7 @@ export default function () {
           progress: undefined,
           theme: "dark",
         });
+        navigate('/')
         setLoading(false);
       } else {
         toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
@@ -391,7 +465,9 @@ export default function () {
   const handleInputFileRefClick = () => {
     inputFileRef.current?.click();
   };
-
+  const handleReturnHome = () => {
+    setModalBuyingFree(true);
+  };
   const handleFileInput = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files![0];
     if (file) {
@@ -416,7 +492,11 @@ export default function () {
       <ThemeProvider theme={DarkTheme}>
         <Container>
           <div style={{ color: "#ffffff" }}>
-            <img src={EzpicsLogo} style={{ width: 60, height: 60 }} />
+            <img
+              src={EzpicsLogo}
+              style={{ width: 60, height: 60,cursor: "pointer" }}
+              onClick={() => handleReturnHome()}
+            />
           </div>
           {/* <DesignTitle /> */}
           <Block
@@ -546,11 +626,73 @@ export default function () {
                 // alignSelf: 'center',
                 zIndex: 999999,
               }}
-              src="https://ezpics.vn/wp-content/uploads/2023/05/LOGO-EZPICS-300.png"
+              src={ezlogo}
             />
           </div>
         </div>
       )}
+      <Modal
+        open={modalBuyingFree}
+        onClose={handleCloseModalFree}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModalBuyingFree}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: "bold",
+              paddingBottom: "10px",
+              fontFamily: "Helvetica, Arial, sans-serif",
+            }}
+          >
+            Cảnh báo
+          </p>
+          <img
+            src={warning}
+            alt=""
+            style={{ width: "25%", height: "40%", marginBottom: "10px" }}
+          />
+          <p
+            style={{
+              margin: 0,
+              fontSize: 17,
+              fontWeight: "500",
+              paddingTop: "10px",
+              fontFamily: "Helvetica, Arial, sans-serif",
+            }}
+          >
+            Bạn muốn lưu mẫu thiết kế này trước khi rời đi chứ ?
+          </p>
+
+          <Button
+            variant="contained"
+            size="medium"
+            style={{
+              height: 40,
+              alignSelf: "center",
+              textTransform: "none",
+              color: "white",
+              backgroundColor: "rgb(255, 66, 78)",
+              marginTop: "40px",
+              width: "50%",
+                                fontFamily: "Helvetica, Arial, sans-serif"
+
+            }}
+            onClick={() => {
+              handleSaveIcon();
+            }}
+          >
+            {" "}
+            {loadingBuyingFunc ? (
+              <span class="loaderNew"></span>
+            ) : (
+              "Lưu mẫu thiết kế "
+            )}
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 }

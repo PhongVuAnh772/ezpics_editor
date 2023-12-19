@@ -69,6 +69,10 @@ import gift from "./assets/gift-box.png";
 import { CHANGE_VALUE_TOKEN } from "../../../store/slice/authSlice";
 import paintRoller from "./assets/paint-roller (1).png";
 import DownloadIcon from "@mui/icons-material/Download";
+import banknote from './banknotes.png'
+import coin from './coin.png'
+
+
 const drawerWidth = 240;
 
 export default function PersistentDrawerLeft() {
@@ -758,7 +762,7 @@ export default function PersistentDrawerLeft() {
                           "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                         color: "rgb(13, 18, 22)",
                         fontWeight: "600",
-                        lineHeight: "24px",
+                        lineHeight: "0px",
                       }}
                     >
                       <b>{infoUser[0]?.name}</b>
@@ -770,25 +774,40 @@ export default function PersistentDrawerLeft() {
                           "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                         color: "rgb(13, 18, 22)",
                         fontWeight: "600",
-                        lineHeight: "24px",
+                        lineHeight: "0px",
                       }}
                     >
                       Đăng nhập
                     </p>
                   )}
                   {authentication && (
-                    <p
+                    <>
+                    <div style={{display:'flex',flexDirection: 'row',alignItems:"center"}}><img src={banknote} alt="" style={{width: 20,height:20}}/><p
                       style={{
                         color: "rgba(13, 18, 22, 0.7)",
-                        fontSize: "13px",
+                        fontSize: "15px",
                         fontFamily:
                           "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                         lineHeight: "0px",
+                        paddingLeft: 5,
+                        fontWeight: "bold",
                       }}
                     >
-                      Tiền: <b>{formatPrice(infoUser[0]?.account_balance)}₫</b>{" "}
-                      - eCoin: <b>{infoUser[0]?.ecoin}</b>
-                    </p>
+                      : <b>{formatPrice(infoUser[0]?.account_balance)}₫</b>
+                    </p></div>
+                    <div style={{display:'flex',flexDirection: 'row',alignItems:"center"}}><img src={coin} alt="" style={{width: 20,height:20}}/>
+                    <p
+                      style={{
+                        color: "rgba(13, 18, 22, 0.7)",
+                        fontSize: "15px",
+                        fontFamily:
+                          "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        lineHeight: "0px",
+                        paddingLeft: 5
+                      }}
+                    >
+                      : <b>{infoUser[0]?.ecoin}</b>
+                    </p></div></>
                   )}
                 </div>
               </div>

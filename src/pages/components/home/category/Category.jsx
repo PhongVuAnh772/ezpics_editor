@@ -430,7 +430,7 @@ function Category({
         setLoadingBuyingLostFunc(true);
 
         try {
-          const response = await axios.post(`${network}/buyProductEcoinAPI`, {
+          const response = await axios.post(`${network}/buyProductAPI`, {
             id: id,
             token: checkTokenCookie(),
             type: "ecoin",
@@ -476,7 +476,7 @@ function Category({
         console.log("th2");
 
         try {
-          const response = await axios.post(`${network}/buyProductEcoinAPI`, {
+          const response = await axios.post(`${network}/buyProductAPI`, {
             id: id,
             token: checkTokenCookie(),
           });

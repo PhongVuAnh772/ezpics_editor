@@ -56,7 +56,7 @@ import magicwand from "./assets/magic-wand1.png";
 import home from "./assets/home.png";
 import folder from "./assets/folder.png";
 import paintPaletted from "./assets/paint-palette.png";
-import officialLogo from './ezpics-logo.png'
+import officialLogo from "./ezpics-logo.png";
 import "./Content.scss";
 import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../../store/slice/infoUser";
 import crownPro from "./assets/crown.png";
@@ -67,7 +67,8 @@ import repeater from "./assets/repeater.png";
 import downloader from "./assets/download-icon.png";
 import gift from "./assets/gift-box.png";
 import { CHANGE_VALUE_TOKEN } from "../../../store/slice/authSlice";
-
+import paintRoller from "./assets/paint-roller (1).png";
+import DownloadIcon from "@mui/icons-material/Download";
 const drawerWidth = 240;
 
 export default function PersistentDrawerLeft() {
@@ -418,7 +419,13 @@ export default function PersistentDrawerLeft() {
                     aria-label="show 4 new mails"
                     color="inherit"
                     title="Tải xuống ứng dụng"
-                    onClick={() => navigate("/download")}
+                    onClick={() => {
+                      navigate("/download");
+                      window.scrollTo({
+                        top: 70,
+                        behavior: "smooth",
+                      });
+                    }}
                   >
                     <Badge color="error">
                       <MonitorOutlinedIcon />
@@ -431,10 +438,9 @@ export default function PersistentDrawerLeft() {
                     aria-label="show 4 new mails"
                     color="inherit"
                     title="Cài đặt"
-                                        onClick={() => {
+                    onClick={() => {
                       navigate("/information");
                     }}
-
                   >
                     <Badge color="error">
                       <SettingsOutlinedIcon />
@@ -687,6 +693,7 @@ export default function PersistentDrawerLeft() {
               "& .MuiDrawer-paper": {
                 width: drawerWidth,
                 boxSizing: "border-box",
+                overflowY: "hidden",
               },
             }}
             variant="persistent"
@@ -779,8 +786,8 @@ export default function PersistentDrawerLeft() {
                         lineHeight: "0px",
                       }}
                     >
-                      Tiền:{" "}
-                      <b>{formatPrice(infoUser[0]?.account_balance)}₫</b> - eCoin: <b>{(infoUser[0]?.ecoin)}</b>
+                      Tiền: <b>{formatPrice(infoUser[0]?.account_balance)}₫</b>{" "}
+                      - eCoin: <b>{infoUser[0]?.ecoin}</b>
                     </p>
                   )}
                 </div>
@@ -1038,7 +1045,7 @@ export default function PersistentDrawerLeft() {
                     }}
                   >
                     <Link
-                      to="/"
+                      to="/your-design"
                       style={{
                         display: "flex",
                         textDecoration: "none",
@@ -1056,7 +1063,7 @@ export default function PersistentDrawerLeft() {
                         alt=""
                         style={{ marginRight: 5, height: 20, width: 20 }}
                       />
-                      Kho của bạn
+                      Thiết kế của bạn
                     </Link>
                   </li>
                   <li
@@ -1120,11 +1127,45 @@ export default function PersistentDrawerLeft() {
                       }}
                     >
                       <img
+                        src={paintRoller}
+                        alt=""
+                        style={{ marginRight: 5, height: 20, width: 20 }}
+                      />
+                      Bộ sưu tập của bạn
+                    </Link>
+                  </li>
+                  <li
+                    style={{
+                      display: "flex",
+                      textDecoration: "none",
+                      width: "100%",
+                      color: "inherit",
+                      backgroundColor:
+                        location.pathname === "/f" ? "#ccc" : "transparent",
+                    }}
+                  >
+                    <Link
+                      to="/"
+                      style={{
+                        display: "flex",
+                        textDecoration: "none",
+                        width: "100%",
+                        height: 40,
+                        alignItems: "center",
+                        paddingLeft: 10,
+                        // fontFamily:
+                        //   "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        color: "rgb(13, 18, 22)",
+                        lineHeight: "22px",
+                      }}
+                    >
+                      <img
                         src={history}
                         alt=""
                         style={{ marginRight: 5, height: 20, width: 20 }}
                       />
-                      Lịch sử giao dịch eCoin
+                      Lịch sử giao dịch
                     </Link>
                   </li>
                   <li
@@ -1184,18 +1225,19 @@ export default function PersistentDrawerLeft() {
                         alignItems: "center",
                         // fontFamily:
                         //   "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                        fontSize: "15px",
-                        color: "rgb(13, 18, 22)",
+                        fontSize: "16px",
+                        color: "white",
                         lineHeight: "22px",
+
+                        backgroundColor: "rgb(255, 66, 78)",
+                        textTransform: "none",
+                        fontWeight: "500",
+                        marginTop: "28.2px",
                       }}
                       onClick={() => navigate("/download")}
                     >
-                      <img
-                        src={downloader}
-                        alt=""
-                        style={{ marginRight: 5, height: 20, width: 20 }}
-                      />
-                      Tải ứng dụng
+                      <DownloadIcon style={{ color: "white",}} />
+                      <p style={{paddingLeft: 3}}>Tải ứng dụng</p>
                     </Button>
                   </li>
                 </>
@@ -1203,9 +1245,8 @@ export default function PersistentDrawerLeft() {
             </ul>
           </Drawer>
           <Outlet context={open} />
-
         </Box>
-        
+
         {openModalPro && (
           <>
             <div className="ezpics-pro-modal" style={ezpicsProContainer}>
@@ -1388,14 +1429,22 @@ export default function PersistentDrawerLeft() {
 
                   <form className="card-form---create-newing">
                     <div className="input---create-newing">
-                      <input type="text" className="input-field---create-newing" required />
-                      <label className="input-label---create-newing">Tên mẫu thiết kế</label>
+                      <input
+                        type="text"
+                        className="input-field---create-newing"
+                        required
+                      />
+                      <label className="input-label---create-newing">
+                        Tên mẫu thiết kế
+                      </label>
                     </div>
 
                     <div className="input---create-newing">
                       {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
                        */}
-                      <label className="input-label---create-newing">Ảnh nền</label>
+                      <label className="input-label---create-newing">
+                        Ảnh nền
+                      </label>
 
                       <form
                         id="file-upload-form"
@@ -1445,7 +1494,9 @@ export default function PersistentDrawerLeft() {
                     </div>
 
                     <div className="action---create-newing">
-                      <button className="action-button---create-newing">Bắt đầu tạo mẫu</button>
+                      <button className="action-button---create-newing">
+                        Bắt đầu tạo mẫu
+                      </button>
                     </div>
                   </form>
                   <div className="card-info---create-newing">

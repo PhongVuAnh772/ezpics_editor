@@ -23,6 +23,7 @@ function Login() {
     flex: 1,
     backgroundSize: "contain",
     minHeight: "100%",
+    overflowY: "hidden",
   };
   const overlayStyle = {
     position: "absolute",
@@ -31,6 +32,8 @@ function Login() {
     width: "100%",
     height: "100%",
     background: "rgba(0, 0, 0, 0.25)", // Adjust the alpha value for the darkness
+        overflowY: "hidden",
+
   };
   const blockStyle = {
     padding: "20px",
@@ -46,6 +49,8 @@ function Login() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
+        marginBottom: "10%",
+
   };
   const page = {
   };
@@ -115,7 +120,7 @@ function Login() {
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     display: 'flex',
-    
+    paddingLeft:'2%'
 
   };
   const network = useSelector((state) => state.ipv4.network);

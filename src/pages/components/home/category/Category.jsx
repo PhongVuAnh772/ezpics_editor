@@ -430,7 +430,7 @@ function Category({
         setLoadingBuyingLostFunc(true);
 
         try {
-          const response = await axios.post(`${network}/buyProductAPI`, {
+          const response = await axios.post(`${network}/buyProductEcoinAPI`, {
             id: id,
             token: checkTokenCookie(),
             type: "ecoin",
@@ -476,7 +476,7 @@ function Category({
         console.log("th2");
 
         try {
-          const response = await axios.post(`${network}/buyProductAPI`, {
+          const response = await axios.post(`${network}/buyProductEcoinAPI`, {
             id: id,
             token: checkTokenCookie(),
           });
@@ -932,7 +932,7 @@ function Category({
             />
           ) : (
             <p style={{ fontSize: 18, fontWeight: "bold" }}>
-              Có thể bạn muốn thử
+              Mẫu thiết kế tương tự
             </p>
           )}
           {loading ? (
@@ -1077,7 +1077,7 @@ fontFamily:
                 </div>
                 <div
                   style={{
-                    minHeight: 70,
+                    height: 70,
                     maxWidth: "100%",
                     color: "rgb(37, 38, 56)",
 fontFamily:
@@ -1091,7 +1091,6 @@ fontFamily:
                 >
                   <h5
                     style={{
-                      height: "100%",
                       maxWidth: "80%",
                       color: "rgb(37, 38, 56)",
   fontFamily:
@@ -1136,7 +1135,7 @@ fontFamily:
                       fontWeight: 300,
                     }}
                   >
-                    {formatPrice(item.sale_price)}₫
+                    {formatPrice(item.price)}₫
                   </p>
                 </div>
               </div>
@@ -1274,7 +1273,7 @@ fontFamily:
               >
                 Số sản phẩm bán ra tiền:{" "}
                 <span style={{ color: "black" }}>
-                  {dataCreator?.sellingMoney}
+                  {formatPrice(dataCreator?.sellingMoney)} đ
                 </span>
               </p>
             </div>

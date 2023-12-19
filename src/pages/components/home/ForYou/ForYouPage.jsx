@@ -218,7 +218,6 @@ function ForYouPage() {
               </div>
               <div
                 style={{
-                  minHeight: 70,
                   maxWidth: "100%",
                   color: "rgb(37, 38, 56)",
                   fontFamily:
@@ -228,18 +227,18 @@ function ForYouPage() {
                   margin: 0,
                   marginBottom: 15,
                   marginTop: 10,
+                  height: 70
                 }}
               >
                 <h5
                   style={{
-                    height: "100%",
-                    maxWidth: "80%",
                     color: "rgb(37, 38, 56)",
                     fontFamily:
                       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
+                    width: "80%",
                   }}
                 >
                   {item.name}
@@ -400,7 +399,6 @@ function ForYouPage() {
               </div>
               <div
                 style={{
-                  minHeight: 70,
                   maxWidth: "100%",
                   color: "rgb(37, 38, 56)",
                   fontFamily:
@@ -410,11 +408,11 @@ function ForYouPage() {
                   margin: 0,
                   marginBottom: 15,
                   marginTop: 10,
+                  height: 70
                 }}
               >
                 <h5
                   style={{
-                    height: "100%",
                     maxWidth: "80%",
                     color: "rgb(37, 38, 56)",
                     fontFamily:
@@ -422,6 +420,8 @@ function ForYouPage() {
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
+                                        width: "80%",
+
                   }}
                 >
                   {item.name}

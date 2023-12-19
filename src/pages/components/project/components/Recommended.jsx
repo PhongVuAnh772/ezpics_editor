@@ -13,7 +13,7 @@ function Recommended() {
   const [loading, setLoading] = React.useState(true);
     const [loading2, setLoading2] = React.useState(true);
 
-  const network = useSelector((state) => state.network.network);
+  const network = useSelector((state) => state.ipv4.network);
   const responsiveSliding = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -245,7 +245,6 @@ function Recommended() {
               >
                 <h5
                   style={{
-                    height: "100%",
                     maxWidth: "80%",
                     color: "rgb(37, 38, 56)",
                     fontFamily: "Inter",
@@ -335,7 +334,6 @@ function Recommended() {
               <div
                 style={{
                   minHeight: 70,
-                  maxWidth: "100%",
                   color: "rgb(37, 38, 56)",
                   fontFamily: "Inter",
                   fontWeight: 600,

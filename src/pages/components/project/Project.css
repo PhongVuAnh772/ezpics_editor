@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto&display=swap');
 .project-header__advertisement {
   width: 60%;
   height: 100%;
@@ -12,8 +13,7 @@
 
 .project-header__advertisement---textHeader {
   color: rgb(13, 18, 22);
-  font-family: "Noto Sans";
-  font-size: 34px;
+font-family: "Noto Sans", Segoe UI, Helvetica, Arial, sans-serif;  font-size: 34px;
   font-weight: 800;
   margin: 0;
   line-height: 42px;

@@ -1,0 +1,271 @@
+.header {
+  width: "100%";
+  /* height: 400px; */
+  background-image: url("./remove.svg");
+  background-position: left;
+  /* height: 500px; */
+
+  background-repeat: no-repeat;
+  background-size: contain;
+  padding-top: 5%;
+  padding-left: 5%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+
+.header-text__content {
+    font-family: Poppins,
+      "Open sans",
+      Arial,
+      sans-serif;
+        color: rgb(51, 51, 51);
+        font-size: 38px;
+        font-weight: 700;
+}
+
+.header-text {
+}
+.text-decs {
+  font-family: Poppins,
+    "Open sans",
+    Arial,
+    sans-serif;
+  color: rgb(51, 51, 51);
+  font-size: 13px;
+}
+
+.header-button {
+  display: flex;
+  flex-direction: row;
+  border: none;
+  width: 250px;
+  height: 60px;
+  align-items: center;
+  justify-content: center;
+  background-color: rgb(81, 100, 255);
+  color: white;
+}
+
+.content-remove {
+  padding-top: 7%;
+  padding-left: 7%;
+  padding-right: 7%;
+}
+
+.content-description__up {
+  text-align: center;
+  padding-top: 3%;
+  padding-right: 10%;
+  padding-left: 10%;
+  /* font-family: Poppins,
+            "Open sans",
+            Arial,
+            sans-serif; */
+}
+
+.content h1 {
+  text-align: center;
+}
+
+.list-step-remove {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  padding-top: 3%;
+}
+
+.step-title-remove {
+  text-align: left;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-top: 10px;
+}
+
+.number-title__container-remove {
+  width: 30px;
+  height: 30px;
+  border-radius: 25px;
+  align-items: center;
+  justify-content: center;
+  display: flex;
+  background-color: rgb(215, 229, 254);
+  color: rgb(0, 81, 238);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.introduce-app__container {
+  width: 100%;
+  padding-top: 3%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-bottom: 3%;
+}
+
+.introduce-app {
+  background-color: rgb(232, 229, 244);
+  height: 200px;
+  width: 100%;
+  border-radius: 20px;
+  padding-left: 5%;
+  padding-right: 5%;
+  padding-top: 2%;
+  padding-bottom: 2%;
+  display: flex;
+  flex-direction: row;
+}
+
+.introduce-app__title {
+  color: rgb(33, 43, 57);
+  font-weight: 700;
+}
+
+.introduce-app__desc {
+  padding-right: 10%;
+}
+
+.advantage-app__container {
+  width: 100%;
+  background-color: rgb(248, 250, 253);
+  height: auto;
+  padding-top: 3%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-bottom: 3%;
+}
+
+.advantage-app__header {
+  font-size: 40px;
+}
+.advantage-app__header--span {
+  font-size: 72px;
+  background-image: linear-gradient(
+    138.69deg,
+    rgb(13, 255, 255) -2.74%,
+    rgb(0, 81, 239) 39.11%,
+    rgb(164, 0, 191) 98.64%
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.advantage-app__content {
+    width: 100%;
+    height: auto;
+}
+
+.advantage-app__content-wrapper {
+    width: 100%;
+    padding-top: 5%;
+    
+    display: flex;
+    flex-direction: row;
+}
+
+.advantage-app__content--text---wrapper {
+    width: '50%';
+    padding-right: 10%;
+}
+
+.advantage-app__content--text---header {
+    color: rgb(37, 38, 56);
+    font-family: Poppins,
+      "Open sans",
+      Arial,
+      sans-serif;
+    font-weight: 600;
+    font-size: 32px;
+    line-height: 48px;
+}
+
+.advantage-app__content--text---content {
+        font-weight: 400;
+        font-size: 17px;
+            color: rgb(87, 87, 88);
+}
+
+
+.performance-app__container {
+  width: 100%;
+  background-color: rgb(26, 27, 47);
+  height: auto;
+  padding-top: 10%;
+  padding-left: 7%;
+  padding-right: 7%;
+  padding-bottom: 3%;
+}
+
+.performance-app__wrapper {
+  width: 100%;
+  height: auto;
+  display: flex;
+  
+}
+.performance-app__block {
+  width: 50%;
+  height: 100%;
+}
+
+.performance-app__block---children {
+  display: flex;
+    padding-bottom: 7%;
+  
+}
+
+.performance-app__block---children----text__title {
+  color: white;
+  margin-top: 0;
+  font-size: 20px;
+}
+
+.performance-app__block---children----text__content {
+  color: rgb(210, 210, 214);
+  font-size: 16px;
+}
+
+.performance-app__block---children----text__container {
+  padding-left: 25px;
+  height: '50%';
+
+}
+
+.asking-app__container {
+  width: "100%";
+    background-image: url("./remove.svg");
+    background-position: left;
+    /* height: 500px; */
+  
+    background-size: cover;
+    padding-left: 7%;
+      padding-right: 7%;
+      padding-bottom: 3%;
+      padding-top: 10%;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+}
+
+.asking-app__wrapper {
+  width: 50%;
+  height: 100%;
+}
+
+.asking-app__button {
+  background-color: rgb(67, 167, 255);
+  border: none;
+  width: 200px;
+  height: 50px;
+  font-size: 18px;
+  color: white;
+  font-family: Poppins,
+    "Open sans",
+    Arial,
+    sans-serif;
+  font-weight: 600;
+  border-radius: 30px;
+  margin-top: 20px;
+}

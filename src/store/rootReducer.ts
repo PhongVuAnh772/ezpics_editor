@@ -9,7 +9,9 @@ import fontReducer from "./slices/font/fontSlice";
 import typeUserReducer from './slices/type/typeSlice'
 import variableReducer from "./slices/variable/variableSlice";
 import colorReducer from "./slices/color/colorSlice";
-
+import  infoReducer  from "./slices/user/userSlice";
+import authReducer from '../../src/pages/store/slice/authSlice.js'
+import ipv4Reducer from '../../src/pages/store/slice/networkSlice.js'
 const rootReducer = combineReducers({
   designEditor: designEditorReducer,
   fonts: fontsReducer,
@@ -20,8 +22,10 @@ const rootReducer = combineReducers({
   newFont: fontReducer,
   typeUser: typeUserReducer,
   variable: variableReducer,
-  color: colorReducer
-
+  color: colorReducer,
+  user: infoReducer,
+  auth: authReducer,
+  ipv4: ipv4Reducer,
 });
 
 export type RootState = ReturnType<typeof rootReducer>;

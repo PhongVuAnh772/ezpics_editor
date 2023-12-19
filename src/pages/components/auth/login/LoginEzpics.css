@@ -1,0 +1,139 @@
+input[type="text"],
+input[type="password"],
+select {
+  width: 100%;
+  padding: 12px 20px;
+  display: inline-block;
+  border: none;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+input[type="submit"] {
+  width: 100%;
+  background-color: #4caf50;
+  color: white;
+  padding: 14px 20px;
+  margin: 8px 0;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+input[type="submit"]:hover {
+  background-color: #45a049;
+}
+
+a {
+  color: #696cff;
+  font-size: 13px;
+  text-decoration: none;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.loginBlock {
+  padding: 20px;
+  background-color: white;
+  width: 300px;
+  border-radius: 8px;
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+.googleButton {
+  width: 100%;
+  padding-top: 10px;
+  padding-bottom: 10px;
+  border: none;
+  background-color: rgb(230, 56, 26);
+  border-radius: 10px;
+  font-size: 14px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  font-weight: 500;
+  color: rgb(255, 255, 255);
+  font-family: "Noto Sans", sans-serif;
+  animation: slideIn 0.5s ease-in-out;
+}
+@keyframes slideInFromLeft {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.headerLogin {
+  animation: slideInFromLeft 0.75s ease-in-out;
+}
+
+
+.lds-ring-login {
+  display: inline-block;
+  position: relative;
+  width: 20px;
+  height: 20px;
+}
+
+.lds-ring-login div {
+  box-sizing: border-box;
+  display: block;
+  position: absolute;
+  margin-top: 3px;
+  width: 15px;
+  height: 15px;
+  border: 2px solid white;
+  border-radius: 50%;
+  animation: lds-ring-login 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+  border-color: white transparent transparent transparent;
+}
+
+.lds-ring-login div:nth-child(1) {
+  animation-delay: -0.45s;
+}
+
+.lds-ring-login div:nth-child(2) {
+  animation-delay: -0.3s;
+}
+
+.lds-ring-login div:nth-child(3) {
+  animation-delay: -0.15s;
+}
+
+@keyframes lds-ring-login {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}

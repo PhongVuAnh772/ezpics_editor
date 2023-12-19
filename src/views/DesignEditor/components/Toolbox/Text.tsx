@@ -417,7 +417,6 @@ function TextFontSize() {
                 backgroundColor: "#ffffff",
                 paddingRight: 0,
                 fontWeight: 500,
-                fontFamily: "Uber Move Text",
                 fontSize: "14px",
               },
             },

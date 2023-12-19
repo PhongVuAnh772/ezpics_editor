@@ -1,0 +1,179 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+*,
+*:after,
+*:before {
+    box-sizing: border-box;
+}
+
+
+img {
+    max-width: 100%;
+    display: block;
+}
+
+
+input {
+    appearance: none;
+    border-radius: 0;
+}
+
+.card---create-newing {
+    margin: 1rem auto;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    max-width: 425px;
+    border-radius: 10px;
+    box-shadow: 0 10px 20px 0 rgba(#999, .25);
+    padding: .75rem;
+    
+}
+
+.card-image---create-newing {
+    border-radius: 8px;
+    overflow: hidden;
+    padding-bottom: 60%;
+    background-image: url('https://assets.codepen.io/285131/coffee_1.jpg');
+    background-repeat: no-repeat;
+    background-size: 150%;
+    background-position: 0 5%;
+    position: relative;
+}
+
+.card-heading---create-newing {
+    position: absolute;
+    left: 10%;
+    top: 15%;
+    right: 10%;
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #735400;
+    line-height: 1.222;
+    
+
+    small {
+        display: block;
+        font-size: .75em;
+        font-weight: 400;
+        margin-top: .25em;
+    }
+}
+
+.card-form---create-newing {
+    padding: 0.5rem 1rem 0;
+}
+
+.input---create-newing {
+    display: flex;
+    flex-direction: column-reverse;
+    position: relative;
+    padding-top: 1rem;
+
+    &+.input {
+        margin-top: 1rem;
+    }
+}
+
+.input-label---create-newing {
+    color: #8597a3;
+    position: absolute;
+    top: 1.5rem;
+    transition: .25s ease;
+}
+
+.input-field---create-newing {
+    border: 0;
+    z-index: 1;
+    background-color: transparent;
+    border-bottom: 2px solid #eee;
+    font: inherit;
+    font-size: 1.125rem;
+    padding: .25rem 0;
+
+    &:focus,
+    &:valid {
+        outline: 0;
+        border-bottom-color: #6658d3;
+
+        &+.input-label {
+            color: #6658d3;
+            transform: translateY(-1.5rem);
+        }
+    }
+}
+
+.action---create-newing {
+    margin-top: 2rem;
+}
+
+.action-button---create-newing {
+    font: inherit;
+    font-size: 1.25rem;
+    padding: 10px;
+    width: 100%;
+    font-weight: 500;
+    background-color: #6658d3;
+    border-radius: 6px;
+    color: #FFF;
+    border: 0;
+
+    &:focus {
+        outline: 0;
+    }
+}
+
+.card-info---create-newing {
+    padding: 0rem 1rem;
+    text-align: center;
+    font-size: .875rem;
+    color: #8597a3;
+
+    a {
+        display: block;
+        color: #6658d3;
+        text-decoration: none;
+    }
+}
+
+.lds-ring {
+    display: inline-block;
+    position: relative;
+    width: 20px;
+    height: 20px;
+}
+
+.lds-ring div {
+    box-sizing: border-box;
+    display: block;
+    position: absolute;
+    margin-top: 3px;
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgb(255, 66, 78);
+    border-radius: 50%;
+    animation: lds-ring 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    border-color: rgb(255, 66, 78) transparent transparent transparent;
+}
+
+.lds-ring div:nth-child(1) {
+    animation-delay: -0.45s;
+}
+
+.lds-ring div:nth-child(2) {
+    animation-delay: -0.3s;
+}
+
+.lds-ring div:nth-child(3) {
+    animation-delay: -0.15s;
+}
+
+@keyframes lds-ring {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}

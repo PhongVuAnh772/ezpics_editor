@@ -1,0 +1,6 @@
+.carousel-item:hover img {
+    transform: scale(1.1);
+    /* Điều chỉnh giá trị scale theo mong muốn */
+    transition: transform 0.3s ease;
+    /* Điều chỉnh thời gian và kiểu chuyển động */
+}

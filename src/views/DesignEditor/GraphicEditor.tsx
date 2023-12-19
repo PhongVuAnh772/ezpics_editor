@@ -25,8 +25,12 @@ import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
+import {useLocation} from 'react-router-dom';
+
 
 function GraphicEditor() {
+      const location = useLocation();
+
   const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
@@ -108,16 +112,6 @@ function GraphicEditor() {
       }
     } catch (error) {
       console.error("Error fetching fonts:", error);
-      toast.error("Lỗi tìm nạp phông chữ, hãy thử lại", {
-        position: "top-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
       // setError(true
       setLoading(false);
     }
@@ -279,8 +273,10 @@ function GraphicEditor() {
   };
   const queryString = window.location.search;
   const urlParams = new URLSearchParams(queryString);
-  const token = urlParams.get("token");
-  const id = urlParams.get("id");
+  // const token = urlParams.get("token");
+  // const id = urlParams.get("id");
+    const { id, token } = location.state;
+
   if (token && id) {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));

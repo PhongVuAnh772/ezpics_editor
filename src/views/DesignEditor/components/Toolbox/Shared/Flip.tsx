@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { useActiveObject, useEditor } from "@layerhub-io/react";
+import { useActiveObject, useEditor,useObjects } from "@layerhub-io/react";
 import { Block } from "baseui/block";
 import { Input } from "baseui/input";
 import { Slider } from "baseui/slider";
@@ -14,9 +14,14 @@ import axios from "axios";
 import { useAppSelector } from "~/hooks/hook";
 import fs from "fs";
 import { toast } from "react-toastify";
+import { ILayer } from "@layerhub-io/types";
 
 export default function () {
   const editor = useEditor();
+    const objects = useObjects() as ILayer[];
+
+    const [layerObjects, setLayerObjects] = React.useState<any[]>([]);
+
   const activeObject = useActiveObject() as any;
   const [state, setState] = React.useState({ flipX: false, flipY: false });
   const [stated, setStated] = React.useState({ opacity: 1 });
@@ -35,7 +40,12 @@ export default function () {
     scaleX: 0,
     scaleY: 0,
   });
-
+  React.useEffect(() => {
+    if (objects) {
+      setLayerObjects(objects);
+      console.log(objects);
+    }
+  }, [objects]);
   const token = useAppSelector((state) => state.token.token);
   React.useEffect(() => {
     if (activeObject) {
@@ -59,7 +69,21 @@ export default function () {
       console.log(distance, sizeInitial);
     }
   }, [activeObject]);
-
+  React.useEffect(() => {
+    let watcher = async () => {
+      if (objects) {
+        setLayerObjects([...objects]);
+      }
+    };
+    if (editor) {
+      editor.on("history:changed", watcher);
+    }
+    return () => {
+      if (editor) {
+        editor.off("history:changed", watcher);
+      }
+    };
+  }, [editor, objects]);
   // Gọi hàm với URL blob và tên khóa tùy chọn
   // var imageUrl = 'URL_CUA_IMAGE_BLOB';
   // var storageKey = 'ten_khoa_luu';
@@ -151,9 +175,18 @@ export default function () {
             console.log(srcAttributeValue)
             console.log(activeObject);
             console.log(response.data?.linkOnline);
-            // newOptions
             editor.objects.remove()
             editor.objects.add(newOptions);
+            layerObjects.map((layer, index) => {
+  // Nếu số thứ tự của object không bằng với sort, tiếp tục đẩy về phía sau
+  if (index !== activeObject.metadata.sort) {
+    editor.objects.sendToBack();
+    // Cập nhật lại số thứ tự của object sau khi đẩy về phía sau
+    index = layerObjects.findIndex(obj => obj === layer);
+  }
+  console.log(activeObject.metadata.sort); // In ra sort khi nó đúng với số thứ tự của object
+});
+
           } else {
             console.log("Failed to create the image file.");
             

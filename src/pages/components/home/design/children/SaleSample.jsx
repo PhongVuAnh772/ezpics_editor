@@ -288,7 +288,7 @@ function PurchaseForm() {
       ) : (
         <div style={{ textAlign: "center", width: "100%", paddingTop: "3%" }}>
           <p style={{ textAlign: "center", fontWeight: "bold" }}>
-            Không có dữ liệu, mời bạn tiếp tục mua sắm
+            Bạn chưa có mẫu thiết kế nào
           </p>
           <Button
             variant="contained"

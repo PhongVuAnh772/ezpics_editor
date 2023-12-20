@@ -18,6 +18,10 @@ import YourDesign from "./pages/components/home/design/YourDesign.jsx";
 import PurchaseForm from './pages/components/home/design/children/PurchaseForm.jsx'
 import SaleSample from './pages/components/home/design/children/SaleSample.jsx'
 import PrintedForm from './pages/components/home/design/children/PrintedForm.jsx'
+import TransactionHistory from './pages/components/transaction/TransactionHistory.jsx'
+import AuthorDesigner from './pages/components/author/authorDesigner.jsx'
+import Table from './pages/components/transaction/Table.jsx'
+import TableEcoin from './pages/components/transaction/TableEcoin.jsx'
 
 function Router() {
   return (
@@ -33,8 +37,9 @@ function Router() {
             <Route path="/" element={<ForYouPage />} />
             <Route path="/for-you" element={<ForYouPage />} />
           </Route>
-          <Route path="/category/:id" element={<Category />} />
+                  <Route path="/author" element={<AuthorDesigner />} />
 
+          <Route path="/category/:id" element={<Category />} />
           <Route
             path="/user-information"
             element={
@@ -43,6 +48,15 @@ function Router() {
               </RequireAuth>
             }
           />
+          <Route
+            path="/transaction"
+            element={
+              <RequireAuth>
+                <TransactionHistory />
+              </RequireAuth>
+            }
+          ><Route index path="table-1" element={<Table />} />
+            <Route path="table-2" element={<TableEcoin />} /></Route>
           <Route
             path="/user-information"
             element={

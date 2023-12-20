@@ -4,20 +4,38 @@ import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import AccountBalanceWalletOutlinedIcon from "@mui/icons-material/AccountBalanceWalletOutlined";
 import ShoppingCartOutlinedIcon from "@mui/icons-material/ShoppingCartOutlined";
 import MonetizationOnOutlinedIcon from "@mui/icons-material/MonetizationOnOutlined";
-
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes,
+  useLocation,
+  Outlet,
+  useOutletContext,
+  useNavigate,
+  Navigate,
+  useParams,
+} from "react-router-dom";
 const Widget = ({ type }) => {
   let data;
+    const navigate = useNavigate();
+
+  const min = 10;
+  const max = 99;
+const minSold = 0;
+  const maxSold = 4;
+  const amount = Math.floor(Math.random() * (max - min + 1)) + min;
+    const sold = Math.floor(Math.random() * (maxSold - minSold + 1)) + minSold;
 
   //temporary
-  const amount = 100;
   const diff = 20;
 
   switch (type) {
     case "user":
       data = {
-        title: "USERS",
+        title: "Số lượng giao dịch",
         isMoney: false,
-        link: "See all users",
+        link: "Xem thêm",
         icon: (
           <PersonOutlinedIcon
             className="icon"
@@ -31,9 +49,9 @@ const Widget = ({ type }) => {
       break;
     case "order":
       data = {
-        title: "ORDERS",
+        title: "Đã mua trong tuần",
         isMoney: false,
-        link: "View all orders",
+        link: "Xem thêm",
         icon: (
           <ShoppingCartOutlinedIcon
             className="icon"
@@ -47,9 +65,9 @@ const Widget = ({ type }) => {
       break;
     case "earning":
       data = {
-        title: "EARNINGS",
-        isMoney: true,
-        link: "View net earnings",
+        title: "Đã bán trong tuần",
+        isMoney: false,
+        link: "Xem thêm",
         icon: (
           <MonetizationOnOutlinedIcon
             className="icon"
@@ -83,16 +101,16 @@ const Widget = ({ type }) => {
       <div className="left">
         <span className="title">{data.title}</span>
         <span className="counter">
-          {data.isMoney && "$"} {amount}
+          {data.isMoney && "$"} {type === 'earning' ? sold : amount}
         </span>
-        <span className="link">{data.link}</span>
+        <span className="link" onClick={()=> navigate('/your-design/purchase-form')}>{data.link}</span>
       </div>
       <div className="right">
         <div className="percentage positive">
-          <KeyboardArrowUpIcon />
-          {diff} %
+          <KeyboardArrowUpIcon style={{color: 'rgb(255, 66, 78)'}}/>
         </div>
         {data.icon}
+        
       </div>
     </div>
   );

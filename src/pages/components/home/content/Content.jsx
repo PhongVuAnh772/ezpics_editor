@@ -806,7 +806,7 @@ export default function PersistentDrawerLeft() {
                         paddingLeft: 5
                       }}
                     >
-                      : <b>{infoUser[0]?.ecoin}</b>
+                      : <b>{infoUser[0]?.ecoin} eCoin</b> 
                     </p></div></>
                   )}
                 </div>
@@ -979,7 +979,8 @@ export default function PersistentDrawerLeft() {
                   width: "100%",
                   color: "inherit",
                   backgroundColor:
-                    location.pathname === "/f" ? "#ccc" : "transparent",
+                    location.pathname === "/project" ? "#ccc" : "transparent",
+                    borderRadius: "5px",
                 }}
               >
                 <Link
@@ -1164,7 +1165,7 @@ export default function PersistentDrawerLeft() {
                     }}
                   >
                     <Link
-                      to="/"
+                      to="/transaction"
                       style={{
                         display: "flex",
                         textDecoration: "none",
@@ -1184,7 +1185,7 @@ export default function PersistentDrawerLeft() {
                         alt=""
                         style={{ marginRight: 5, height: 20, width: 20 }}
                       />
-                      Lịch sử giao dịch
+                      Tổng quan giao dịch
                     </Link>
                   </li>
                   <li
@@ -1251,7 +1252,7 @@ export default function PersistentDrawerLeft() {
                         backgroundColor: "rgb(255, 66, 78)",
                         textTransform: "none",
                         fontWeight: "500",
-                        marginTop: "28.2px",
+                        marginTop: "15.2px",
                       }}
                       onClick={() => navigate("/download")}
                     >

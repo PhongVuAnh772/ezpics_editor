@@ -19,7 +19,7 @@ import PurchaseForm from './pages/components/home/design/children/PurchaseForm.j
 import SaleSample from './pages/components/home/design/children/SaleSample.jsx'
 import PrintedForm from './pages/components/home/design/children/PrintedForm.jsx'
 import TransactionHistory from './pages/components/transaction/TransactionHistory.jsx'
-import AuthorDesigner from './pages/components/author/authorDesigner.jsx'
+// import AuthorDesigner from './pages/components/author/authorDesigner.jsx'
 import Table from './pages/components/transaction/Table.jsx'
 import TableEcoin from './pages/components/transaction/TableEcoin.jsx'
 
@@ -37,7 +37,7 @@ function Router() {
             <Route path="/" element={<ForYouPage />} />
             <Route path="/for-you" element={<ForYouPage />} />
           </Route>
-                  <Route path="/author" element={<AuthorDesigner />} />
+                  {/* <Route path="/author" element={<AuthorDesigner />} /> */}
 
           <Route path="/category/:id" element={<Category />} />
           <Route

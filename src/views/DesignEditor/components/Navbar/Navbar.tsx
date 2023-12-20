@@ -40,7 +40,7 @@ const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
 }));
 
 export default function () {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const {
     setDisplayPreview,
@@ -154,7 +154,7 @@ export default function () {
       console.log("NO CURRENT DESIGN");
     }
   };
-  const handleSaveIcon = async() => {
+  const handleSaveIcon = async () => {
     const template = editor.scene.exportToJSON();
     const image = (await editor.renderer.render(template)) as string;
 
@@ -419,7 +419,6 @@ export default function () {
     const template = editor.scene.exportToJSON();
     const image = (await editor.renderer.render(template)) as string;
 
-    // downloadImage(image, "preview.png");
     console.log(JSON.stringify(parseGraphicJSON()));
     setLoading(true);
 
@@ -462,6 +461,10 @@ export default function () {
       setLoading(false);
     }
   };
+  const handleNotSave = () => {
+    navigate('/')
+
+  }
   const handleInputFileRefClick = () => {
     inputFileRef.current?.click();
   };
@@ -494,7 +497,7 @@ export default function () {
           <div style={{ color: "#ffffff" }}>
             <img
               src={EzpicsLogo}
-              style={{ width: 60, height: 60,cursor: "pointer" }}
+              style={{ width: 60, height: 60, cursor: "pointer" }}
               onClick={() => handleReturnHome()}
             />
           </div>
@@ -666,7 +669,7 @@ export default function () {
             Bạn muốn lưu mẫu thiết kế này trước khi rời đi chứ ?
           </p>
 
-          <Button
+          <div style={{ display: 'flex', flexDirection: "row", width: '100%', paddingRight: '5%', paddingLeft: '5%' }}><Button
             variant="contained"
             size="medium"
             style={{
@@ -677,8 +680,8 @@ export default function () {
               backgroundColor: "rgb(255, 66, 78)",
               marginTop: "40px",
               width: "50%",
-                                fontFamily: "Helvetica, Arial, sans-serif"
-
+              fontFamily: "Helvetica, Arial, sans-serif",
+              marginRight: '5%'
             }}
             onClick={() => {
               handleSaveIcon();
@@ -691,6 +694,30 @@ export default function () {
               "Lưu mẫu thiết kế "
             )}
           </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "black",
+                backgroundColor: "rgb(241, 242, 246)",
+                marginTop: "40px",
+                width: "50%",
+                fontFamily: "Helvetica, Arial, sans-serif"
+              }}
+              onClick={() => {
+                handleNotSave();
+              }}
+            >
+              {" "}
+              {loadingBuyingFunc ? (
+                <span className="loaderNew"></span>
+              ) : (
+                "Không lưu"
+              )}
+            </Button></div>
         </Box>
       </Modal>
     </>

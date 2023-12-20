@@ -152,8 +152,8 @@ export default function () {
             console.log(activeObject);
             console.log(response.data?.linkOnline);
             // newOptions
-            // editor.objects.remove()
-            // editor.objects.add(newOptions);
+            editor.objects.remove()
+            editor.objects.add(newOptions);
           } else {
             console.log("Failed to create the image file.");
             

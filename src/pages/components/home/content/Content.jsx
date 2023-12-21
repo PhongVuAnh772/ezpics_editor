@@ -71,7 +71,10 @@ import paintRoller from "./assets/paint-roller (1).png";
 import DownloadIcon from "@mui/icons-material/Download";
 import banknote from "./banknotes.png";
 import coin from "./coin.png";
-import downloadIcon from './assets/direct-download (1).png'
+import downloadIcon from "./assets/direct-download (1).png";
+// import "../../../../../src/pages/components/home/category/loadingFavorite.css";
+
+
 
 const drawerWidth = 240;
 
@@ -133,7 +136,7 @@ export default function PersistentDrawerLeft() {
     };
     getDataUser();
   }, []);
-    const [selectedFile, setSelectedFile] = React.useState(null);
+  const [selectedFile, setSelectedFile] = React.useState(null);
 
   useEffect(() => {
     setLoadingModal(true);
@@ -332,7 +335,7 @@ export default function PersistentDrawerLeft() {
       }),
     })
   );
-
+  const [loadingAwesome, setLoadingAwesome] = React.useState(false);
   const AppBar = styled(MuiAppBar, {
     shouldForwardProp: (prop) => prop !== "open",
   })(({ theme, open }) => ({
@@ -355,6 +358,8 @@ export default function PersistentDrawerLeft() {
     position: "relative",
     zIndex: theme.zIndex.drawer + 1,
   }));
+  
+  
   function checkTokenCookie() {
     // Lấy tất cả các cookies
     var allCookies = document.cookie;
@@ -431,10 +436,11 @@ export default function PersistentDrawerLeft() {
       navigate("/", { replace: true });
     }, 1500);
   };
+  const [loadingButtonModalCreate,setLoadingButtonModalCreate] = React.useState(false)
+  // loadingAwesome,
   const handleCreate = async (data) => {
     const response = await axios.post(`${network}/createProductAPI`, {
-      background:
-        data.image,
+      background: data.image,
       token: checkTokenCookie(),
       type: "user_create",
       category_id: 0,
@@ -443,9 +449,16 @@ export default function PersistentDrawerLeft() {
       // data.image
     });
     if (response && response.data && response.data.code === 0) {
-      navigate(`/design`, {
-                    state: { id: response.data.product_id, token: checkTokenCookie() },
-                  });
+      
+
+      setLoadingAwesome(true);  
+      setTimeout(function () {
+        setLoadingAwesome(false);
+
+        navigate(`/design`, {
+          state: { id: response.data.product_id, token: checkTokenCookie() },
+        });
+      }, 1500);
       // console.log(response.data.product_id);
     }
     //
@@ -468,28 +481,40 @@ export default function PersistentDrawerLeft() {
   };
   const handleCreateCustom = async (e) => {
     e.preventDefault();
+        setLoadingButtonModalCreate(true)
+
     if (selectedFile) {
-      const response = await axios.post(`${network}/createProductAPI`, {
-      token: checkTokenCookie(),
-      type: "user_create",
-      category_id: 0,
-      sale_price: 0,
-      name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
-      background: selectedFile
-    },
-      {
-        headers: {
-          "Content-Type": "multipart/form-data",
+      const response = await axios.post(
+        `${network}/createProductAPI`,
+        {
+          token: checkTokenCookie(),
+          type: "user_create",
+          category_id: 0,
+          sale_price: 0,
+          name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
+          background: selectedFile,
         },
-      });
-    if (response && response.data && response.data.code === 0) {
-      navigate(`/design`, {
-                    state: { id: response.data.product_id, token: checkTokenCookie() },
-                  });
-    }
-    }
-    else {
-      console.log('Không thấy ảnh')
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response && response.data && response.data.code === 0) {
+        setLoadingButtonModalCreate(false)
+      setOpenModalCreating(false);
+        setLoadingAwesome(true);
+        
+        setTimeout(function () {
+          setLoadingAwesome(false);
+
+          navigate(`/design`, {
+            state: { id: response.data.product_id, token: checkTokenCookie() },
+          });
+        }, 1500);
+      }
+    } else {
+      console.log("Không thấy ảnh");
     }
     // 23979
     // console.log(response.data);
@@ -960,6 +985,8 @@ export default function PersistentDrawerLeft() {
             sx={{
               width: drawerWidth,
               flexShrink: 0,
+                              transformStyle:'unset',
+
               "& .MuiDrawer-paper": {
                 width: drawerWidth,
                 boxSizing: "border-box",
@@ -968,7 +995,7 @@ export default function PersistentDrawerLeft() {
             }}
             variant="persistent"
             anchor="left"
-            open={open}
+            open={true}
             style={{ paddingRight: 10 }}
           >
             <DrawerHeader></DrawerHeader>
@@ -1769,14 +1796,13 @@ export default function PersistentDrawerLeft() {
                           type="file"
                           name="fileUpload"
                           accept="image/*"
-                              onChange={handleFileChange}
-
+                          onChange={handleFileChange}
                         />
 
                         <label
                           for="file-upload"
                           id="file-drag"
-                          style={{ height: 200,cursor: "pointer" }}
+                          style={{ height: 200, cursor: "pointer" }}
                         >
                           <img
                             id="file-image"
@@ -1785,7 +1811,17 @@ export default function PersistentDrawerLeft() {
                             class="hidden"
                           />
                           <div id="start---create-newing">
-                            <img src={downloadIcon} alt="" style={{width: 30,height: 30,alignSelf:'center',margin:'0 auto',marginBottom:'2%'}}/>
+                            <img
+                              src={downloadIcon}
+                              alt=""
+                              style={{
+                                width: 30,
+                                height: 30,
+                                alignSelf: "center",
+                                margin: "0 auto",
+                                marginBottom: "2%",
+                              }}
+                            />
                             <div id="notimage" class="hidden">
                               Hãy chọn ảnh
                             </div>
@@ -1808,11 +1844,24 @@ export default function PersistentDrawerLeft() {
                     </div>
 
                     <div className="action---create-newing">
-                      {selectedFile!==null ? <button className="action-button---create-newing" style={{cursor:'pointer'}} onClick={(e) => handleCreateCustom(e)}>
-                        Bắt đầu tạo mẫu
-                      </button> : <button className="action-button---create-newing" style={{backgroundColor: "rgba(255, 66, 78,0.3)"}} disabled>
-                        Bắt đầu tạo mẫu
-                      </button>}
+                      {selectedFile !== null ? (
+                        <button
+                          className="action-button---create-newing"
+                          style={{ cursor: "pointer",display:'flex',alignItems: "center",justifyContent: "center"}}
+                          onClick={(e) => handleCreateCustom(e)}
+                        >
+                          
+                          {loadingButtonModalCreate ? <span class="loader-create-film"></span>: 'Bắt đầu tạo mẫu'}
+                        </button>
+                      ) : (
+                        <button
+                          className="action-button---create-newing"
+                          style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
+                          disabled
+                        >
+                          Bắt đầu tạo mẫu
+                        </button>
+                      )}
                     </div>
                   </form>
                   <div className="card-info---create-newing">
@@ -1843,6 +1892,47 @@ export default function PersistentDrawerLeft() {
             </div>
           </>
         )}
+        {loadingAwesome && (
+  <div
+    className="preserve-3d"
+    style={{
+      position: "absolute",
+      width: "100%",
+      height: "100%",
+      backgroundColor: "rgba(0,0,0,0.4)",
+      zIndex: 99999,
+      transition: "fadeIn 2s ease-in-out",
+      display: "flex",
+      justifyContent: "center",
+      paddingTop: "20%",
+      boxSizing: "border-box",
+      transformStyle: "preserve-3d",
+    }}
+  >
+    <div style={{ width: "100px", height: "100px" }} className="loading-vspet">
+      <div className="scene-vspet">
+        <div className="shadow-vspet"></div>
+        <div className="jumper-vspet">
+          <div className="spinner-vspet">
+            <div className="scaler-vspet">
+              <div className="loader-vspet">
+                <div className="cuboid-vspet">
+                  <div className="cuboid__side-vspet"></div>
+                  <div className="cuboid__side-vspet"></div>
+                  <div className="cuboid__side-vspet"></div>
+                  <div className="cuboid__side-vspet"></div>
+                  <div className="cuboid__side-vspet"></div>
+                  <div className="cuboid__side-vspet"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+)}
+
       </Box>
     </>
   );

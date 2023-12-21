@@ -159,7 +159,9 @@ $dark-text: #5f6982;
         cursor: pointer;
     }
 }
-
-#start---create-newing {
-
-}
+*,
+*:after,
+*:before {
+	box-sizing: border-box;
+	transform-style: preserve-3d;
+} 

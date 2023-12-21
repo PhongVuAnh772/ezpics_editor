@@ -1,4 +1,4 @@
-import * as React from "react";
+import React, { useEffect } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -69,13 +69,14 @@ import gift from "./assets/gift-box.png";
 import { CHANGE_VALUE_TOKEN } from "../../../store/slice/authSlice";
 import paintRoller from "./assets/paint-roller (1).png";
 import DownloadIcon from "@mui/icons-material/Download";
-import banknote from './banknotes.png'
-import coin from './coin.png'
-
+import banknote from "./banknotes.png";
+import coin from "./coin.png";
+import downloadIcon from './assets/direct-download (1).png'
 
 const drawerWidth = 240;
 
 export default function PersistentDrawerLeft() {
+  const [loadingModal, setLoadingModal] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
   const theme = useTheme();
@@ -83,8 +84,12 @@ export default function PersistentDrawerLeft() {
   const location = useLocation();
   const [openModalPro, setOpenModalPro] = React.useState(false);
   const [openModalCreating, setOpenModalCreating] = React.useState(false);
-  const network = useSelector((state) => state.network.network);
+  const network = useSelector((state) => state.ipv4.network);
   const infoUser = useSelector((state) => state.user.info);
+  const [creatingBucket, setCreatingBucket] = React.useState(false);
+  const [dataSizeBox, setDataSizeBox] = React.useState([]);
+  const [hoveredIndex, setHoveredIndex] = React.useState(null);
+
   function checkTokenCookie() {
     var allCookies = document.cookie;
 
@@ -128,7 +133,31 @@ export default function PersistentDrawerLeft() {
     };
     getDataUser();
   }, []);
+    const [selectedFile, setSelectedFile] = React.useState(null);
 
+  useEffect(() => {
+    setLoadingModal(true);
+
+    const getData = async () => {
+      try {
+        const response = await axios.get(`${network}/getSizeProductAPI`);
+        if (response && response.data) {
+          console.log(response.data);
+          setDataSizeBox(response.data);
+          setLoadingModal(false);
+        } else {
+          console.error("Invalid response format");
+          setLoadingModal(false);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+        setLoadingModal(false);
+      }
+    };
+
+    getData();
+  }, []);
+  const [showWidthHeight, setShowWidthHeight] = React.useState(false);
   const navigate = useNavigate();
   const authentication = checkTokenCookie();
 
@@ -326,7 +355,35 @@ export default function PersistentDrawerLeft() {
     position: "relative",
     zIndex: theme.zIndex.drawer + 1,
   }));
+  function checkTokenCookie() {
+    // Lấy tất cả các cookies
+    var allCookies = document.cookie;
 
+    // Tách các cookies thành mảng các cặp key-value
+    var cookiesArray = allCookies.split("; ");
+
+    // Tìm cookie có tên là "token"
+    var tokenCookie;
+    for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i];
+      var cookieParts = cookie.split("=");
+      var cookieName = cookieParts[0];
+      var cookieValue = cookieParts[1];
+
+      if (cookieName === "token") {
+        tokenCookie = cookieValue;
+        break;
+      }
+    }
+
+    // Kiểm tra nếu đã tìm thấy cookie "token"
+    if (tokenCookie) {
+      console.log('Giá trị của cookie "token" là:', tokenCookie);
+      return tokenCookie.replace(/^"|"$/g, "");
+    } else {
+      console.log('Không tìm thấy cookie có tên là "token"');
+    }
+  }
   const DrawerHeader = styled("div")(({ theme }) => ({
     display: "flex",
     alignItems: "center",
@@ -374,6 +431,70 @@ export default function PersistentDrawerLeft() {
       navigate("/", { replace: true });
     }, 1500);
   };
+  const handleCreate = async (data) => {
+    const response = await axios.post(`${network}/createProductAPI`, {
+      background:
+        data.image,
+      token: checkTokenCookie(),
+      type: "user_create",
+      category_id: 0,
+      sale_price: 0,
+      name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
+      // data.image
+    });
+    if (response && response.data && response.data.code === 0) {
+      navigate(`/design`, {
+                    state: { id: response.data.product_id, token: checkTokenCookie() },
+                  });
+      // console.log(response.data.product_id);
+    }
+    //
+    // 23979
+    console.log(response.data);
+  };
+  const handleFileChange = (event) => {
+    const fileInput = event.target;
+    const files = fileInput.files;
+
+    if (files.length > 0) {
+      const file = files[0];
+      console.log("Selected file:", file);
+
+      // Lưu trữ thông tin về tệp tin trong trạng thái của component
+      setSelectedFile(file);
+
+      // Bạn có thể thực hiện các xử lý khác tại đây
+    }
+  };
+  const handleCreateCustom = async (e) => {
+    e.preventDefault();
+    if (selectedFile) {
+      const response = await axios.post(`${network}/createProductAPI`, {
+      token: checkTokenCookie(),
+      type: "user_create",
+      category_id: 0,
+      sale_price: 0,
+      name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
+      background: selectedFile
+    },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+    if (response && response.data && response.data.code === 0) {
+      navigate(`/design`, {
+                    state: { id: response.data.product_id, token: checkTokenCookie() },
+                  });
+    }
+    }
+    else {
+      console.log('Không thấy ảnh')
+    }
+    // 23979
+    // console.log(response.data);
+    // console.log(selectedFile)
+  };
   return (
     <>
       <Box
@@ -416,7 +537,14 @@ export default function PersistentDrawerLeft() {
               <div style={textHeader}>BLOG</div>
               <div style={textHeader}>Liên hệ</div>
               <Box sx={{ flexGrow: 1 }} />
-              <Box sx={{ display: { xs: "none", md: "flex" } }}>
+              <Box
+                sx={{
+                  display: { xs: "none", md: "flex" },
+                  flexDirection: "row", // Đặt hướng của flexbox là cột
+                  alignItems: "center", // Đặt căn giữa theo chiều ngang
+                  position: "relative",
+                }}
+              >
                 <Tooltip title="Tải xuống ứng dụng">
                   <IconButton
                     size="large"
@@ -474,17 +602,155 @@ export default function PersistentDrawerLeft() {
                     textTransform: "none",
                     color: "white",
                     backgroundColor: "rgb(255, 66, 78)",
+                    position: "relative",
                   }}
                   onClick={() => {
-                    window.scrollTo({
-                      top: 70,
-                      behavior: "smooth", // This makes the scroll animation smooth
-                    });
-                    setOpenModalCreating(true);
+                    if (authentication) {
+                      window.scrollTo({
+                        top: 0,
+                        behavior: "smooth",
+                      });
+                      setCreatingBucket(!creatingBucket);
+                      // setOpenModalCreating(true);
+                    } else {
+                      navigate("/login");
+                    }
                   }}
                 >
                   Tạo thiết kế
                 </Button>
+                {creatingBucket && (
+                  <div className="new-creating---template___dashboard">
+                    <div
+                      style={{
+                        paddingLeft: 12,
+                        paddingTop: 5,
+                        overflowX: "hidden",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        paddingBottom: 5,
+                        borderBottom: "0.5px solid rgb(191, 196, 200)",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "rgb(242, 243, 245)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "white";
+                      }}
+                      onClick={() => {
+                        setCreatingBucket(false);
+                        setOpenModalCreating(true);
+                        document.body.style.overflowY = "hidden";
+                      }}
+                    >
+                      <svg
+                        width="24"
+                        height="24"
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M3 6.165V19a2 2 0 0 0 2 2h12.835c-.06-.05-.12-.102-.176-.159L16.318 19.5H5a.5.5 0 0 1-.5-.5V7.682L3.159 6.341A2.275 2.275 0 0 1 3 6.165ZM17.28 4.22a.75.75 0 0 1 0 1.06l-2 2a.75.75 0 1 1-1.06-1.06l.72-.72H6.56l.72.72a.75.75 0 0 1-1.06 1.06l-2-2a.75.75 0 0 1 0-1.06l2-2a.75.75 0 0 1 1.06 1.06L6.56 4h8.38l-.72-.72a.75.75 0 0 1 1.06-1.06l2 2ZM19.78 19.78a.75.75 0 0 1-1.06 0l-2-2a.75.75 0 1 1 1.06-1.06l.72.72V9.06l-.72.72a.75.75 0 1 1-1.06-1.06l2-2a.75.75 0 0 1 1.06 0l2 2a.75.75 0 0 1-1.06 1.06L20 9.06v8.38l.72-.72a.75.75 0 1 1 1.06 1.06l-2 2Z"
+                          fill="black"
+                        ></path>
+                      </svg>
+                      <p
+                        style={{
+                          margin: 0,
+                          paddingLeft: 10,
+                          color: "rgb(13, 18, 22)",
+                          fontWeight: 400,
+                          fontFamily: "Noto Sans",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Cỡ tùy chỉnh
+                      </p>
+                    </div>
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "rgba(13, 18, 22, 0.7)",
+                        fontSize: "14px",
+                        fontWeight: 600,
+                        paddingTop: 5,
+                        paddingLeft: 12,
+                      }}
+                    >
+                      Đề xuất
+                    </p>
+                    <div style={{ display: "flex", flexDirection: "column" }}>
+                      {dataSizeBox.map((data, index) => {
+                        return (
+                          <div
+                            key={index}
+                            style={{
+                              paddingLeft: 12,
+                              paddingTop: 5,
+                              overflowX: "hidden",
+                              display: "flex",
+                              flexDirection: "row",
+                              alignItems: "center",
+                              paddingBottom: 5,
+                              cursor: "pointer",
+                            }}
+                            data-size={index}
+                            onMouseEnter={(e) => {
+                              e.currentTarget.style.backgroundColor =
+                                "rgb(242, 243, 245)";
+                              // setHoveredIndex(index)
+                            }}
+                            onMouseLeave={(e) => {
+                              e.currentTarget.style.backgroundColor = "white";
+                              // setHoveredIndex(null)
+                            }}
+                            onClick={() => {
+                              handleCreate(data);
+                              // console.log(data)
+                            }}
+                          >
+                            <img
+                              src={data.icon}
+                              alt=""
+                              style={{ width: 24, height: 24 }}
+                            />
+                            <p
+                              style={{
+                                margin: 0,
+                                paddingLeft: 10,
+                                color: "rgb(13, 18, 22)",
+                                fontWeight: 400,
+                                fontFamily: "Noto Sans",
+                                fontSize: "14px",
+                              }}
+                            >
+                              {data.name}
+                            </p>
+                            {
+                              <span
+                                style={{
+                                  margin: 0,
+                                  paddingLeft: 10,
+                                  color: "rgb(13, 18, 22)",
+                                  fontWeight: 400,
+                                  fontFamily: "Noto Sans",
+                                  fontSize: "12px",
+                                  color: "rgba(13, 18, 22, 0.7)",
+                                }}
+                              >
+                                {data.width} x {data.height} px
+                              </span>
+                            }
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
               </Box>
 
               <Box
@@ -782,32 +1048,58 @@ export default function PersistentDrawerLeft() {
                   )}
                   {authentication && (
                     <>
-                    <div style={{display:'flex',flexDirection: 'row',alignItems:"center"}}><img src={banknote} alt="" style={{width: 20,height:20}}/><p
-                      style={{
-                        color: "rgba(13, 18, 22, 0.7)",
-                        fontSize: "15px",
-                        fontFamily:
-                          "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                        lineHeight: "0px",
-                        paddingLeft: 5,
-                        fontWeight: "bold",
-                      }}
-                    >
-                      : <b>{formatPrice(infoUser[0]?.account_balance)}₫</b>
-                    </p></div>
-                    <div style={{display:'flex',flexDirection: 'row',alignItems:"center"}}><img src={coin} alt="" style={{width: 20,height:20}}/>
-                    <p
-                      style={{
-                        color: "rgba(13, 18, 22, 0.7)",
-                        fontSize: "15px",
-                        fontFamily:
-                          "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                        lineHeight: "0px",
-                        paddingLeft: 5
-                      }}
-                    >
-                      : <b>{infoUser[0]?.ecoin} eCoin</b> 
-                    </p></div></>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={banknote}
+                          alt=""
+                          style={{ width: 20, height: 20 }}
+                        />
+                        <p
+                          style={{
+                            color: "rgba(13, 18, 22, 0.7)",
+                            fontSize: "15px",
+                            fontFamily:
+                              "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                            lineHeight: "0px",
+                            paddingLeft: 5,
+                            fontWeight: "bold",
+                          }}
+                        >
+                          : <b>{formatPrice(infoUser[0]?.account_balance)}₫</b>
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          alignItems: "center",
+                        }}
+                      >
+                        <img
+                          src={coin}
+                          alt=""
+                          style={{ width: 20, height: 20 }}
+                        />
+                        <p
+                          style={{
+                            color: "rgba(13, 18, 22, 0.7)",
+                            fontSize: "15px",
+                            fontFamily:
+                              "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                            lineHeight: "0px",
+                            paddingLeft: 5,
+                          }}
+                        >
+                          : <b>{infoUser[0]?.ecoin} eCoin</b>
+                        </p>
+                      </div>
+                    </>
                   )}
                 </div>
               </div>
@@ -840,6 +1132,7 @@ export default function PersistentDrawerLeft() {
                 }}
                 onClick={() => {
                   setOpenModalPro(true);
+                  // document.body.style
                   window.scrollTo({
                     top: 0,
                     behavior: "smooth", // This makes the scroll animation smooth
@@ -980,7 +1273,7 @@ export default function PersistentDrawerLeft() {
                   color: "inherit",
                   backgroundColor:
                     location.pathname === "/project" ? "#ccc" : "transparent",
-                    borderRadius: "5px",
+                  borderRadius: "5px",
                 }}
               >
                 <Link
@@ -1256,8 +1549,8 @@ export default function PersistentDrawerLeft() {
                       }}
                       onClick={() => navigate("/download")}
                     >
-                      <DownloadIcon style={{ color: "white",}} />
-                      <p style={{paddingLeft: 3}}>Tải ứng dụng</p>
+                      <DownloadIcon style={{ color: "white" }} />
+                      <p style={{ paddingLeft: 3 }}>Tải ứng dụng</p>
                     </Button>
                   </li>
                 </>
@@ -1434,7 +1727,7 @@ export default function PersistentDrawerLeft() {
           <>
             <div className="ezpics-pro-modal" style={ezpicsProContainer}>
               <div
-                className="container"
+                className="container-modal-create"
                 style={{ animation: "fadeIn 0.5s ease-in-out" }}
               >
                 <div className="card---create-newing">
@@ -1448,7 +1741,7 @@ export default function PersistentDrawerLeft() {
                   </div>
 
                   <form className="card-form---create-newing">
-                    <div className="input---create-newing">
+                    {/* <div className="input---create-newing">
                       <input
                         type="text"
                         className="input-field---create-newing"
@@ -1457,7 +1750,7 @@ export default function PersistentDrawerLeft() {
                       <label className="input-label---create-newing">
                         Tên mẫu thiết kế
                       </label>
-                    </div>
+                    </div> */}
 
                     <div className="input---create-newing">
                       {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
@@ -1469,19 +1762,21 @@ export default function PersistentDrawerLeft() {
                       <form
                         id="file-upload-form"
                         class="uploader"
-                        style={{ marginTop: 30 }}
+                        style={{ marginTop: 40 }}
                       >
                         <input
                           id="file-upload"
                           type="file"
                           name="fileUpload"
                           accept="image/*"
+                              onChange={handleFileChange}
+
                         />
 
                         <label
                           for="file-upload"
                           id="file-drag"
-                          style={{ height: 200 }}
+                          style={{ height: 200,cursor: "pointer" }}
                         >
                           <img
                             id="file-image"
@@ -1490,8 +1785,7 @@ export default function PersistentDrawerLeft() {
                             class="hidden"
                           />
                           <div id="start---create-newing">
-                            <i class="fa fa-download" aria-hidden="true"></i>
-                            <div>Chọn ảnh</div>
+                            <img src={downloadIcon} alt="" style={{width: 30,height: 30,alignSelf:'center',margin:'0 auto',marginBottom:'2%'}}/>
                             <div id="notimage" class="hidden">
                               Hãy chọn ảnh
                             </div>
@@ -1514,9 +1808,11 @@ export default function PersistentDrawerLeft() {
                     </div>
 
                     <div className="action---create-newing">
-                      <button className="action-button---create-newing">
+                      {selectedFile!==null ? <button className="action-button---create-newing" style={{cursor:'pointer'}} onClick={(e) => handleCreateCustom(e)}>
                         Bắt đầu tạo mẫu
-                      </button>
+                      </button> : <button className="action-button---create-newing" style={{backgroundColor: "rgba(255, 66, 78,0.3)"}} disabled>
+                        Bắt đầu tạo mẫu
+                      </button>}
                     </div>
                   </form>
                   <div className="card-info---create-newing">
@@ -1525,19 +1821,25 @@ export default function PersistentDrawerLeft() {
                       <a href="#"> Mẫu thiết kế có sẵn</a>
                     </p>
                   </div>
+                  <img
+                    src={xMark}
+                    alt=""
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: -30,
+                      right: 0,
+                      top: 0,
+                      cursor: "pointer",
+                      position: "absolute",
+                    }}
+                    onClick={() => {
+                      setOpenModalCreating(false);
+                      document.body.style.overflowY = "auto";
+                    }}
+                  />
                 </div>
               </div>
-              <img
-                src={xMark}
-                alt=""
-                style={{
-                  width: 20,
-                  height: 20,
-                  marginLeft: 10,
-                  cursor: "pointer",
-                }}
-                onClick={() => setOpenModalCreating(false)}
-              />
             </div>
           </>
         )}

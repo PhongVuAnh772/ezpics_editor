@@ -3,7 +3,7 @@
 
 // Vars and Reset
 // 
-$theme: #454cad;
+$theme: rgb(255, 66, 78);
 $dark-text: #5f6982;
 
 // Upload Demo
@@ -158,4 +158,8 @@ $dark-text: #5f6982;
         border-color: $theme;
         cursor: pointer;
     }
+}
+
+#start---create-newing {
+
 }

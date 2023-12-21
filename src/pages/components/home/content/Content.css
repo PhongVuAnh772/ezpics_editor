@@ -19,15 +19,15 @@ input {
 }
 
 .card---create-newing {
-    margin: 1rem auto;
-    display: flex;
+    margin: -2.5rem auto;
     flex-direction: column;
     width: 100%;
     max-width: 425px;
     border-radius: 10px;
     box-shadow: 0 10px 20px 0 rgba(#999, .25);
     padding: .75rem;
-    
+    background-color: white;
+    position: relative;
 }
 
 .card-image---create-newing {
@@ -76,7 +76,7 @@ input {
 }
 
 .input-label---create-newing {
-    color: #8597a3;
+    color: #606365;
     position: absolute;
     top: 1.5rem;
     transition: .25s ease;
@@ -113,7 +113,7 @@ input {
     padding: 10px;
     width: 100%;
     font-weight: 500;
-    background-color: #6658d3;
+    background-color: rgb(255, 66, 78);
     border-radius: 6px;
     color: #FFF;
     border: 0;
@@ -176,4 +176,36 @@ input {
     100% {
         transform: rotate(360deg);
     }
+}
+
+.container-modal-create {
+
+}
+
+.new-creating---template___dashboard {
+    width: 500px;
+    height: 500px;
+    max-height: 500px;
+    background-color: white;
+    position: absolute;
+    z-index: 99999;
+    right: 0;
+    top: 55px;
+    box-shadow: 10px 10px 20px 10px rgba(#999, 1);
+    border-radius: 5px;
+    padding-top:3px;
+    overflow-y: hidden;
+}
+
+.new-creating---template___dashboard:hover {
+    overflow-y: auto;
+}
+
+[data-size] span {
+    display: none;
+}
+
+/* Hiển thị thông tin width và height khi hover vào phần tử */
+[data-size]:hover span {
+    display: block;
 }

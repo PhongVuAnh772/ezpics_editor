@@ -74,8 +74,6 @@ import coin from "./coin.png";
 import downloadIcon from "./assets/direct-download (1).png";
 // import "../../../../../src/pages/components/home/category/loadingFavorite.css";
 
-
-
 const drawerWidth = 240;
 
 export default function PersistentDrawerLeft() {
@@ -358,8 +356,7 @@ export default function PersistentDrawerLeft() {
     position: "relative",
     zIndex: theme.zIndex.drawer + 1,
   }));
-  
-  
+
   function checkTokenCookie() {
     // Lấy tất cả các cookies
     var allCookies = document.cookie;
@@ -436,7 +433,8 @@ export default function PersistentDrawerLeft() {
       navigate("/", { replace: true });
     }, 1500);
   };
-  const [loadingButtonModalCreate,setLoadingButtonModalCreate] = React.useState(false)
+  const [loadingButtonModalCreate, setLoadingButtonModalCreate] =
+    React.useState(false);
   // loadingAwesome,
   const handleCreate = async (data) => {
     const response = await axios.post(`${network}/createProductAPI`, {
@@ -449,9 +447,7 @@ export default function PersistentDrawerLeft() {
       // data.image
     });
     if (response && response.data && response.data.code === 0) {
-      
-
-      setLoadingAwesome(true);  
+      setLoadingAwesome(true);
       setTimeout(function () {
         setLoadingAwesome(false);
 
@@ -481,7 +477,7 @@ export default function PersistentDrawerLeft() {
   };
   const handleCreateCustom = async (e) => {
     e.preventDefault();
-        setLoadingButtonModalCreate(true)
+    setLoadingButtonModalCreate(true);
 
     if (selectedFile) {
       const response = await axios.post(
@@ -501,10 +497,11 @@ export default function PersistentDrawerLeft() {
         }
       );
       if (response && response.data && response.data.code === 0) {
-        setLoadingButtonModalCreate(false)
-      setOpenModalCreating(false);
+        setLoadingButtonModalCreate(false);
+        setOpenModalCreating(false);
         setLoadingAwesome(true);
-        
+        document.body.style.overflowY = "auto";
+
         setTimeout(function () {
           setLoadingAwesome(false);
 
@@ -778,9 +775,7 @@ export default function PersistentDrawerLeft() {
                 )}
               </Box>
 
-              <Box
-                sx={{ flexGrow: 0, marginLeft: "20px", overflowY: "hidden" }}
-              >
+              <Box sx={{ flexGrow: 0, marginLeft: "20px" }}>
                 {authentication ? (
                   <Tooltip title="Cá nhân">
                     <IconButton
@@ -985,7 +980,7 @@ export default function PersistentDrawerLeft() {
             sx={{
               width: drawerWidth,
               flexShrink: 0,
-                              transformStyle:'unset',
+              transformStyle: "unset",
 
               "& .MuiDrawer-paper": {
                 width: drawerWidth,
@@ -1847,11 +1842,19 @@ export default function PersistentDrawerLeft() {
                       {selectedFile !== null ? (
                         <button
                           className="action-button---create-newing"
-                          style={{ cursor: "pointer",display:'flex',alignItems: "center",justifyContent: "center"}}
+                          style={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
                           onClick={(e) => handleCreateCustom(e)}
                         >
-                          
-                          {loadingButtonModalCreate ? <span class="loader-create-film"></span>: 'Bắt đầu tạo mẫu'}
+                          {loadingButtonModalCreate ? (
+                            <span class="loader-create-film"></span>
+                          ) : (
+                            "Bắt đầu tạo mẫu"
+                          )}
                         </button>
                       ) : (
                         <button
@@ -1892,47 +1895,49 @@ export default function PersistentDrawerLeft() {
             </div>
           </>
         )}
-        {loadingAwesome && (
-  <div
-    className="preserve-3d"
-    style={{
-      position: "absolute",
-      width: "100%",
-      height: "100%",
-      backgroundColor: "rgba(0,0,0,0.4)",
-      zIndex: 99999,
-      transition: "fadeIn 2s ease-in-out",
-      display: "flex",
-      justifyContent: "center",
-      paddingTop: "20%",
-      boxSizing: "border-box",
-      transformStyle: "preserve-3d",
-    }}
-  >
-    <div style={{ width: "100px", height: "100px" }} className="loading-vspet">
-      <div className="scene-vspet">
-        <div className="shadow-vspet"></div>
-        <div className="jumper-vspet">
-          <div className="spinner-vspet">
-            <div className="scaler-vspet">
-              <div className="loader-vspet">
-                <div className="cuboid-vspet">
-                  <div className="cuboid__side-vspet"></div>
-                  <div className="cuboid__side-vspet"></div>
-                  <div className="cuboid__side-vspet"></div>
-                  <div className="cuboid__side-vspet"></div>
-                  <div className="cuboid__side-vspet"></div>
-                  <div className="cuboid__side-vspet"></div>
+        {true && (
+          <div
+            className="preserve-3d"
+            style={{
+              position: "absolute",
+              width: "100%",
+              height: "100%",
+              backgroundColor: "rgba(0,0,0,0.4)",
+              zIndex: 99999,
+              transition: "fadeIn 2s ease-in-out",
+              display: "flex",
+              justifyContent: "center",
+              paddingTop: "20%",
+              boxSizing: "border-box",
+              transformStyle: "preserve-3d",
+            }}
+          >
+            <div
+              style={{ width: "100px", height: "100px" }}
+              className="loading-vspet"
+            >
+              <div className="scene-vspet">
+                <div className="shadow-vspet"></div>
+                <div className="jumper-vspet">
+                  <div className="spinner-vspet">
+                    <div className="scaler-vspet">
+                      <div className="loader-vspet">
+                        <div className="cuboid-vspet">
+                          <div className="cuboid__side-vspet"></div>
+                          <div className="cuboid__side-vspet"></div>
+                          <div className="cuboid__side-vspet"></div>
+                          <div className="cuboid__side-vspet"></div>
+                          <div className="cuboid__side-vspet"></div>
+                          <div className="cuboid__side-vspet"></div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
-)}
-
+        )}
       </Box>
     </>
   );

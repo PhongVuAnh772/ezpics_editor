@@ -1895,7 +1895,7 @@ export default function PersistentDrawerLeft() {
             </div>
           </>
         )}
-        {true && (
+        {loadingAwesome && (
           <div
             className="preserve-3d"
             style={{

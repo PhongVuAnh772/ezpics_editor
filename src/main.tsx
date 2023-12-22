@@ -4,6 +4,7 @@ import Router from "./Router";
 import Container from "./Container";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import { BrowserRouter, Routes, Route,useLocation } from "react-router-dom";
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <Provider>
@@ -20,7 +21,8 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       theme="dark"
     />
     <Container>
-      <Router />
+      <BrowserRouter><Router /></BrowserRouter>
+      
     </Container>
   </Provider>
 );

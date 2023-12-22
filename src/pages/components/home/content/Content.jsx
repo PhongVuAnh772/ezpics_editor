@@ -6,6 +6,7 @@ import {
   Routes,
   useLocation,
   Outlet,
+  
 } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Cookies from "js-cookie";
@@ -404,6 +405,8 @@ export default function PersistentDrawerLeft() {
     // alignItems: "center",
     paddingTop: "5%",
     justifyContent: "center",
+    backdropFilter: 'blur(3px)',
+    display: "flex",
   };
   const ezpizProBlock = {
     width: "65%",
@@ -436,7 +439,10 @@ export default function PersistentDrawerLeft() {
   const [loadingButtonModalCreate, setLoadingButtonModalCreate] =
     React.useState(false);
   // loadingAwesome,
+  
   const handleCreate = async (data) => {
+          setLoadingAwesome(true);
+
     const response = await axios.post(`${network}/createProductAPI`, {
       background: data.image,
       token: checkTokenCookie(),
@@ -447,7 +453,6 @@ export default function PersistentDrawerLeft() {
       // data.image
     });
     if (response && response.data && response.data.code === 0) {
-      setLoadingAwesome(true);
       setTimeout(function () {
         setLoadingAwesome(false);
 
@@ -1127,10 +1132,8 @@ export default function PersistentDrawerLeft() {
               </div>
             </div>
 
-            {infoUser[0]?.member_pro ? (
-              <></>
-            ) : (
-              <button
+            
+              <Link
                 style={{
                   backgroundColor: "#e1e4e7",
                   marginLeft: "15px",
@@ -1148,25 +1151,18 @@ export default function PersistentDrawerLeft() {
                   border: "none",
                   borderRadius: 10,
                   marginRight: "12px",
-                  marginTop: "10px",
-                  marginBottom: "20px",
+                  marginBottom: "10px",
                   cursor: "pointer",
+                  paddingTop: '7px',
+                  paddingBottom: '7px',
                 }}
-                onClick={() => {
-                  setOpenModalPro(true);
-                  // document.body.style
-                  window.scrollTo({
-                    top: 0,
-                    behavior: "smooth", // This makes the scroll animation smooth
-                  });
-                }}
-              >
+to="/modal"
+                      state={{ previousLocation: location }}              >
                 <CrownIcon style={{ marginLeft: "-10px" }} />
-                <span style={{ paddingRight: "10px", paddingLeft: "5px" }}>
-                  Dùng Ezpics Pro
+                <span style={{ paddingRight: "10px", paddingLeft: "5px",fontSize: 14 }}>
+                  Nạp tiền
                 </span>
-              </button>
-            )}
+              </Link>
             <Divider />
             <ul
               style={{
@@ -1227,7 +1223,7 @@ export default function PersistentDrawerLeft() {
                 }}
               >
                 <Link
-                  to="/category"
+                  to="/"
                   style={{
                     display: "flex",
                     textDecoration: "none",
@@ -1294,12 +1290,15 @@ export default function PersistentDrawerLeft() {
                   width: "100%",
                   color: "inherit",
                   backgroundColor:
-                    location.pathname === "/project" ? "#ccc" : "transparent",
+      location.pathname === "/project" || location.pathname === "/project/recommend"|| location.pathname === "/project/youtube"|| location.pathname === "/project/cooking"|| location.pathname === "/project/logo"|| location.pathname === "/project/congrat"|| location.pathname === "/project/banner"|| location.pathname === "/project/more"
+      
+        ? "#ccc"
+        : "transparent",
                   borderRadius: "5px",
                 }}
               >
                 <Link
-                  to="/project"
+                  to="/project/recommend"
                   style={{
                     display: "flex",
                     textDecoration: "none",
@@ -1376,11 +1375,12 @@ export default function PersistentDrawerLeft() {
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/f" ? "#ccc" : "transparent",
+                        location.pathname === "/your-design/purchase-form" || location.pathname === "/your-design/sale-sample" || location.pathname === "/your-design/printed-form" ? "#ccc" : "transparent",
+                      borderRadius: "5px"
                     }}
                   >
                     <Link
-                      to="/your-design"
+                      to="/your-design/purchase-form"
                       style={{
                         display: "flex",
                         textDecoration: "none",
@@ -1408,7 +1408,8 @@ export default function PersistentDrawerLeft() {
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/f" ? "#ccc" : "transparent",
+                        location.pathname === "/ordered" ? "#ccc" : "transparent",
+                        borderRadius: "5px",
                     }}
                   >
                     <Link
@@ -1476,7 +1477,8 @@ export default function PersistentDrawerLeft() {
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/f" ? "#ccc" : "transparent",
+                        location.pathname === "/transaction/table-1" || location.pathname === "/transaction/table-2"? "#ccc" : "transparent",
+                        borderRadius: "5px"
                     }}
                   >
                     <Link
@@ -1513,8 +1515,8 @@ export default function PersistentDrawerLeft() {
                         location.pathname === "/f" ? "#ccc" : "transparent",
                     }}
                   >
-                    <Link
-                      to="/"
+                    <div
+                      
                       style={{
                         display: "flex",
                         textDecoration: "none",
@@ -1527,7 +1529,16 @@ export default function PersistentDrawerLeft() {
                         fontSize: "15px",
                         color: "rgb(13, 18, 22)",
                         lineHeight: "22px",
+                        cursor: "pointer"
                       }}
+                      onClick={() => {
+                  setOpenModalPro(true);
+                        document.body.style.overflowY = "hidden";
+                  window.scrollTo({
+                    top: 0,
+                    behavior: "smooth", // This makes the scroll animation smooth
+                  });
+                }}
                     >
                       <img
                         src={repeater}
@@ -1537,9 +1548,9 @@ export default function PersistentDrawerLeft() {
                       {infoUser[0]?.member_pro
                         ? "Gia hạn bản PRO"
                         : "Dùng thử bản PRO"}
-                    </Link>
+                    </div>
                   </li>
-                  <li
+                  {/* <li
                     style={{
                       display: "flex",
                       textDecoration: "none",
@@ -1574,7 +1585,7 @@ export default function PersistentDrawerLeft() {
                       <DownloadIcon style={{ color: "white" }} />
                       <p style={{ paddingLeft: 3 }}>Tải ứng dụng</p>
                     </Button>
-                  </li>
+                  </li> */}
                 </>
               )}
             </ul>
@@ -1740,7 +1751,11 @@ export default function PersistentDrawerLeft() {
                   // minHeight: "100%",
                   // objectFit: "cover",
                 }}
-                onClick={() => setOpenModalPro(false)}
+                onClick={() => {
+                  setOpenModalPro(false)                        
+                  document.body.style.overflowY = "auto";
+
+                }}
               />
             </div>
           </>
@@ -1907,35 +1922,13 @@ export default function PersistentDrawerLeft() {
               transition: "fadeIn 2s ease-in-out",
               display: "flex",
               justifyContent: "center",
-              paddingTop: "20%",
               boxSizing: "border-box",
+              paddingTop: '20%',
               transformStyle: "preserve-3d",
             }}
           >
-            <div
-              style={{ width: "100px", height: "100px" }}
-              className="loading-vspet"
-            >
-              <div className="scene-vspet">
-                <div className="shadow-vspet"></div>
-                <div className="jumper-vspet">
-                  <div className="spinner-vspet">
-                    <div className="scaler-vspet">
-                      <div className="loader-vspet">
-                        <div className="cuboid-vspet">
-                          <div className="cuboid__side-vspet"></div>
-                          <div className="cuboid__side-vspet"></div>
-                          <div className="cuboid__side-vspet"></div>
-                          <div className="cuboid__side-vspet"></div>
-                          <div className="cuboid__side-vspet"></div>
-                          <div className="cuboid__side-vspet"></div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <div class="loader-loading---css"></div>
+
           </div>
         )}
       </Box>

@@ -116,6 +116,8 @@ export default function () {
     alignItems: "center",
     flexDirection: "column",
     paddingTop: "15px",
+    paddingLeft: "30px",
+                paddingRight: "30px",
 
     borderRadius: "15px",
   };
@@ -705,7 +707,8 @@ export default function () {
                 backgroundColor: "rgb(241, 242, 246)",
                 marginTop: "40px",
                 width: "50%",
-                fontFamily: "Helvetica, Arial, sans-serif"
+                fontFamily: "Helvetica, Arial, sans-serif",
+                
               }}
               onClick={() => {
                 handleNotSave();

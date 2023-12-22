@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import DesignEditor from "~/views/DesignEditor";
 import Download from "../src/pages/components/home/download/DownloadIOS.jsx";
 import HomePage from "../src/pages/components/home/HomePage.jsx";
@@ -15,18 +15,22 @@ import Dashboard from "./pages/components/home/Dashboard/Dashboard.jsx";
 import ForYouPage from "./pages/components/home/ForYou/ForYouPage.jsx";
 import Category from "./pages/components/home/category/Category.jsx";
 import YourDesign from "./pages/components/home/design/YourDesign.jsx";
-import PurchaseForm from './pages/components/home/design/children/PurchaseForm.jsx'
-import SaleSample from './pages/components/home/design/children/SaleSample.jsx'
-import PrintedForm from './pages/components/home/design/children/PrintedForm.jsx'
-import TransactionHistory from './pages/components/transaction/TransactionHistory.jsx'
+import PurchaseForm from "./pages/components/home/design/children/PurchaseForm.jsx";
+import SaleSample from "./pages/components/home/design/children/SaleSample.jsx";
+import PrintedForm from "./pages/components/home/design/children/PrintedForm.jsx";
+import TransactionHistory from "./pages/components/transaction/TransactionHistory.jsx";
 // import AuthorDesigner from './pages/components/author/authorDesigner.jsx'
-import Table from './pages/components/transaction/Table.jsx'
-import TableEcoin from './pages/components/transaction/TableEcoin.jsx'
+import Table from "./pages/components/transaction/Table.jsx";
+import TableEcoin from "./pages/components/transaction/TableEcoin.jsx";
+import ModalTransaction from "./pages/components/modal/ModalTransaction.jsx";
+import ModalQRCode from "./pages/components/modal/ModalQRCode.jsx";
 
 function Router() {
+  const location = useLocation();
+  const previousLocation = location.state?.previousLocation;
   return (
-    <BrowserRouter>
-      <Routes>
+    <div className="app">
+      <Routes location={previousLocation || location}>
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/manage" element={<DesignEditor />} />
@@ -37,7 +41,7 @@ function Router() {
             <Route path="/" element={<ForYouPage />} />
             <Route path="/for-you" element={<ForYouPage />} />
           </Route>
-                  {/* <Route path="/author" element={<AuthorDesigner />} /> */}
+          {/* <Route path="/author" element={<AuthorDesigner />} /> */}
 
           <Route path="/category/:id" element={<Category />} />
           <Route
@@ -55,8 +59,10 @@ function Router() {
                 <TransactionHistory />
               </RequireAuth>
             }
-          ><Route index path="table-1" element={<Table />} />
-            <Route path="table-2" element={<TableEcoin />} /></Route>
+          >
+            <Route index path="table-1" element={<Table />} />
+            <Route path="table-2" element={<TableEcoin />} />
+          </Route>
           <Route
             path="/user-information"
             element={
@@ -101,11 +107,17 @@ function Router() {
             <Route index path="purchase-form" element={<PurchaseForm />} />
             <Route path="sale-sample" element={<SaleSample />} />
             <Route path="printed-form" element={<PrintedForm />} />
-            
           </Route>
         </Route>
       </Routes>
-    </BrowserRouter>
+      {previousLocation && (
+        <Routes>
+          <Route path="/modal" element={<ModalTransaction />}>
+            <Route path="modal-money" element={<ModalQRCode />} />
+          </Route>
+        </Routes>
+      )}
+    </div>
   );
 }
 

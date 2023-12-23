@@ -6,7 +6,6 @@ import {
   Routes,
   useLocation,
   Outlet,
-  
 } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import Cookies from "js-cookie";
@@ -405,7 +404,7 @@ export default function PersistentDrawerLeft() {
     // alignItems: "center",
     paddingTop: "5%",
     justifyContent: "center",
-    backdropFilter: 'blur(3px)',
+    backdropFilter: "blur(3px)",
     display: "flex",
   };
   const ezpizProBlock = {
@@ -439,9 +438,9 @@ export default function PersistentDrawerLeft() {
   const [loadingButtonModalCreate, setLoadingButtonModalCreate] =
     React.useState(false);
   // loadingAwesome,
-  
+
   const handleCreate = async (data) => {
-          setLoadingAwesome(true);
+    setLoadingAwesome(true);
 
     const response = await axios.post(`${network}/createProductAPI`, {
       background: data.image,
@@ -1132,37 +1131,43 @@ export default function PersistentDrawerLeft() {
               </div>
             </div>
 
-            
-              <Link
+            {authentication && <Link
+              style={{
+                backgroundColor: "#e1e4e7",
+                marginLeft: "15px",
+                display: "flex",
+                textDecoration: "none",
+                height: 40,
+                alignItems: "center",
+                paddingLeft: 10,
+                textAlign: "center",
+                justifyContent: "center",
+                fontSize: "13px",
+                color: "rgb(13, 18, 22)",
+                lineHeight: "22px",
+                fontWeight: "bold",
+                border: "none",
+                borderRadius: 10,
+                marginRight: "12px",
+                marginBottom: "10px",
+                cursor: "pointer",
+                paddingTop: "7px",
+                paddingBottom: "7px",
+              }}
+              to="/modal"
+              state={{ previousLocation: location }}
+            >
+              <CrownIcon style={{ marginLeft: "-10px" }} />
+              <span
                 style={{
-                  backgroundColor: "#e1e4e7",
-                  marginLeft: "15px",
-                  display: "flex",
-                  textDecoration: "none",
-                  height: 40,
-                  alignItems: "center",
-                  paddingLeft: 10,
-                  textAlign: "center",
-                  justifyContent: "center",
-                  fontSize: "13px",
-                  color: "rgb(13, 18, 22)",
-                  lineHeight: "22px",
-                  fontWeight: "bold",
-                  border: "none",
-                  borderRadius: 10,
-                  marginRight: "12px",
-                  marginBottom: "10px",
-                  cursor: "pointer",
-                  paddingTop: '7px',
-                  paddingBottom: '7px',
+                  paddingRight: "10px",
+                  paddingLeft: "5px",
+                  fontSize: 14,
                 }}
-to="/modal"
-                      state={{ previousLocation: location }}              >
-                <CrownIcon style={{ marginLeft: "-10px" }} />
-                <span style={{ paddingRight: "10px", paddingLeft: "5px",fontSize: 14 }}>
-                  Nạp tiền
-                </span>
-              </Link>
+              >
+                Nạp tiền
+              </span>
+            </Link>}
             <Divider />
             <ul
               style={{
@@ -1290,10 +1295,16 @@ to="/modal"
                   width: "100%",
                   color: "inherit",
                   backgroundColor:
-      location.pathname === "/project" || location.pathname === "/project/recommend"|| location.pathname === "/project/youtube"|| location.pathname === "/project/cooking"|| location.pathname === "/project/logo"|| location.pathname === "/project/congrat"|| location.pathname === "/project/banner"|| location.pathname === "/project/more"
-      
-        ? "#ccc"
-        : "transparent",
+                    location.pathname === "/project" ||
+                    location.pathname === "/project/recommend" ||
+                    location.pathname === "/project/youtube" ||
+                    location.pathname === "/project/cooking" ||
+                    location.pathname === "/project/logo" ||
+                    location.pathname === "/project/congrat" ||
+                    location.pathname === "/project/banner" ||
+                    location.pathname === "/project/more"
+                      ? "#ccc"
+                      : "transparent",
                   borderRadius: "5px",
                 }}
               >
@@ -1375,8 +1386,12 @@ to="/modal"
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/your-design/purchase-form" || location.pathname === "/your-design/sale-sample" || location.pathname === "/your-design/printed-form" ? "#ccc" : "transparent",
-                      borderRadius: "5px"
+                        location.pathname === "/your-design/purchase-form" ||
+                        location.pathname === "/your-design/sale-sample" ||
+                        location.pathname === "/your-design/printed-form"
+                          ? "#ccc"
+                          : "transparent",
+                      borderRadius: "5px",
                     }}
                   >
                     <Link
@@ -1408,8 +1423,10 @@ to="/modal"
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/ordered" ? "#ccc" : "transparent",
-                        borderRadius: "5px",
+                        location.pathname === "/ordered"
+                          ? "#ccc"
+                          : "transparent",
+                      borderRadius: "5px",
                     }}
                   >
                     <Link
@@ -1477,8 +1494,11 @@ to="/modal"
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/transaction/table-1" || location.pathname === "/transaction/table-2"? "#ccc" : "transparent",
-                        borderRadius: "5px"
+                        location.pathname === "/transaction/table-1" ||
+                        location.pathname === "/transaction/table-2"
+                          ? "#ccc"
+                          : "transparent",
+                      borderRadius: "5px",
                     }}
                   >
                     <Link
@@ -1516,7 +1536,6 @@ to="/modal"
                     }}
                   >
                     <div
-                      
                       style={{
                         display: "flex",
                         textDecoration: "none",
@@ -1529,16 +1548,16 @@ to="/modal"
                         fontSize: "15px",
                         color: "rgb(13, 18, 22)",
                         lineHeight: "22px",
-                        cursor: "pointer"
+                        cursor: "pointer",
                       }}
                       onClick={() => {
-                  setOpenModalPro(true);
+                        setOpenModalPro(true);
                         document.body.style.overflowY = "hidden";
-                  window.scrollTo({
-                    top: 0,
-                    behavior: "smooth", // This makes the scroll animation smooth
-                  });
-                }}
+                        window.scrollTo({
+                          top: 0,
+                          behavior: "smooth", // This makes the scroll animation smooth
+                        });
+                      }}
                     >
                       <img
                         src={repeater}
@@ -1752,9 +1771,8 @@ to="/modal"
                   // objectFit: "cover",
                 }}
                 onClick={() => {
-                  setOpenModalPro(false)                        
+                  setOpenModalPro(false);
                   document.body.style.overflowY = "auto";
-
                 }}
               />
             </div>
@@ -1923,12 +1941,11 @@ to="/modal"
               display: "flex",
               justifyContent: "center",
               boxSizing: "border-box",
-              paddingTop: '20%',
+              paddingTop: "20%",
               transformStyle: "preserve-3d",
             }}
           >
             <div class="loader-loading---css"></div>
-
           </div>
         )}
       </Box>

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import bg from "./background.jpg";
+import bg from "./thumb-bg.jpg";
 import logo from "./ezpics-logo.png";
 import GoogleIcon from "@mui/icons-material/Google";
 import "./LoginEzpics.css";
@@ -49,7 +49,7 @@ function Login() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-        marginBottom: "10%",
+        marginBottom: "12%",
 
   };
   const page = {
@@ -143,13 +143,13 @@ function Login() {
       const response = await axios.post(`${network}/checkLoginMemberAPI`, {
         phone: phoneNum,
         password: password,
-        token_device: "",
+        type_device: 'web',
       });
       if (response.data.code === 0) {
         console.log(response.data);
         dispatch(CHANGE_STATUS_AUTH(true));
-        dispatch(CHANGE_VALUE_TOKEN(response.data?.info_member?.token));
-        setCookie("token", response.data?.info_member?.token, expirationHours);
+        dispatch(CHANGE_VALUE_TOKEN(response.data?.info_member?.token_web));
+        setCookie("token", response.data?.info_member?.token_web, expirationHours);
         setCookie("user_login", response.data?.info_member, expirationHours);
         setLoading(false);
 

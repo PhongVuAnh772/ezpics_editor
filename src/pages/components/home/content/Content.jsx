@@ -1715,6 +1715,7 @@ export default function PersistentDrawerLeft() {
                       position: "absolute",
                       bottom: 0,
                       alignSelf: "center",
+                      cursor:"pointer",
                     }}
                   >
                     Đăng ký Ezpic Pro

@@ -173,7 +173,7 @@ function Login() {
       <div style={overlayStyle}>
         <div style={page}>
           <div style={header} className="headerLogin">
-            <img src={logo} alt="" style={{ width: 50, height: 50 }} />
+            <img src={logo} alt="" style={{ width: 50, height: 50,cursor:'pointer' }} onClick={() => navigate('/')}/>
             <div style={textHeader}>Tính năng</div>
             <div style={textHeader}>Mẫu thiết kế nổi bật</div>
             <div style={textHeader}>Hướng dẫn sử dụng</div>

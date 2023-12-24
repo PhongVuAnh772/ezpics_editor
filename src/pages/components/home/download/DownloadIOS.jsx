@@ -334,7 +334,8 @@ export default function PersistentDrawerLeft() {
                 alt=""
                 src={ezpicsLogo}
                 loading="lazy"
-                style={{ width: "3%", height: "5%" }}
+                style={{ width: "3%", height: "5%",cursor: "pointer" }}
+                onClick={() => navigate('/')}
               />
               <div style={textHeader}>Tính năng</div>
               <div style={textHeader}>Mẫu thiết kế nổi bật</div>

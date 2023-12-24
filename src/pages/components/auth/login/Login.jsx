@@ -24,6 +24,8 @@ function Login() {
     backgroundSize: "contain",
     minHeight: "100%",
     overflowY: "hidden",
+            overflowX: "hidden"
+
   };
   const overlayStyle = {
     position: "absolute",
@@ -33,6 +35,7 @@ function Login() {
     height: "100%",
     background: "rgba(0, 0, 0, 0.25)", // Adjust the alpha value for the darkness
         overflowY: "hidden",
+        overflowX: "hidden"
 
   };
   const blockStyle = {

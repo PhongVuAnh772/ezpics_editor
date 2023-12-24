@@ -74,7 +74,7 @@ import coin from "./coin.png";
 import downloadIcon from "./assets/direct-download (1).png";
 // import "../../../../../src/pages/components/home/category/loadingFavorite.css";
 
-const drawerWidth = 240;
+const drawerWidth = 250;
 
 export default function PersistentDrawerLeft() {
   const [loadingModal, setLoadingModal] = React.useState(false);
@@ -557,6 +557,10 @@ export default function PersistentDrawerLeft() {
                 style={{ width: "3%", height: "5%", cursor: "pointer" }}
                 onClick={() => navigate("/")}
               />
+              <div style={textHeader} onClick={() => navigate("/")}>
+                Trang chủ
+              </div>
+
               <div style={textHeader}>Tính năng</div>
               <div style={textHeader}>Mẫu thiết kế nổi bật</div>
               <div style={textHeader}>Hướng dẫn sử dụng</div>
@@ -580,7 +584,7 @@ export default function PersistentDrawerLeft() {
                     onClick={() => {
                       navigate("/download");
                       window.scrollTo({
-                        top: 70,
+                        top: 0,
                         behavior: "smooth",
                       });
                     }}
@@ -985,17 +989,33 @@ export default function PersistentDrawerLeft() {
               width: drawerWidth,
               flexShrink: 0,
               transformStyle: "unset",
-
+              overflowY: "hidden",
+              scrollbarWidth:"none",
+              // boxSizing: "content-box",
+              transition: "1s", // Add a transition for smooth effect
+              paddingRight: 120,
+              "&:hover": {
+                overflowY: "auto",
+                transition: "1s", // Add a transition for smooth effect
+              },
+              "&:hover .MuiDrawer-paper": {
+                overflowY: "auto",
+                transition: "1s", // Add a transition for smooth effect
+              },
               "& .MuiDrawer-paper": {
                 width: drawerWidth,
-                boxSizing: "border-box",
-                overflowY: "hidden",
+                // boxSizing: "border-box",
+                // overflowY: "hidden",
+                overflowY: "hidden", // Hide the scrollbar
+                transition: "1s", // Add a transition for smooth effect
               },
+              "&::-webkit-scrollbar": {
+        display: "none",
+      },
             }}
             variant="persistent"
             anchor="left"
             open={true}
-            style={{ paddingRight: 10 }}
           >
             <DrawerHeader></DrawerHeader>
             <List></List>
@@ -1131,43 +1151,46 @@ export default function PersistentDrawerLeft() {
               </div>
             </div>
 
-            {authentication && <Link
-              style={{
-                backgroundColor: "#e1e4e7",
-                marginLeft: "15px",
-                display: "flex",
-                textDecoration: "none",
-                height: 40,
-                alignItems: "center",
-                paddingLeft: 10,
-                textAlign: "center",
-                justifyContent: "center",
-                fontSize: "13px",
-                color: "rgb(13, 18, 22)",
-                lineHeight: "22px",
-                fontWeight: "bold",
-                border: "none",
-                borderRadius: 10,
-                marginRight: "12px",
-                marginBottom: "10px",
-                cursor: "pointer",
-                paddingTop: "7px",
-                paddingBottom: "7px",
-              }}
-              to="/modal"
-              state={{ previousLocation: location }}
-            >
-              <CrownIcon style={{ marginLeft: "-10px" }} />
-              <span
+            {authentication && (
+              <Link
                 style={{
-                  paddingRight: "10px",
-                  paddingLeft: "5px",
-                  fontSize: 14,
+                  backgroundColor: "#e1e4e7",
+                  marginLeft: "15px",
+                  display: "flex",
+                  textDecoration: "none",
+                  height: 40,
+                  alignItems: "center",
+                  paddingLeft: 10,
+                  textAlign: "center",
+                  justifyContent: "center",
+                  fontSize: "13px",
+                  color: "rgb(13, 18, 22)",
+                  lineHeight: "22px",
+                  fontWeight: "bold",
+                  border: "none",
+                  borderRadius: 10,
+                  marginRight: "12px",
+                  marginBottom: "10px",
+                  cursor: "pointer",
+                  paddingTop: "7px",
+                  paddingBottom: "7px",
+                  
                 }}
+                to="/modal"
+                state={{ previousLocation: location }}
               >
-                Nạp tiền
-              </span>
-            </Link>}
+                <CrownIcon style={{ marginLeft: "-10px" }} />
+                <span
+                  style={{
+                    paddingRight: "10px",
+                    paddingLeft: "5px",
+                    fontSize: 14,
+                  }}
+                >
+                  Nạp tiền
+                </span>
+              </Link>
+            )}
             <Divider />
             <ul
               style={{
@@ -1684,7 +1707,7 @@ export default function PersistentDrawerLeft() {
                       width: "95%",
                       height: 35,
                       borderRadius: 5,
-                      backgroundColor: "rgb(244, 204, 62)",
+                      backgroundColor: "rgb(255, 66, 78)",
                       border: "none",
                       color: "white",
                       fontSize: 15,

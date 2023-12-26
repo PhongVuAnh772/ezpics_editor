@@ -857,7 +857,7 @@ function Category({
                   onClick={() => deleteFavorite()}
                 >
                   {loadingFavorite ? (
-                    <span class="loader"></span>
+                    <span class="loader-favorite"></span>
                   ) : (
                     <>
                       <span style={{ paddingRight: 5, alignSelf: "center" }}>
@@ -881,7 +881,7 @@ function Category({
                   onClick={() => handleFavorite()}
                 >
                   {loadingFavorite ? (
-                    <span class="loader"></span>
+                    <span class="loader-favorite"></span>
                   ) : (
                     <>
                       <span style={{ paddingRight: 5, alignSelf: "center" }}>

@@ -35,7 +35,7 @@ function InformationPersonal() {
   const [inputPhoneChanging, setInputPhoneChanging] = React.useState("");
   const [inputEmailChanging, setInputEmailChanging] = React.useState("");
 
-  const network = useSelector((state) => state.network.network);
+  const network = useSelector((state) => state.ipv4.network);
   const [passwordChanging, setPasswordChanging] = React.useState(false);
   const [oldPass, setOldPass] = React.useState("");
   const [password, setPassword] = React.useState("");

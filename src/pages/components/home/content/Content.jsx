@@ -72,6 +72,7 @@ import DownloadIcon from "@mui/icons-material/Download";
 import banknote from "./banknotes.png";
 import coin from "./coin.png";
 import downloadIcon from "./assets/direct-download (1).png";
+import discount from "./assets/discount-coupon.png";
 // import "../../../../../src/pages/components/home/category/loadingFavorite.css";
 
 const drawerWidth = 250;
@@ -90,7 +91,28 @@ export default function PersistentDrawerLeft() {
   const [creatingBucket, setCreatingBucket] = React.useState(false);
   const [dataSizeBox, setDataSizeBox] = React.useState([]);
   const [hoveredIndex, setHoveredIndex] = React.useState(null);
+  const [proDiscount, setProDiscount] = React.useState([]);
+  const [contentProExtend, setContentProExtend] = React.useState(false);
+  const [selectedOption, setSelectedOption] = React.useState(null);
+  const [modalProDiscount, setModalProDiscount] = React.useState(false);
+  const [selectedDiscount, setSelectedDiscount] = React.useState(null);
+  const [selectedDiscountSpecified, setSelectedDiscountSpecified] =
+    React.useState(null);
+  const [selectedOptionTransaction, setSelectedOptionTransaction] =
+    React.useState(null);
 
+  // const
+  const handleRadioChangeTransaction = (event) => {
+    setSelectedOptionTransaction(event.target.value);
+  };
+  // const [contentProExtend, setContentProExtend] = React.useState(false);
+  const handleRadioChange = (event) => {
+    setSelectedOption(event.target.value);
+  };
+  const handleDiscountClick = (index) => {
+    // Set the selectedDiscount state to the index of the clicked item
+    setSelectedDiscount(index);
+  };
   function checkTokenCookie() {
     var allCookies = document.cookie;
 
@@ -133,6 +155,22 @@ export default function PersistentDrawerLeft() {
       }
     };
     getDataUser();
+  }, []);
+  React.useEffect(() => {
+    const getDataDiscount = async () => {
+      try {
+        const response = await axios.get(`${network}/showDiscountCodeAPI`);
+        if (response && response.data) {
+          console.log(response.data);
+          setProDiscount(response.data.data);
+        } else {
+          console.error("Invalid response format");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+    getDataDiscount();
   }, []);
   const [selectedFile, setSelectedFile] = React.useState(null);
 
@@ -211,6 +249,15 @@ export default function PersistentDrawerLeft() {
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
+  function parseTimestamp(timestamp) {
+    const dateTime = new Date(timestamp);
+
+    const year = dateTime.getFullYear();
+    const month = dateTime.getMonth() + 1; // Month is zero-based, so add 1
+    const day = dateTime.getDate();
+
+    return `${day}-${month}-${year}`;
+  }
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -477,6 +524,42 @@ export default function PersistentDrawerLeft() {
       setSelectedFile(file);
 
       // Bạn có thể thực hiện các xử lý khác tại đây
+    }
+  };
+  const handleTransactionPro = async () => {
+    if (infoUser[0]?.member_pro) {
+      const apiEndpoint =
+        selectedOption === "2"
+          ? "memberExtendProAPI"
+          : "memberExtendProMonthAPI";
+      // const infoUser[0]?.member_pro
+      const response = await axios.post(`${network}/${apiEndpoint}`, {
+        token: checkTokenCookie(),
+        discountCode:
+          selectedDiscountSpecified !== null
+            ? selectedDiscountSpecified.code
+            : "",
+        type: selectedOptionTransaction === "2" ? "ecoin" : "",
+      });
+      if (response && response.data && response.data.code === 0) {
+        console.log(response.data);
+      }
+    } else {
+      const apiEndpoint =
+        selectedOption === "2" ? "memberBuyProAPI" : "memberBuyProMonthAPI";
+      // const infoUser[0]?.member_pro
+      infoUser[0]?.member_pro;
+      const response = await axios.post(`${network}/${apiEndpoint}`, {
+        token: checkTokenCookie(),
+        discountCode:
+          selectedDiscountSpecified !== null
+            ? selectedDiscountSpecified.code
+            : "",
+        type: selectedOptionTransaction === 2 ? "ecoin" : "",
+      });
+      if (response && response.data && response.data.code === 0) {
+        console.log(response.data);
+      }
     }
   };
   const handleCreateCustom = async (e) => {
@@ -990,7 +1073,7 @@ export default function PersistentDrawerLeft() {
               flexShrink: 0,
               transformStyle: "unset",
               overflowY: "hidden",
-              scrollbarWidth:"none",
+              scrollbarWidth: "none",
               // boxSizing: "content-box",
               transition: "1s", // Add a transition for smooth effect
               paddingRight: 120,
@@ -1010,8 +1093,8 @@ export default function PersistentDrawerLeft() {
                 transition: "1s", // Add a transition for smooth effect
               },
               "&::-webkit-scrollbar": {
-        display: "none",
-      },
+                display: "none",
+              },
             }}
             variant="persistent"
             anchor="left"
@@ -1174,7 +1257,6 @@ export default function PersistentDrawerLeft() {
                   cursor: "pointer",
                   paddingTop: "7px",
                   paddingBottom: "7px",
-                  
                 }}
                 to="/modal"
                 state={{ previousLocation: location }}
@@ -1558,39 +1640,73 @@ export default function PersistentDrawerLeft() {
                         location.pathname === "/f" ? "#ccc" : "transparent",
                     }}
                   >
-                    <div
-                      style={{
-                        display: "flex",
-                        textDecoration: "none",
-                        width: "100%",
-                        height: 40,
-                        alignItems: "center",
-                        paddingLeft: 10,
-                        // fontFamily:
-                        //   "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                        fontSize: "15px",
-                        color: "rgb(13, 18, 22)",
-                        lineHeight: "22px",
-                        cursor: "pointer",
-                      }}
-                      onClick={() => {
-                        setOpenModalPro(true);
-                        document.body.style.overflowY = "hidden";
-                        window.scrollTo({
-                          top: 0,
-                          behavior: "smooth", // This makes the scroll animation smooth
-                        });
-                      }}
-                    >
-                      <img
-                        src={repeater}
-                        alt=""
-                        style={{ marginRight: 5, height: 20, width: 20 }}
-                      />
-                      {infoUser[0]?.member_pro
-                        ? "Gia hạn bản PRO"
-                        : "Dùng thử bản PRO"}
-                    </div>
+                    {infoUser[0]?.member_pro ? (
+                      <div
+                        style={{
+                          display: "flex",
+                          textDecoration: "none",
+                          width: "100%",
+                          height: 40,
+                          alignItems: "center",
+                          paddingLeft: 10,
+                          // fontFamily:
+                          //   "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                          fontSize: "15px",
+                          color: "rgb(13, 18, 22)",
+                          lineHeight: "22px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          navigate("/");
+                          setOpenModalPro(true);
+                          document.body.style.overflowY = "hidden";
+                          window.scrollTo({
+                            top: 0,
+                            behavior: "smooth", // This makes the scroll animation smooth
+                          });
+                        }}
+                      >
+                        <img
+                          src={repeater}
+                          alt=""
+                          style={{ marginRight: 5, height: 20, width: 20 }}
+                        />
+                        {"Gia hạn bản PRO"}
+                      </div>
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          textDecoration: "none",
+                          width: "100%",
+                          height: 40,
+                          alignItems: "center",
+                          paddingLeft: 10,
+                          // fontFamily:
+                          //   "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                          fontSize: "15px",
+                          color: "rgb(13, 18, 22)",
+                          lineHeight: "22px",
+                          cursor: "pointer",
+                        }}
+                        onClick={() => {
+                          navigate("/");
+                          setOpenModalPro(true);
+                          document.body.style.overflowY = "hidden";
+                          window.scrollTo({
+                            top: 0,
+                            behavior: "smooth", // This makes the scroll animation smooth
+                          });
+                        }}
+                      >
+                        <img
+                          src={repeater}
+                          alt=""
+                          style={{ marginRight: 5, height: 20, width: 20 }}
+                        />
+                        {"Dùng thử bản PRO"}
+                      </div>
+                    )}
                   </li>
                   {/* <li
                     style={{
@@ -1648,78 +1764,505 @@ export default function PersistentDrawerLeft() {
                       lineHeight: "32px",
                     }}
                   >
-                    Dùng thử Ezpics Pro
+                    {infoUser[0]?.member_pro
+                      ? "Gia hạn Ezpics Pro"
+                      : "Dùng thử Ezpics Pro"}
                   </h2>
 
-                  <p
-                    style={{
-                      fontSize: "13px",
-                      fontWeight: 400,
-                      color: "rgb(13, 18, 22)",
-                      fontFamily:
-                        "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                    }}
-                  >
-                    Năng suất hơn. Mạnh mẽ hơn. Dùng thử những tính năng ưu việt
-                    của chúng tôi.
-                  </p>
+                  {contentProExtend ? (
+                    <>
+                      <div
+                        class="container"
+                        style={{
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "flex-start",
+                          paddingLeft: 0,
+                        }}
+                      >
+                        <form
+                          style={{
+                            paddingLeft: 0,
+                            justifyContent: "flex-start",
+                            flexDirection: "column",
+                          }}
+                        >
+                          <label>
+                            <input
+                              type="radio"
+                              name="radio"
+                              onChange={(e) => handleRadioChange(e)}
+                              value={1}
+                            />
+                            <span>Bản 1 tháng</span>
+                          </label>
+                          <p
+                            style={{
+                              margin: 0,
+                              marginLeft: "30px",
+                              fontWeight: 400,
+                              fontFamily: "Noto Sans",
+                              fontSize: 12,
+                              paddingBottom: 5,
+                            }}
+                          >
+                            200.000 ₫ <b>hoặc</b> 200 eCoin
+                          </p>
+                          <label>
+                            <input
+                              type="radio"
+                              name="radio"
+                              onChange={(e) => handleRadioChange(e)}
+                              value={2}
+                            />
+                            <span>
+                              Bản 12 tháng{" "}
+                              <b
+                                style={{
+                                  color: "red",
+                                  fontSize: 15,
+                                  fontWeight: 400,
+                                }}
+                              >
+                                &nbsp;(Khuyến nghị)
+                              </b>
+                            </span>
+                          </label>
+                          <p
+                            style={{
+                              margin: 0,
+                              marginLeft: "30px",
+                              fontWeight: 400,
+                              fontFamily: "Noto Sans",
+                              fontSize: 12,
+                              color: "rgb(13, 18, 22)",
+                            }}
+                          >
+                            1.999.000 ₫ <b>hoặc</b> 2000 eCoin
+                          </p>
+                        </form>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                fill="rgb(12, 134, 21)"
+                                d="M4.53 11.9 9 16.38 19.44 5.97a.75.75 0 0 1 1.06 1.06L9.53 17.97c-.3.29-.77.29-1.06 0l-5-5c-.7-.71.35-1.77 1.06-1.07z"
+                              ></path>
+                            </svg>
+                          </span>
+                          <p
+                            style={{
+                              margin: 0,
+                              marginLeft: 5,
+                              fontSize: "14px",
+                              fontFamily: "Noto Sans",
+                              fontWeight: 400,
+                            }}
+                          >
+                            Chức năng xóa nền tự dộng
+                          </p>{" "}
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                fill="rgb(12, 134, 21)"
+                                d="M4.53 11.9 9 16.38 19.44 5.97a.75.75 0 0 1 1.06 1.06L9.53 17.97c-.3.29-.77.29-1.06 0l-5-5c-.7-.71.35-1.77 1.06-1.07z"
+                              ></path>
+                            </svg>
+                          </span>
+                          <p
+                            style={{
+                              margin: 0,
+                              marginLeft: 5,
+                              fontSize: "14px",
+                              fontFamily: "Noto Sans",
+                              fontWeight: 400,
+                            }}
+                          >
+                            Hỗ trợ khách hàng 24/7
+                          </p>{" "}
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                fill="rgb(12, 134, 21)"
+                                d="M4.53 11.9 9 16.38 19.44 5.97a.75.75 0 0 1 1.06 1.06L9.53 17.97c-.3.29-.77.29-1.06 0l-5-5c-.7-.71.35-1.77 1.06-1.07z"
+                              ></path>
+                            </svg>
+                          </span>
+                          <p
+                            style={{
+                              margin: 0,
+                              marginLeft: 5,
+                              fontSize: "14px",
+                              fontFamily: "Noto Sans",
+                              fontWeight: 400,
+                            }}
+                          >
+                            Viết content tự động
+                          </p>{" "}
+                        </div>
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                        >
+                          <span>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="24"
+                              height="24"
+                              viewBox="0 0 24 24"
+                            >
+                              <path
+                                fill="rgb(12, 134, 21)"
+                                d="M4.53 11.9 9 16.38 19.44 5.97a.75.75 0 0 1 1.06 1.06L9.53 17.97c-.3.29-.77.29-1.06 0l-5-5c-.7-.71.35-1.77 1.06-1.07z"
+                              ></path>
+                            </svg>
+                          </span>
+                          <p
+                            style={{
+                              margin: 0,
+                              marginLeft: 5,
+                              fontSize: "14px",
+                              fontFamily: "Noto Sans",
+                              fontWeight: 400,
+                            }}
+                          >
+                            Nhận hoa hồng khi giới thiệu người dùng vĩnh viễn
+                          </p>{" "}
+                        </div>
+                        <p
+                          style={{
+                            marginTop: 5,
+                            marginLeft: 5,
+                            fontSize: "14px",
+                            fontFamily: "Noto Sans",
+                            fontWeight: 500,
+                            color: "rgb(255, 66, 78)",
+                            marginBottom: 0,
+                          }}
+                        >
+                          Tặng 1 bộ sưu tập 500 mẫu Ezpics
+                        </p>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: "13px",
+                            fontFamily: "Noto Sans",
+                            fontWeight: 400,
+                          }}
+                        ></p>
+                        <form
+                          style={{
+                            paddingLeft: 0,
+                            justifyContent: "flex-start",
+                            flexDirection: "row",
+                          }}
+                        >
+                          <label>
+                            <input
+                              type="radio"
+                              name="radio"
+                              onChange={(e) => handleRadioChangeTransaction(e)}
+                              value={1}
+                            />
+                            <span>Mua bằng tiền mặt</span>
+                          </label>
 
-                  <p
-                    style={{
-                      fontSize: "14px",
-                      fontWeight: "bold",
-                      paddingTop: "3%",
-                    }}
-                  >
-                    Mở khóa các tính năng sau với Canva Pro.
-                  </p>
+                          <label>
+                            <input
+                              type="radio"
+                              name="radio"
+                              onChange={(e) => handleRadioChangeTransaction(e)}
+                              value={2}
+                            />
+                            <span>Mua bằng eCoin</span>
+                          </label>
+                        </form>
+                        {/*  */}
+                      </div>
 
-                  <div style={{ display: "flex", flexDirection: "row" }}>
-                    <img
-                      src={picture}
-                      alt=""
-                      style={{ width: 15, height: 15 }}
-                    />
-                    <p style={{ fontSize: "14px", margin: 0, paddingLeft: 10 }}>
-                      <b>Hơn 100 triệu ảnh, video</b> và thành phần cao cấp,{" "}
-                      <b>
-                        hơn 3.000 phông chữ cao cấp, hơn 610.000 mẫu cao cấp
-                      </b>
-                    </p>
-                  </div>
-                  <div
-                    style={{
-                      display: "flex",
-                      flexDirection: "row",
-                      paddingTop: 10,
-                    }}
-                  >
-                    <img src={paint} alt="" style={{ width: 15, height: 15 }} />
-                    <p style={{ fontSize: "14px", margin: 0, paddingLeft: 10 }}>
-                      Sáng tạo dễ dàng nhờ các tính năng như{" "}
-                      <b>Xóa nền, tạo ảnh tự động</b>
-                    </p>
-                  </div>
+                      {selectedDiscountSpecified !== null && (
+                        <div
+                          style={{
+                            width: "95%",
+                            display: "flex",
+                            flexDirection: "row",
+                            justifyContent: "space-between",
+                            alignItems: "flex-end",
+                            position: "absolute",
+                            bottom: "20%",
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "100%",
+                              height: 50,
+                              flexShrink: 0,
+                              border: "1px solid rgb(255, 66, 78)",
+                              borderRadius: "10px",
+                              display: "flex",
+                              cursor: "pointer",
+                            }}
+                          >
+                            <div
+                              style={{
+                                width: "30%",
+                                backgroundColor: "rgb(255, 66, 78)",
+                                height: "100%",
+                                borderRadius: "10px",
+                                display: "flex",
+                                alignItems: "center",
+                                justifyContent: "center",
+                              }}
+                            >
+                              <p
+                                style={{
+                                  margin: 0,
+                                  fontWeight: 500,
+                                  fontSize: 20,
+                                  color: "white",
+                                }}
+                              >
+                                {selectedDiscountSpecified.name}
+                              </p>
+                            </div>
+                            <div
+                              style={{
+                                width: "70%",
+                                height: "100%",
+                                borderRadius: "10px",
+                                display: "flex",
+                                flexDirection: "column",
+                                justifyContent: "center",
+                                paddingLeft: 10,
+                                paddingTop: 5,
+                                paddingBottom: 5,
+                              }}
+                            >
+                              <p
+                                style={{
+                                  margin: 0,
+                                  fontWeight: 500,
+                                  fontSize: 17,
+                                }}
+                              >
+                                {selectedDiscountSpecified.name}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                      <div
+                        style={{
+                          width: "95%",
+                          display: "flex",
+                          flexDirection: "row",
+                          justifyContent: "space-between",
+                          alignItems: "flex-end",
+                          position: "absolute",
+                          bottom: "13%",
+                        }}
+                      >
+                        <div
+                          style={{
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "flex-end",
+                            // paddingBottom: '3px'
+                          }}
+                        >
+                          <img
+                            src={discount}
+                            alt=""
+                            style={{ width: 20, height: 20 }}
+                          />
+                          <p style={{ margin: 0, fontSize: 12 }}>
+                            Ezpics Voucher
+                          </p>
+                        </div>
+                        <p
+                          style={{
+                            margin: 0,
+                            fontSize: 12,
+                            color: "rgb(255, 66, 78)",
+                            cursor: "pointer",
+                          }}
+                          onClick={() => {
+                            document.body.style.overflowY = "hidden";
+                            setModalProDiscount(true);
+                          }}
+                        >
+                          Chọn để nhập mã
+                        </p>
+                      </div>
+                      <button
+                        style={{
+                          marginBottom: "5%",
+                          width: "95%",
+                          height: 35,
+                          borderRadius: 5,
+                          backgroundColor:
+                            selectedOption === null ||
+                            selectedOptionTransaction === null
+                              ? "gray"
+                              : "rgb(255, 66, 78)",
+                          border: "none",
+                          color: "white",
+                          position: "absolute",
+                          fontSize: 15,
+                          fontWeight: "bold",
+                          bottom: 0,
+                          alignSelf: "center",
+                          cursor: "pointer",
+                          transition: "opacity 0.5s ease", // Add transition effect
+                          // opacity: contentProExtend ? 0 : 1, // Show or hide based on state
+                        }}
+                        onClick={() => handleTransactionPro()}
+                        disabled={
+                          selectedOption === null ||
+                          selectedOptionTransaction === null
+                        }
+                      >
+                        Thanh toán
+                      </button>
+                    </>
+                  ) : (
+                    <>
+                      <p
+                        style={{
+                          fontSize: "13px",
+                          fontWeight: 400,
+                          color: "rgb(13, 18, 22)",
+                          fontFamily:
+                            "Noto Sans Vietnamese,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                          transition: "opacity 0.5s ease", // Add transition effect
+                          opacity: contentProExtend ? 0 : 1, // Show or hide based on state
+                        }}
+                      >
+                        Năng suất hơn. Mạnh mẽ hơn. Dùng thử những tính năng ưu
+                        việt của chúng tôi.
+                      </p>
 
-                  <button
-                    style={{
-                      marginBottom: "5%",
-                      width: "95%",
-                      height: 35,
-                      borderRadius: 5,
-                      backgroundColor: "rgb(255, 66, 78)",
-                      border: "none",
-                      color: "white",
-                      fontSize: 15,
-                      fontWeight: "bold",
-                      position: "absolute",
-                      bottom: 0,
-                      alignSelf: "center",
-                      cursor:"pointer",
-                    }}
-                  >
-                    Đăng ký Ezpic Pro
-                  </button>
+                      <p
+                        style={{
+                          fontSize: "14px",
+                          fontWeight: "bold",
+                          paddingTop: "3%",
+                          transition: "opacity 0.5s ease", // Add transition effect
+                          opacity: contentProExtend ? 0 : 1, // Show or hide based on state
+                        }}
+                      >
+                        Mở khóa các tính năng sau với Canva Pro.
+                      </p>
+
+                      <div style={{ display: "flex", flexDirection: "row" }}>
+                        <img
+                          src={picture}
+                          alt=""
+                          style={{ width: 15, height: 15 }}
+                        />
+                        <p
+                          style={{
+                            fontSize: "14px",
+                            margin: 0,
+                            paddingLeft: 10,
+                          }}
+                        >
+                          <b>Hơn 100 triệu ảnh, video</b> và thành phần cao cấp,{" "}
+                          <b>
+                            hơn 3.000 phông chữ cao cấp, hơn 610.000 mẫu cao cấp
+                          </b>
+                        </p>
+                      </div>
+                      <div
+                        style={{
+                          display: "flex",
+                          flexDirection: "row",
+                          paddingTop: 10,
+                        }}
+                      >
+                        <img
+                          src={paint}
+                          alt=""
+                          style={{ width: 15, height: 15 }}
+                        />
+                        <p
+                          style={{
+                            fontSize: "14px",
+                            margin: 0,
+                            paddingLeft: 10,
+                          }}
+                        >
+                          Sáng tạo dễ dàng nhờ các tính năng như{" "}
+                          <b>Xóa nền, tạo ảnh tự động</b>
+                        </p>
+                      </div>
+
+                      <button
+                        style={{
+                          marginBottom: "5%",
+                          width: "95%",
+                          height: 35,
+                          borderRadius: 5,
+                          backgroundColor: "rgb(255, 66, 78)",
+                          border: "none",
+                          color: "white",
+                          fontSize: 15,
+                          fontWeight: "bold",
+                          position: "absolute",
+                          bottom: 0,
+                          alignSelf: "center",
+                          cursor: "pointer",
+                          transition: "opacity 0.5s ease", // Add transition effect
+                          opacity: contentProExtend ? 0 : 1, // Show or hide based on state
+                        }}
+                        onClick={() => setContentProExtend(true)}
+                      >
+                        {infoUser[0]?.member_pro
+                          ? "Gia hạn Ezpics Pro"
+                          : "Đăng ký Ezpic Pro"}
+                      </button>
+                    </>
+                  )}
                 </div>
 
                 {/* <div > */}
@@ -1795,10 +2338,225 @@ export default function PersistentDrawerLeft() {
                   // objectFit: "cover",
                 }}
                 onClick={() => {
+                  setContentProExtend(false);
                   setOpenModalPro(false);
+                  setSelectedOption(null);
+                  setSelectedDiscount(null);
+                  setModalProDiscount(false);
+                  setSelectedDiscountSpecified(null);
                   document.body.style.overflowY = "auto";
                 }}
               />
+            </div>
+          </>
+        )}
+        {modalProDiscount && (
+          <>
+            <div className="ezpics-pro-modal" style={ezpicsProContainer}>
+              <div
+                className="container-modal-create"
+                style={{
+                  animation: "fadeIn 0.5s ease-in-out",
+                  marginTop: "3%",
+                }}
+              >
+                <div
+                  className="card---create-newing"
+                  style={{ paddingLeft: 20, paddingRight: 20 }}
+                >
+                  <p style={{ fontWeight: 600, fontSize: 20 }}>Chọn Voucher</p>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      justifyContent: "space-between",
+                      minWidth: "500px",
+                      height: 300,
+                      overflowY: "auto",
+                    }}
+                  >
+                    {proDiscount.length > 0 ? (
+                      proDiscount.map((discountValue, index) => (
+                        <div
+                          onClick={() => {
+                            if (selectedDiscount === null) {
+                              handleDiscountClick(index);
+                            } else {
+                              setSelectedDiscount(null);
+                            }
+                          }}
+                          style={{
+                            width: "100%",
+                            height: 100,
+                            flexShrink: 0,
+                            border: "1px solid rgb(255, 66, 78)",
+                            borderRadius: "10px",
+                            display: "flex",
+                            cursor: "pointer",
+                            backgroundColor:
+                              selectedDiscount === index
+                                ? "rgba(255, 66, 78,0.5)"
+                                : "white", // Change color based on selection
+                          }}
+                        >
+                          <div
+                            style={{
+                              width: "30%",
+                              backgroundColor: "rgb(255, 66, 78)",
+                              height: "100%",
+                              borderRadius: "10px",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                            }}
+                          >
+                            <p
+                              style={{
+                                margin: 0,
+                                fontWeight: 500,
+                                fontSize: 20,
+                                color: "white",
+                              }}
+                            >
+                              {discountValue.name}
+                            </p>
+                          </div>
+                          <div
+                            style={{
+                              width: "70%",
+                              height: "100%",
+                              borderRadius: "10px",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "space-between",
+                              paddingLeft: 10,
+                              paddingTop: 5,
+                              paddingBottom: 5,
+                            }}
+                          >
+                            <p
+                              style={{
+                                margin: 0,
+                                fontWeight: 500,
+                                fontSize: 17,
+                              }}
+                            >
+                              {discountValue.name}
+                            </p>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontWeight: 500,
+                                fontSize: 14,
+                              }}
+                            >
+                              Số lượng : {discountValue.number_user}
+                            </p>
+                            <p
+                              style={{
+                                margin: 0,
+                                fontWeight: 500,
+                                fontSize: 14,
+                              }}
+                            >
+                              Hạn sử dụng :{" "}
+                              {parseTimestamp(discountValue.deadline_at)}
+                            </p>
+                          </div>
+                        </div>
+                      ))
+                    ) : (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "center",
+                          alignItems: "center",
+                        }}
+                      >
+                        <p>Hiện tại chưa có mã giảm giá nào</p>
+                      </div>
+                    )}
+                  </div>
+                  <div
+                    style={{
+                      width: "100%",
+                      height: 60,
+                      display: "flex",
+                      justifyContent: "flex-end",
+                    }}
+                  >
+                    <Button
+                      variant="contained"
+                      size="medium"
+                      style={{
+                        marginLeft: "20px",
+                        height: 40,
+                        alignSelf: "center",
+                        textTransform: "none",
+                        color: "black",
+                        backgroundColor: "white",
+                        position: "relative",
+                      }}
+                      onClick={() => {
+                        setModalProDiscount(false);
+                        setSelectedDiscountSpecified(null);
+                      }}
+                    >
+                      Hủy
+                    </Button>
+                    <Button
+                      variant="contained"
+                      size="medium"
+                      style={{
+                        marginLeft: "20px",
+                        height: 40,
+                        alignSelf: "center",
+                        textTransform: "none",
+                        color: "white",
+
+                        position: "relative",
+                        backgroundColor:
+                          selectedDiscount === null
+                            ? "gray"
+                            : "rgb(255, 66, 78)",
+                      }}
+                      disabled={selectedDiscount === null}
+                      onClick={() => {
+                        if (selectedDiscount !== null) {
+                          setSelectedDiscountSpecified(
+                            proDiscount[selectedDiscount]
+                          );
+                          setModalProDiscount(false);
+                        }
+                        console.log(selectedDiscount);
+                      }}
+                    >
+                      Chọn Voucher
+                    </Button>
+                  </div>
+                  <img
+                    src={xMark}
+                    alt=""
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: -30,
+                      right: 0,
+                      top: 0,
+                      cursor: "pointer",
+                      position: "absolute",
+                    }}
+                    onClick={() => {
+                      setSelectedOption(null);
+                      setSelectedDiscount(null);
+                      setModalProDiscount(false);
+                      setSelectedDiscountSpecified(null);
+
+                      document.body.style.overflowY = "auto";
+                    }}
+                  />
+                </div>
+              </div>
             </div>
           </>
         )}

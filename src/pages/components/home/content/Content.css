@@ -25,7 +25,6 @@ input {
   margin: -2.5rem auto;
   flex-direction: column;
   width: 100%;
-  max-width: 425px;
   border-radius: 10px;
   box-shadow: 0 10px 20px 0 rgba(#999, 0.25);
   padding: 0.75rem;
@@ -667,4 +666,82 @@ input {
     box-shadow: 60px 0 0 #97bf0d;
     margin-top: 0;
   }
+}
+
+.custom-radio-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  padding-left: 0;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+/* Additional styles for labels inside the custom container */
+.custom-radio-container label {
+  width: 100%;
+  padding: 1em;
+  line-height: 1.4;
+  background-color: #f9f9f9;
+  border: 1px solid #e5e5e5;
+  border-radius: 3px;
+  transition: 0.35s ease-in-out;
+  transition: all 0.35s ease-in-out;
+}
+.recommendation-text {
+  color: #f0a500;
+  /* Change color to your preference */
+}
+.custom-radio-container label span {
+  float: left;
+  width: 50%;
+  text-align: center;
+  border-radius: 0;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+.custom-radio-container label:last-of-type span {
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+.custom-radio-container input:focus {
+  outline: 0;
+}
+
+/* Additional styles for radio button */
+.custom-radio-container input[type="radio"] {
+  display: none;
+}
+
+.custom-radio-container input[type="radio"]+label {
+  display: inline-block;
+  width: 100%;
+  text-align: center;
+  float: left;
+  border-radius: 0;
+}
+
+.custom-radio-container input:checked+label:before {
+  background-color: black;
+  color: #fff;
+}
+
+/* Additional styles for checkbox */
+.custom-checkbox-container input[type="checkbox"] {
+  display: none;
+}
+
+.custom-checkbox-container input[type="checkbox"]+label {
+  position: relative;
+  display: block;
+  padding-left: 1.6em;
+}
+
+.custom-checkbox-container input:checked+label:after {
+  opacity: 1;
 }

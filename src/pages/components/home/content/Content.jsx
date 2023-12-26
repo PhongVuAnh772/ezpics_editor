@@ -8,6 +8,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
+import { toast } from "react-toastify";
 import Cookies from "js-cookie";
 import axios from "axios";
 import Slider from "react-slick";
@@ -246,6 +247,8 @@ export default function PersistentDrawerLeft() {
   };
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+  const [loadingBuyingLostFunc, setLoadingBuyingLostFunc] =
+    React.useState(false);
   const handleOpenNavMenu = (event) => {
     setAnchorElNav(event.currentTarget);
   };
@@ -527,6 +530,7 @@ export default function PersistentDrawerLeft() {
     }
   };
   const handleTransactionPro = async () => {
+    setLoadingBuyingLostFunc(true);
     if (infoUser[0]?.member_pro) {
       const apiEndpoint =
         selectedOption === "2"
@@ -541,8 +545,23 @@ export default function PersistentDrawerLeft() {
             : "",
         type: selectedOptionTransaction === "2" ? "ecoin" : "",
       });
-      if (response && response.data && response.data.code === 0) {
+      if (response.data.code === 0) {
         console.log(response.data);
+        setLoadingBuyingLostFunc(false);
+      } else {
+        setOpenModalPro(false)
+        setLoadingBuyingLostFunc(false)
+
+        toast.error("Tài khoản không đủ để giao dịch !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } else {
       const apiEndpoint =
@@ -557,8 +576,9 @@ export default function PersistentDrawerLeft() {
             : "",
         type: selectedOptionTransaction === 2 ? "ecoin" : "",
       });
-      if (response && response.data && response.data.code === 0) {
+      if (response && response.data) {
         console.log(response.data);
+        setLoadingBuyingLostFunc(false);
       }
     }
   };
@@ -2162,7 +2182,11 @@ export default function PersistentDrawerLeft() {
                           selectedOptionTransaction === null
                         }
                       >
-                        Thanh toán
+                        {loadingBuyingLostFunc ? (
+                          <span className="loaderNew"></span>
+                        ) : (
+                          "Thanh toán"
+                        )}
                       </button>
                     </>
                   ) : (

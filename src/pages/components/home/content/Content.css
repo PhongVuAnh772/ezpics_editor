@@ -745,3 +745,15 @@ input {
 .custom-checkbox-container input:checked+label:after {
   opacity: 1;
 }
+
+.loaderNew {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: block;
+  margin: 15px auto;
+  position: relative;
+  color: white;
+  box-sizing: border-box;
+  animation: animloader 2s linear infinite;
+}

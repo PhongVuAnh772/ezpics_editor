@@ -732,7 +732,7 @@ function Category({
         </div>
         <div className="category-wrapper__block" style={{ width: "50%" }}>
           <div className="category-wrapper__block---title">
-            {pro && (
+            {dataProduct.free_pro && (
               <img
                 src={crown}
                 className="category-wrapper__block---title----vip"

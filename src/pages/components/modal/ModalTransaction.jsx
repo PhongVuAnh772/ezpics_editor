@@ -55,8 +55,39 @@ export default function ModalTransaction() {
   const [messageErr, setMessageErr] = React.useState(false);
   const modalRef = useRef();
   const { id } = useParams();
+  function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+        begin = dc.indexOf(prefix);
+        if (begin != 0) return null;
+    }
+    else
+    {
+        begin += 2;
+        var end = document.cookie.indexOf(";", begin);
+        if (end == -1) {
+        end = dc.length;
+        }
+    }
+    // because unescape has been deprecated, replaced with decodeURI
+    //return unescape(dc.substring(begin + prefix.length, end));
+    return decodeURI(dc.substring(begin + prefix.length, end));
+} 
+function checkAvailableLogin() {
+    var token = getCookie("token");
+    var userLogin = getCookie("user_login")
+
+    if (userLogin == null || token == null) {
+        return false;
+    }
+    else {
+        return true;
+    }
+}
   const navigate = useNavigate();
-  const authentication = checkTokenCookie();
+  const authentication = checkAvailableLogin();
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price);
   };

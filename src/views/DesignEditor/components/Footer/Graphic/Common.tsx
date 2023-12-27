@@ -16,7 +16,7 @@ interface Options {
 interface State {
   panel: string
 }
-export default function () {
+export default function ({ setHide, hide }) {
   const [state, setState] = React.useState<State>({ panel: "Text" })
   const isSidebarOpen = useIsSidebarOpen()
   const { activePanel, activeSubMenu } = useAppContext()
@@ -26,6 +26,9 @@ export default function () {
   const [options, setOptions] = React.useState<Options>({
     zoomRatio: 20,
   });
+  React.useEffect(() => {
+    setHide(false)
+  }, [])
   const zoomRatio: number = useZoomRatio();
   const handleChange = (type: string, value: any) => {
     if (value < 0) {
@@ -69,8 +72,8 @@ export default function () {
       }}
     >
       <div>
-        <Button kind={KIND.tertiary} size={SIZE.compact} >
-          <Icons.Layers size={20} />
+        <Button kind={KIND.tertiary} size={SIZE.compact} onClick={() => setHide(!hide)}>
+          <Icons.Layers size={15} /><p style={{paddingLeft: 5}}>Trang</p>
         </Button>
       </div>
       <div

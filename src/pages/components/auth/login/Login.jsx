@@ -24,8 +24,7 @@ function Login() {
     backgroundSize: "contain",
     minHeight: "100%",
     overflowY: "hidden",
-            overflowX: "hidden"
-
+    overflowX: "hidden",
   };
   const overlayStyle = {
     position: "absolute",
@@ -34,9 +33,8 @@ function Login() {
     width: "100%",
     height: "100%",
     background: "rgba(0, 0, 0, 0.25)", // Adjust the alpha value for the darkness
-        overflowY: "hidden",
-        overflowX: "hidden"
-
+    overflowY: "hidden",
+    overflowX: "hidden",
   };
   const blockStyle = {
     padding: "20px",
@@ -52,11 +50,9 @@ function Login() {
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
-        marginBottom: "12%",
-
+    marginBottom: "12%",
   };
-  const page = {
-  };
+  const page = {};
   const textHeader = {
     color: "white",
     fontFamily:
@@ -122,9 +118,8 @@ function Login() {
     flexDirection: "row",
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
-    display: 'flex',
-    paddingLeft:'2%'
-
+    display: "flex",
+    paddingLeft: "2%",
   };
   const network = useSelector((state) => state.ipv4.network);
   const [loading, setLoading] = useState(false);
@@ -138,25 +133,59 @@ function Login() {
     var expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
   }
+  function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+      begin = dc.indexOf(prefix);
+      if (begin != 0) return null;
+    } else {
+      begin += 2;
+      var end = document.cookie.indexOf(";", begin);
+      if (end == -1) {
+        end = dc.length;
+      }
+    }
+    // because unescape has been deprecated, replaced with decodeURI
+    //return unescape(dc.substring(begin + prefix.length, end));
+    return decodeURI(dc.substring(begin + prefix.length, end));
+  }
+  function checkAvailableLogin() {
+    var token = getCookie("token");
+    var userLogin = getCookie("user_login");
+
+    if (userLogin == null || token == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   var expirationHours = 3; // số giờ tồn tại của cookie
-  const [errMessage,setErrMessage] = useState(false)
+  const [errMessage, setErrMessage] = useState(false);
   const signInButton = async () => {
     setLoading(true);
     try {
       const response = await axios.post(`${network}/checkLoginMemberAPI`, {
         phone: phoneNum,
         password: password,
-        type_device: 'web',
+        type_device: "web",
       });
       if (response.data.code === 0) {
         console.log(response.data);
         dispatch(CHANGE_STATUS_AUTH(true));
         dispatch(CHANGE_VALUE_TOKEN(response.data?.info_member?.token_web));
-        setCookie("token", response.data?.info_member?.token_web, expirationHours);
+        setCookie(
+          "token",
+          response.data?.info_member?.token_web,
+          expirationHours
+        );
         setCookie("user_login", response.data?.info_member, expirationHours);
         setLoading(false);
-
-        navigate("/", { replace: true });
+        const auth = checkAvailableLogin();
+        if (auth) {
+          navigate("/", { replace: true });
+        }
       } else {
         setLoading(false);
         setErrMessage(true);
@@ -173,7 +202,12 @@ function Login() {
       <div style={overlayStyle}>
         <div style={page}>
           <div style={header} className="headerLogin">
-            <img src={logo} alt="" style={{ width: 50, height: 50,cursor:'pointer' }} onClick={() => navigate('/')}/>
+            <img
+              src={logo}
+              alt=""
+              style={{ width: 50, height: 50, cursor: "pointer" }}
+              onClick={() => navigate("/")}
+            />
             <div style={textHeader}>Tính năng</div>
             <div style={textHeader}>Mẫu thiết kế nổi bật</div>
             <div style={textHeader}>Hướng dẫn sử dụng</div>
@@ -219,21 +253,31 @@ function Login() {
                 onChange={(e) => setPassWord(e.target.value)}
                 placeholder="Mật khẩu"
               />
-              {errMessage && <p
-                style={{
-                 
-                  fontSize: "13px",
-                  fontWeight: 500,
-                  paddingTop: 5,
-                  textAlign: "center",
-                  margin: 0,
-                  color: 'red',
-                }}
-              >
-                Số điện thoại hoặc mật khẩu sai
-              </p>}
+              {errMessage && (
+                <p
+                  style={{
+                    fontSize: "13px",
+                    fontWeight: 500,
+                    paddingTop: 5,
+                    textAlign: "center",
+                    margin: 0,
+                    color: "red",
+                  }}
+                >
+                  Số điện thoại hoặc mật khẩu sai
+                </p>
+              )}
               <button style={submitButton} onClick={() => signInButton()}>
-                 {loading ? <div class="lds-ring-login"><div></div><div></div><div></div><div></div></div> : "Đăng nhập"}
+                {loading ? (
+                  <div class="lds-ring-login">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                ) : (
+                  "Đăng nhập"
+                )}
               </button>
               <p style={{ fontSize: "12px", textAlign: "center" }}>Hoặc</p>
               <button style={googleButton}>

@@ -69,7 +69,7 @@ function Category({
     var expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
   }
-    const infoUser = useSelector((state) => state.user.info);
+  const infoUser = useSelector((state) => state.user.info);
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -150,7 +150,6 @@ function Category({
     // Kiểm tra nếu đã tìm thấy cookie "token"
     if (tokenCookie) {
       return tokenCookie.trim();
-
     } else {
       console.log('Không tìm thấy cookie có tên là "token"');
     }
@@ -308,15 +307,46 @@ function Category({
     setErrMessage(false);
     setErrMessageMoney(false);
   };
+  function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+      begin = dc.indexOf(prefix);
+      if (begin != 0) return null;
+    } else {
+      begin += 2;
+      var end = document.cookie.indexOf(";", begin);
+      if (end == -1) {
+        end = dc.length;
+      }
+    }
+    // because unescape has been deprecated, replaced with decodeURI
+    //return unescape(dc.substring(begin + prefix.length, end));
+    return decodeURI(dc.substring(begin + prefix.length, end));
+  }
+  function checkAvailableLogin() {
+    var token = getCookie("token");
+    var userLogin = getCookie("user_login");
+
+    if (userLogin == null || token == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
-  const authentication = checkTokenCookieTrue();
+  const authentication = checkAvailableLogin();
   const handleCloseModalFree = () => setModalBuyingFree(false);
 
   const handleBuying = async () => {
     if (!authentication) {
       navigate("/login", { replace: true });
     } else {
-      if (dataProduct.sale_price === 0) {
+      if (
+        dataProduct.sale_price === 0 ||
+        (dataProduct.free_pro && infoUser[0]?.member_pro)
+      ) {
         window.scrollTo({ top: 0, behavior: "smooth" });
 
         // setLoadingBuying(true)
@@ -404,6 +434,9 @@ function Category({
           progress: undefined,
           theme: "dark",
         });
+        setTimeout(function () {
+          navigate(`/design`, { state: { id: id, token: checkTokenCookie() } });
+        }, 2000);
       } else {
         console.error("Invalid response format");
         setLoadingBuyingFunc(false);
@@ -420,7 +453,6 @@ function Category({
     React.useState(false);
   const handleBuyingFunc = async () => {
     console.log(infoUser[0]?.account_balance);
-
 
     if (selectedOption === null) {
       setErrMessage(true);
@@ -453,12 +485,13 @@ function Category({
                 theme: "dark",
               });
 
-              setTimeout(function() {
-                navigate(`/design`,{state:{id:id,token:checkTokenCookie()}})
-              setCookie("user_login", (response.data.data), 1);
-              dispatch(CHANGE_VALUE(response.data.data));
-              },2000)
-              
+              setTimeout(function () {
+                navigate(`/design`, {
+                  state: { id: id, token: checkTokenCookie() },
+                });
+                setCookie("user_login", response.data.data, 1);
+                dispatch(CHANGE_VALUE(response.data.data));
+              }, 2000);
             }
           } else {
             console.error("Invalid response format");
@@ -486,12 +519,24 @@ function Category({
               token: token,
             });
             if (response && response.data.code === 0) {
+              // setLoadingBuyingLostFunc(false);
+              // setOpenModal(false);
+
+              // window.location.reload();
+              // setCookie("user_login", (response.data.data), 1);
+              // dispatch(CHANGE_VALUE(response.data.data));
+              // toast.success("Mua mẫu thiết kế thành công", {
+              //   position: "top-right",
+              //   autoClose: 5000,
+              //   hideProgressBar: false,
+              //   closeOnClick: true,
+              //   pauseOnHover: true,
+              //   draggable: true,
+              //   progress: undefined,
+              //   theme: "dark",
+              // });
               setLoadingBuyingLostFunc(false);
               setOpenModal(false);
-
-              window.location.reload();
-              setCookie("user_login", (response.data.data), 1);
-              dispatch(CHANGE_VALUE(response.data.data));
               toast.success("Mua mẫu thiết kế thành công", {
                 position: "top-right",
                 autoClose: 5000,
@@ -502,6 +547,14 @@ function Category({
                 progress: undefined,
                 theme: "dark",
               });
+
+              setTimeout(function () {
+                navigate(`/design`, {
+                  state: { id: id, token: checkTokenCookie() },
+                });
+                setCookie("user_login", response.data.data, 1);
+                dispatch(CHANGE_VALUE(response.data.data));
+              }, 2000);
             }
           } else {
             console.error("Invalid response format");
@@ -554,7 +607,7 @@ function Category({
         );
         if (response && response.data && response.data.listData) {
           setData(response.data.listData[2].listData);
-          console.log(response.data.listData[2].listData)
+          console.log(response.data.listData[2].listData);
         } else {
           console.error("Invalid response format");
         }
@@ -707,7 +760,8 @@ function Category({
               <Skeleton style={{ height: 40, width: 150, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----newer">
-                {dataProduct.sale_price === 0
+                {dataProduct.sale_price === 0 ||
+                (dataProduct.free_pro && infoUser[0]?.member_pro)
                   ? "Miễn phí"
                   : `₫ ${formatPrice(dataProduct.sale_price)}`}
               </p>
@@ -717,9 +771,11 @@ function Category({
               <Skeleton style={{ height: 30, width: 100, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----discount">
-                {Math.round(
-                  100 - (dataProduct.sale_price / dataProduct.price) * 100
-                )}
+                {!(dataProduct.free_pro && infoUser[0]?.member_pro)
+                  ? Math.round(
+                      100 - (dataProduct.sale_price / dataProduct.price) * 100
+                    )
+                  : "100"}
                 % GIẢM
               </p>
             )}
@@ -747,9 +803,11 @@ function Category({
                 }}
               >
                 GIẢM MẠNH{" "}
-                {Math.round(
-                  100 - (dataProduct.sale_price / dataProduct.price) * 100
-                )}
+{!(dataProduct.free_pro && infoUser[0]?.member_pro)
+                  ? Math.round(
+                      100 - (dataProduct.sale_price / dataProduct.price) * 100
+                    )
+                  : "100"}
                 %
               </p>
             </div>
@@ -996,8 +1054,8 @@ function Category({
                     minHeight: 70,
                     maxWidth: "100%",
                     color: "rgb(37, 38, 56)",
-fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
@@ -1080,8 +1138,8 @@ fontFamily:
                     height: 70,
                     maxWidth: "100%",
                     color: "rgb(37, 38, 56)",
-fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
@@ -1093,8 +1151,8 @@ fontFamily:
                     style={{
                       maxWidth: "80%",
                       color: "rgb(37, 38, 56)",
-  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                      fontFamily:
+                        "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                       fontWeight: 600,
                       fontSize: "17px",
                       margin: 0,

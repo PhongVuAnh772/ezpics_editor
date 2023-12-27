@@ -114,33 +114,34 @@ export default function PersistentDrawerLeft() {
     // Set the selectedDiscount state to the index of the clicked item
     setSelectedDiscount(index);
   };
-  function checkTokenCookie() {
-    var allCookies = document.cookie;
-
-    var cookiesArray = allCookies.split(";");
-
-    for (var i = 0; i < cookiesArray.length; i++) {
-      var cookie = cookiesArray[i].trim();
-      if (cookie.indexOf("token=") === 0) {
-        var tokenValue = cookie.substring("token=".length, cookie.length);
-
-        if (tokenValue !== "") {
-          console.log(
-            "Có token và không rỗng. Giá trị token là: " + tokenValue
-          );
-
-          return true;
-        } else {
-          console.log("Có token nhưng giá trị rỗng.");
-          return false;
-        }
+  function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+      begin = dc.indexOf(prefix);
+      if (begin != 0) return null;
+    } else {
+      begin += 2;
+      var end = document.cookie.indexOf(";", begin);
+      if (end == -1) {
+        end = dc.length;
       }
     }
-
-    // Không tìm thấy cookie "token"
-    console.log("Không tìm thấy cookie có tên là 'token'.");
-    return false;
+    return decodeURI(dc.substring(begin + prefix.length, end));
   }
+  function checkAvailableLogin() {
+    var token = getCookie("token");
+    var userLogin = getCookie("user_login");
+
+    if (userLogin == null || token == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  const authentication = checkAvailableLogin();
+
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price);
   };
@@ -199,7 +200,6 @@ export default function PersistentDrawerLeft() {
   }, []);
   const [showWidthHeight, setShowWidthHeight] = React.useState(false);
   const navigate = useNavigate();
-  const authentication = checkTokenCookie();
 
   const darkTheme = createTheme({
     palette: {
@@ -549,8 +549,8 @@ export default function PersistentDrawerLeft() {
         console.log(response.data);
         setLoadingBuyingLostFunc(false);
       } else {
-        setOpenModalPro(false)
-        setLoadingBuyingLostFunc(false)
+        setOpenModalPro(false);
+        setLoadingBuyingLostFunc(false);
 
         toast.error("Tài khoản không đủ để giao dịch !! 🦄", {
           position: "top-left",
@@ -1147,7 +1147,7 @@ export default function PersistentDrawerLeft() {
                     onClick={() => console.log("User info:", infoUser)}
                   />
                 )}
-                {authentication && (
+                {authentication && infoUser[0]?.member_pro && (
                   <img
                     src={crownPro}
                     style={{
@@ -2575,7 +2575,7 @@ export default function PersistentDrawerLeft() {
                       setSelectedDiscount(null);
                       setModalProDiscount(false);
                       setSelectedDiscountSpecified(null);
-
+                      setSelectedOptionTransaction(null);
                       document.body.style.overflowY = "auto";
                     }}
                   />
@@ -2755,6 +2755,7 @@ export default function PersistentDrawerLeft() {
           </div>
         )}
       </Box>
+      
     </>
   );
 }

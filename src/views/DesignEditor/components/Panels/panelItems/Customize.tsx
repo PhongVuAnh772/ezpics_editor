@@ -616,7 +616,7 @@ export default function () {
                       >
                         {categoryList &&
                           categoryList.map((category: any) => (
-                            <option key={category.id} value={category.id}>
+                            <option key={category.id} value={category.id} style={{color: 'black'}}>
                               {category.name}
                             </option>
                           ))}

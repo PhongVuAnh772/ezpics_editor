@@ -16,8 +16,8 @@ import { loadVideoEditorAssets } from "~/utils/video";
 import "../../../../DesignEditor/components/Preview/newloading.css";
 import { useAppSelector } from "~/hooks/hook";
 import axios from "axios";
-import logoE from './EZPICS (converted)-03.png'
-export default function () {
+import logoE from "./EZPICS (converted)-03.png";
+export default function ({hide}) {
   const scenes = useDesignEditorPages();
   const {
     setScenes,
@@ -215,11 +215,9 @@ export default function () {
   };
   const network = useAppSelector((state) => state.network.ipv4Address);
   const idProduct = useAppSelector((state) => state.token.id);
-  function findAndSetIndex(pageIdToDelete:any) {
-        return scenes.findIndex(
-          (scene) => scene.id === pageIdToDelete.id
-        );
-      }
+  function findAndSetIndex(pageIdToDelete: any) {
+    return scenes.findIndex((scene) => scene.id === pageIdToDelete.id);
+  }
   const handleDelete = React.useCallback(
     async (e: any, pageIdToDelete: any) => {
       e.stopPropagation();
@@ -258,11 +256,11 @@ export default function () {
         scenes: newPagess,
         type: "GRAPHIC",
       };
-      
+
       const res = await axios.post(`${network}/deletePageLayerAPI`, {
         idProduct: idProduct,
         page: findAndSetIndex(pageIdToDelete),
-        token: token
+        token: token,
       });
       if (res.data.code === 0) {
         setScenes(newPagess);
@@ -322,114 +320,121 @@ export default function () {
 
   return (
     <>
-      <Block
-        $style={{
-          padding: "0.25rem 0.75rem",
-          background: "#ffffff",
-        }}
-      >
-        <Block $style={{ display: "flex", alignItems: "center" }}>
-          {scenes.map((page: any, index: any) => (
-            <div
-              style={{
-                background:
-                  page.id === currentScene?.id ? "rgb(243,244,246)" : "#ffffff",
-                padding: "1rem 0.5rem",
-              }}
-              key={index}
-              onMouseEnter={() => setHoveredPage(page)}
-              onMouseLeave={() => setHoveredPage(null)}
-            >
+      {
+        <Block
+          $style={{
+            padding: "0.25rem 0.75rem",
+            background: "#ffffff",
+            // display:  hide ? 'block' : 'none',
+  display: hide ? 'block' : 'none'
+          }}
+        >
+          <Block $style={{ display: "flex", alignItems: "center" }}>
+            {scenes.map((page: any, index: any) => (
               <div
-                onClick={() => changePage(page)}
-                className={css({
-                  cursor: "pointer",
-                  position: "relative",
-                  border:
+                style={{
+                  background:
                     page.id === currentScene?.id
-                      ? "2px solid #7158e2"
-                      : "2px solid rgba(0,0,0,.15)",
-                })}
+                      ? "rgb(243,244,246)"
+                      : "#ffffff",
+                  padding: "1rem 0.5rem",
+                }}
+                key={index}
+                onMouseEnter={() => setHoveredPage(page)}
+                onMouseLeave={() => setHoveredPage(null)}
               >
-                <img
-                  style={{
-                    maxWidth: "90px",
-                    maxHeight: "80px",
-                    display: "flex",
-                  }}
-                  src={
-                    currentPreview && page.id === currentScene?.id
-                      ? currentPreview
-                      : page.preview
-                  }
-                />
-                {hoveredPage === page && (
+                <div
+                  onClick={() => changePage(page)}
+                  className={css({
+                    cursor: "pointer",
+                    position: "relative",
+                    border:
+                      page.id === currentScene?.id
+                        ? "2px solid #7158e2"
+                        : "2px solid rgba(0,0,0,.15)",
+                  })}
+                >
+                  <img
+                    style={{
+                      maxWidth: "90px",
+                      maxHeight: "80px",
+                      display: "flex",
+                    }}
+                    src={
+                      currentPreview && page.id === currentScene?.id
+                        ? currentPreview
+                        : page.preview
+                    }
+                  />
+                  {hoveredPage === page && (
+                    <div
+                      onClick={(e) => handleDelete(e, page)} // Add your delete logic here
+                      className={css({
+                        position: "absolute",
+                        top: "4px",
+                        right: "4px",
+                        background: "rgba(255,0,0,0.7)",
+                        color: "#fff",
+                        fontSize: "16px",
+                        borderRadius: "50%",
+                        height: "24px",
+                        width: "24px",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        cursor: "pointer",
+                      })}
+                    >
+                      <FaTrash />
+                    </div>
+                  )}
                   <div
-                    onClick={(e) => handleDelete(e, page)} // Add your delete logic here
                     className={css({
                       position: "absolute",
-                      top: "4px",
+                      bottom: "4px",
                       right: "4px",
-                      background: "rgba(255,0,0,0.7)",
+                      background: "rgba(0,0,0,0.4)",
                       color: "#fff",
-                      fontSize: "16px",
-                      borderRadius: "50%",
-                      height: "24px",
-                      width: "24px",
+                      fontSize: "10px",
+                      borderRadius: "2px",
+                      height: "16px",
+                      width: "16px",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
-                      cursor: "pointer",
                     })}
                   >
-                    <FaTrash />
+                    {index + 1}
                   </div>
-                )}
-                <div
-                  className={css({
-                    position: "absolute",
-                    bottom: "4px",
-                    right: "4px",
-                    background: "rgba(0,0,0,0.4)",
-                    color: "#fff",
-                    fontSize: "10px",
-                    borderRadius: "2px",
-                    height: "16px",
-                    width: "16px",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  })}
-                >
-                  {index + 1}
                 </div>
               </div>
-            </div>
-          ))}
-          <div
-            style={{
-              background: "#ffffff",
-              padding: "1rem 1rem 1rem 0.5rem",
-            }}
-          >
+            ))}
             <div
-              onClick={addScene}
-              // onClick={handleAdd}
-              className={css({
-                width: "100px",
-                height: "56px",
-                background: "rgb(243,244,246)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: "pointer",
-              })}
+              style={{
+                background: "#ffffff",
+                padding: "1rem 1rem 1rem 0.5rem",
+              }}
             >
-              <Add size={20} />
+              <div
+                onClick={addScene}
+                // onClick={handleAdd}
+                className={css({
+                  width: "100px",
+                  height: "56px",
+                  background: "rgb(243,244,246)",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  cursor: "pointer",
+                })}
+              >
+                <Add size={20} />
+              </div>
             </div>
-          </div>
+          </Block>
         </Block>
-      </Block>
+      }
+
       {loading && (
         <div
           style={{

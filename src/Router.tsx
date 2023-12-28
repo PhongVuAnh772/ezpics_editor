@@ -24,7 +24,13 @@ import Table from "./pages/components/transaction/Table.jsx";
 import TableEcoin from "./pages/components/transaction/TableEcoin.jsx";
 import ModalTransaction from "./pages/components/modal/ModalTransaction.jsx";
 import ModalQRCode from "./pages/components/modal/ModalQRCode.jsx";
-
+import Gift from './pages/components/gift/Gift.jsx'
+import Endow from './pages/components/endow/Endow.jsx'
+import Congratulation from './pages/components/congratulation/Congratulation.jsx'
+import Banner from './pages/components/home/Banner/Banner.jsx'
+import SocialMedia from './pages/components/home/social-media/SocialMedia.jsx'
+import Event from './pages/event/Event.jsx'
+import LiveStream from './pages/components/live-stream/LiveStream.jsx'
 function Router() {
   const location = useLocation();
   const previousLocation = location.state?.previousLocation;
@@ -39,7 +45,15 @@ function Router() {
         <Route path="/" element={<HomePage />}>
           <Route path="/" element={<Dashboard />}>
             <Route path="/" element={<ForYouPage />} />
-            <Route path="/for-you" element={<ForYouPage />} />
+            <Route path="/endow" element={<Endow />} />
+            <Route path="/gift" element={<Gift />} />
+            <Route path="/congratulation" element={<Congratulation />} />
+            <Route path="/banner" element={<Banner />} />
+            <Route path="/social-media" element={<SocialMedia />} />
+            <Route path="/event" element={<Event />} />
+            <Route path="/live-stream" element={<LiveStream />} />
+            {/* <Route path="/for-you" element={<ForYouPage />} /> */}
+
           </Route>
           {/* <Route path="/author" element={<AuthorDesigner />} /> */}
 

@@ -266,7 +266,7 @@ function Dashboard() {
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/banner"
               style={{
                 display: "flex",
                 textDecoration: "none",
@@ -331,13 +331,13 @@ function Dashboard() {
                   fontWeight: 600,
                 }}
               >
-                Banner
+                Logo
               </span>
             </Link>
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/social-media"
               style={{
                 display: "flex",
                 textDecoration: "none",
@@ -407,7 +407,7 @@ function Dashboard() {
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/live-stream"
               style={{
                 display: "flex",
                 textDecoration: "none",
@@ -477,7 +477,7 @@ function Dashboard() {
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/gift"
               style={{
                 display: "flex",
                 textDecoration: "none",
@@ -547,7 +547,7 @@ function Dashboard() {
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/endow"
               style={{
                 display: "flex",
                 textDecoration: "none",
@@ -630,7 +630,7 @@ function Dashboard() {
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/congratulation"
               style={{
                 display: "flex",
                 textDecoration: "none",
@@ -699,7 +699,7 @@ function Dashboard() {
           </li>
           <li style={{}}>
             <Link
-              to="/"
+              to="/event"
               style={{
                 display: "flex",
                 textDecoration: "none",

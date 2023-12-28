@@ -459,7 +459,7 @@ export default function PersistentDrawerLeft() {
   };
   const ezpizProBlock = {
     width: "65%",
-    height: "50%",
+    height: 600,
     backgroundColor: "white",
     paddingLeft: 20,
     display: "flex",
@@ -549,6 +549,8 @@ export default function PersistentDrawerLeft() {
         console.log(response.data);
         setLoadingBuyingLostFunc(false);
       } else {
+        document.body.style.overflowY = "auto";
+
         setOpenModalPro(false);
         setLoadingBuyingLostFunc(false);
 
@@ -2755,7 +2757,6 @@ export default function PersistentDrawerLeft() {
           </div>
         )}
       </Box>
-      
     </>
   );
 }

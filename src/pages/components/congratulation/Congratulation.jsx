@@ -11,7 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
-import crown from "../../../../../src/pages/components/home/content/assets/crown.png";
+import crown from "./crown.png";
 import "./ForYouPage.css";
 import { Routes, Route, Link, useParams, useNavigate } from "react-router-dom";
 import Button from "@mui/material/Button";
@@ -21,18 +21,13 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import warning from "./warning.png";
 import { toast } from "react-toastify";
-import {DELETE_ALL_VALUES} from '../../../store/slice/infoUser.js'
+import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../store/slice/infoUser";
 
-function ForYouPage() {
-  const dispatch = useDispatch()
+function Congratulation() {
+  const dispatch = useDispatch();
+
     const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
-  const [modalLogoutDevice,setModalLogoutDevice] = React.useState(false);
-const handleLogoutDevice = () => {
-    document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-    dispatch(DELETE_ALL_VALUES());
-    setModalLogoutDevice(false);
-  };
+    const [modalLogoutDevice,setModalLogoutDevice] = React.useState(false);
   const styleModalBuyingFree = {
     position: "absolute",
     top: "50%",
@@ -46,7 +41,6 @@ const handleLogoutDevice = () => {
     alignItems: "center",
     flexDirection: "column",
     paddingTop: "15px",
-
     borderRadius: "15px",
   };
   const itemsPerRow = 4; // Number of items per row
@@ -82,7 +76,57 @@ const handleLogoutDevice = () => {
       console.error("Error fetching data:", error.message);
       setLoadingBuyingFunc(false);
     }
-  };
+  };  
+  useEffect(() => {
+    const getData = async () => {
+      try {
+        const responseCategory = await axios.get(
+          `${network}/getProductCategoryAPI`
+        );
+        if (
+          responseCategory &&
+          responseCategory.data &&
+          responseCategory.data.listData
+        ) {
+         
+          const thumbnailYoutubeCategory = responseCategory.data.listData.find(
+            (category) => category.name === "Thiệp chúc mừng"
+          );
+          if (thumbnailYoutubeCategory) {
+            const categoryId = thumbnailYoutubeCategory.id;
+            const response = await axios.post(
+              `${network}/getProductByCategoryAPI`,
+              {
+                limit: 30,
+                page: 1,
+                category_id: categoryId
+              }
+            );
+            if (response && response.data) {
+              // setData(response.data.listData[5].listData);
+              // setData2(response.data.listData[8].listData);
+              // setLoading(false);
+              
+              setDataEndow(response.data.listData)
+            } else {
+              console.error("Invalid response format");
+              setLoading(false);
+            }
+            console.log(categoryId)
+          } else {
+            console.log('Category "Thumnail Youtube" not found.');
+          }
+        } else {
+          console.error("Invalid response format");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    getData();
+  }, []);const [dataEndow,setDataEndow] = React.useState([])
+
   const [loading, setLoading] = React.useState(true);
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
 
@@ -119,6 +163,12 @@ const handleLogoutDevice = () => {
   };
   const [dataForYou, setDataForYou] = React.useState([]);
   const [loadingForYou, setLoadingForYou] = React.useState(false);
+  const handleLogoutDevice = () => {
+    document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    dispatch(DELETE_ALL_VALUES());
+    setModalLogoutDevice(false);
+  };
   function getCookie(name) {
     var dc = document.cookie;
     var prefix = name + "=";
@@ -287,6 +337,207 @@ const handleCloseModalFree = () => {
 
   return (
     <div style={{ paddingRight: 15, paddingTop: 15 }}>
+      <p style={{ fontSize: 18, fontWeight: "bold" }}>Thiệp chúc mừng</p>
+
+      {loadingNewest ? (
+        // Display loading skeletons while data is being fetched
+        <Carousel
+          swipeable={false}
+          responsive={responsive}
+          ssr={true}
+          infinite={true}
+          autoPlaySpeed={1000}
+          keyBoardControl={true}
+          transitionDuration={500}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {[...Array(4).keys()].map((index) => (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+                width: "100%",
+                justifyContent: "center",
+                borderRadius: 10,
+                marginLeft: "12px",
+              }}
+            >
+              <div
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "80%",
+                  height: 180,
+                  background: "#f0f0f0",
+                  justifyContent: "center",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                }}
+              >
+                <Skeleton height={180} />
+              </div>
+              <div
+                style={{
+                  minHeight: 70,
+                  maxWidth: "100%",
+                  color: "rgb(37, 38, 56)",
+                  fontWeight: 600,
+                  fontSize: "17px",
+                  margin: 0,
+                  marginBottom: 15,
+                  marginTop: 10,
+                }}
+              >
+                <Skeleton height={17} width="80%" />
+              </div>
+              <Skeleton height={15} width="100%" />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "2em",
+                }}
+              >
+                <Skeleton height={17} width="50%" />
+                <Skeleton height={14} width="40%" />
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      ) : (
+        // Display actual content once data is available
+
+        <Carousel
+          swipeable={false}
+          responsive={responsive}
+          ssr={true}
+          infinite={true}
+          autoPlaySpeed={1000}
+          keyBoardControl={true}
+          transitionDuration={500}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {dataEndow.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+                width: "100%",
+                justifyContent: "center",
+                borderRadius: 10,
+                marginLeft: "12px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                navigate(`/category/${item.id}`);
+                // console.log(item)
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              <div
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "80%",
+                  height: 180,
+                  background: "#f0f0f0",
+                  justifyContent: "center",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  src={item.image}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+                {item.free_pro && (
+                  <div class="ribbon-1 left-ribbon">
+                    {/* <p style={{ color: "white", margin: 0, fontSize: 13 }}>Pro</p> */}
+                    <img
+                      alt=""
+                      src={crown}
+                      style={{
+                        width: 14,
+                        height: 15,
+                        transform: "translate(-0.3%) rotate(45deg)",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div
+                style={{
+                  maxWidth: "100%",
+                  color: "rgb(37, 38, 56)",
+                  fontFamily:
+                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                  fontWeight: 600,
+                  fontSize: "17px",
+                  margin: 0,
+                  marginBottom: 15,
+                  marginTop: 10,
+                  height: 70,
+                }}
+              >
+                <h5
+                  style={{
+                    color: "rgb(37, 38, 56)",
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontWeight: 600,
+                    fontSize: "17px",
+                    margin: 0,
+                    width: "80%",
+                  }}
+                >
+                  {item.name}
+                </h5>
+              </div>
+              <p style={{ margin: 0, color: "black", fontSize: 15 }}>
+                Đã bán {item.sold}
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "2em",
+                }}
+              >
+                <p
+                  style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
+                >
+                  {item.free_pro
+                    ? "Miễn phí"
+                    : `${
+                        item.sale_price
+                          ? `${formatPrice(item.sale_price)} ₫`
+                          : "Miễn phí"
+                      }`}
+                </p>
+                <p
+                  style={{
+                    margin: 0,
+                    fontSize: 14,
+                    textDecoration: "line-through",
+                    paddingLeft: "5%",
+                    color: "gray",
+                    fontWeight: 300,
+                  }}
+                >
+                  {formatPrice(item.price)}₫
+                </p>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      )}
       <p style={{ fontSize: 18, fontWeight: "bold" }}>Mẫu thiết kế mới nhất</p>
       {loadingNewest ? (
         // Display loading skeletons while data is being fetched
@@ -1081,6 +1332,7 @@ const handleCloseModalFree = () => {
           </Button>
         </div>
       )}
+      
       <Modal
         open={modalLogoutDevice}
         onClose={handleLogoutDevice}
@@ -1220,4 +1472,4 @@ const handleCloseModalFree = () => {
   );
 }
 
-export default ForYouPage;
+export default Congratulation;

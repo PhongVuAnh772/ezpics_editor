@@ -46,9 +46,9 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import Box from "@mui/material/Box";
 import { CHANGE_VALUE_TOKEN } from "../../../store/slice/authSlice";
-import { CHANGE_VALUE } from "../../../store/slice/infoUser";
+import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../../store/slice/infoUser";
 import Cookies from "js-cookie";
-
+import warning from "../../live-stream/warning.png";
 function Category({
   image = "https://down-vn.img.susercontent.com/file/a262ff1f44dab967e8e7d50c7bda514d",
   pro = true,
@@ -214,7 +214,13 @@ function Category({
     }
   }
   const [loading, setLoading] = React.useState(true);
-
+  const [modalLogoutDevice, setModalLogoutDevice] = React.useState(false);
+  const handleLogoutDevice = () => {
+    document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+    dispatch(DELETE_ALL_VALUES());
+    setModalLogoutDevice(false);
+  };
   const open = useOutletContext();
   const formatPrice = (price) => {
     return new Intl.NumberFormat("vi-VN").format(price);
@@ -373,8 +379,9 @@ function Category({
           setLoadingFavorite(false);
           // saveFavoriteProductAPI
         } else {
-          console.error("Invalid response format");
+          setFavorite(false);
           setLoadingFavorite(false);
+          setModalLogoutDevice(true);
         }
       } catch (error) {
         console.error("Error fetching data:", error.message);
@@ -403,8 +410,10 @@ function Category({
         // saveFavoriteProductAPI
         setLoadingFavorite(false);
       } else {
-        console.error("Invalid response format");
+        setFavorite(false);
         setLoadingFavorite(false);
+
+        setModalLogoutDevice(true);
       }
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -440,6 +449,7 @@ function Category({
       } else {
         console.error("Invalid response format");
         setLoadingBuyingFunc(false);
+        setModalLogoutDevice(true)
       }
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -496,6 +506,8 @@ function Category({
           } else {
             console.error("Invalid response format");
             setLoadingBuyingLostFunc(false);
+                    setModalLogoutDevice(true)
+
           }
         } catch (error) {
           console.error("Error fetching data:", error.message);
@@ -560,6 +572,9 @@ function Category({
             console.error("Invalid response format");
             setLoadingBuyingLostFunc(false);
             setErrMessageMoney(true);
+                    setModalLogoutDevice(true)
+
+
           }
         } catch (error) {
           console.error("Error fetching data:", error.message);
@@ -803,7 +818,7 @@ function Category({
                 }}
               >
                 GIẢM MẠNH{" "}
-{!(dataProduct.free_pro && infoUser[0]?.member_pro)
+                {!(dataProduct.free_pro && infoUser[0]?.member_pro)
                   ? Math.round(
                       100 - (dataProduct.sale_price / dataProduct.price) * 100
                     )
@@ -1532,6 +1547,65 @@ function Category({
                 </Button>
               </div>
             </div>
+          </div>
+        </Box>
+      </Modal>
+      <Modal
+        open={modalLogoutDevice}
+        onClose={handleLogoutDevice}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModalBuyingFree}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: "bold",
+              paddingBottom: "10px",
+            }}
+          >
+            Cảnh báo
+          </p>
+          <img
+            src={warning}
+            alt=""
+            style={{ width: "20%", height: "30%", marginBottom: "10px" }}
+          />
+          <p
+            style={{
+              margin: 0,
+              fontSize: 17,
+              fontWeight: "500",
+              paddingTop: "10px",
+            }}
+          >
+            Tài khoản đã bị đăng nhập ở thiết bị khác
+          </p>
+          <div style={{ display: "flex" }}>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+                marginTop: "40px",
+                width: "100%",
+              }}
+              onClick={() => {
+                document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+                dispatch(DELETE_ALL_VALUES());
+                setModalLogoutDevice(false);
+
+                navigate("/login", { replace: true });
+              }}
+            >
+              Đăng xuất
+            </Button>
           </div>
         </Box>
       </Modal>

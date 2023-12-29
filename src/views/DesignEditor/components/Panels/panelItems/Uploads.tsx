@@ -61,14 +61,16 @@ export default function () {
           // width: 206,
           // height: 206,
           metadata: {
-            naturalWidth: 206,
-            naturalHeight: 206,
-            initialHeight: 206,
-            initialWidth: 206,
+            naturalWidth: res.data.data.content.naturalWidth,
+            naturalHeight: res.data.data.content.naturalHeight,
+            initialHeight: res.data.data.content.initialHeight,
+            initialWidth: res.data.data.content.initialWidth,
 
             lock: false,
             variable: string1,
             variableLabel: string2,
+                      page:  Number(res.data.data.content.page),
+
           },
         };
         editor.objects.add(options);

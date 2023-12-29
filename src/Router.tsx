@@ -31,6 +31,8 @@ import Banner from './pages/components/home/Banner/Banner.jsx'
 import SocialMedia from './pages/components/home/social-media/SocialMedia.jsx'
 import Event from './pages/event/Event.jsx'
 import LiveStream from './pages/components/live-stream/LiveStream.jsx'
+import CollectionAll from './pages/components/collection-all/CollectionAll.jsx'
+
 function Router() {
   const location = useLocation();
   const previousLocation = location.state?.previousLocation;
@@ -56,6 +58,7 @@ function Router() {
 
           </Route>
           {/* <Route path="/author" element={<AuthorDesigner />} /> */}
+                    <Route path="/collection-all" element={<CollectionAll />} />
 
           <Route path="/category/:id" element={<Category />} />
           <Route

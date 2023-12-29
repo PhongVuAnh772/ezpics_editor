@@ -1355,7 +1355,7 @@ export default function PersistentDrawerLeft() {
                 }}
               >
                 <Link
-                  to="/"
+                  to="/collection-all"
                   style={{
                     display: "flex",
                     textDecoration: "none",

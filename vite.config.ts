@@ -17,8 +17,11 @@ export default defineConfig({
 
     //   return availablePort;
     // },
-    port: 5173,
-    host: 'ezpics.vn',
+    port: 80,
+    host: ['127.0.0.1', 'ezpics.vn'],
     https: false,
+    hmr: {
+      port: 80,
+    },
   },
 });

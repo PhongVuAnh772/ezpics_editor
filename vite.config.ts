@@ -18,7 +18,8 @@ export default defineConfig({
     //   return availablePort;
     // },
     port: 80,
-    host: ['127.0.0.1', 'ezpics.vn'],
+    //host: ['ec2-18-139-16-79.ap-southeast-1.compute.amazonaws.com', 'ezpics.vn'],
+    host: 'ezpics.vn',
     https: false,
     hmr: {
       port: 80,

@@ -17,12 +17,12 @@ export default defineConfig({
 
     //   return availablePort;
     // },
-    port: 443,
+    port: 80,
     host: ['ec2-18-139-16-79.ap-southeast-1.compute.amazonaws.com', 'ezpics.vn'],
     //host: 'ezpics.vn',
-    https: true,
+    https: false,
     hmr: {
-      port: 443,
+      port: 80,
     },
   },
 });

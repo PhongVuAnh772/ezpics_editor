@@ -18,7 +18,7 @@ import { toast } from "react-toastify";
 
 function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
-
+  const [modalCreate,setModalCreate] = React.useState(false);
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
   const handleDelete = async () => {
     setLoadingBuyingFunc(true);
@@ -192,6 +192,7 @@ function PurchaseForm() {
                   navigate(`/design`, {
                     state: { id: item.id, token: checkTokenCookie() },
                   });
+                  // setModalCreate(true)
                 }}
                 style={{
                   color: "black",
@@ -313,8 +314,8 @@ function PurchaseForm() {
         </div>
       )}
       <Modal
-        open={modalBuyingFree}
-        onClose={handleCloseModalFree}
+        open={modalCreate}
+        onClose={() => setModalCreate(false)}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -387,6 +388,81 @@ function PurchaseForm() {
           </div>
         </Box>
       </Modal>
+      {/* <Modal
+        open={modalBuyingFree}
+        onClose={handleCloseModalFree}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModalBuyingFree}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: "bold",
+              paddingBottom: "10px",
+            }}
+          >
+            Tạo ảnh
+          </p>
+          <img
+            src={warning}
+            alt=""
+            style={{ width: "20%", height: "30%", marginBottom: "10px" }}
+          />
+          <p
+            style={{
+              margin: 0,
+              fontSize: 17,
+              fontWeight: "500",
+              paddingTop: "10px",
+            }}
+          >
+            Bạn 
+          </p>
+          <div style={{ display: "flex" }}>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "black",
+                backgroundColor: "white",
+                marginTop: "40px",
+                width: "60%",
+                marginRight: 10,
+              }}
+              onClick={() => {
+                setModalBuyingFree(false);
+                setDeletingItemId(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+                marginTop: "40px",
+                width: "60%",
+              }}
+              onClick={() => {
+                handleDelete();
+              }}
+            >
+              {" "}
+              {loadingBuyingFunc ? <span class="loaderNew"></span> : "Xóa"}
+            </Button>
+          </div>
+        </Box>
+      </Modal> */}
     </div>
   );
 }

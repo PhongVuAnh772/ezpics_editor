@@ -13,17 +13,15 @@ import {
 } from "react-router-dom";
 import Box from "@mui/material/Box";
 import { Tab, TabList, TabPanel, Tabs } from "./tabs.jsx";
-import paintSticker from './paint-sticker.png'
-
 import "./Project.css";
 // import backgroundHeader from
-function CollectionAll() {
+function UnBuyingCollection() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  React.useEffect(() => {
-    navigate("purchase-collection");
-  }, []);
+//   React.useEffect(() => {
+//     navigate("recommend");
+//   }, []);
 
   // Get the current route
   const currentRoute = location.pathname.split("/").pop();
@@ -63,24 +61,23 @@ function CollectionAll() {
           alignItems: "center",
           flexDirection: "row",
           position: "relative",
-          // marginBottom: "10px",
+          marginBottom: "10px",
         }}
       >
         <div className="project-header__advertisement">
           <p className="project-header__advertisement---textHeader">
-            Hãy thổi hồn vào các mẫu thiết kế của bạn 
+            Bắt đầu giàu cảm hứng với Ezpics
           </p>
           <p className="project-header__advertisement---textContent">
-            Không chỉ là mẫu thiết kế, mà là một phần của cuộc sống hiện đại, thể hiện sự cá nhân hóa và gu thẩm mỹ của bạn
+            Với hàng nghìn mẫu thiết kế độc đáo, hãy thổi hồn cho ý tưởng và tác
+            phẩm tuyệt vời nhất của bạn.
           </p>
         </div>
-        <img src={paintSticker} alt="" className="project-header__img---your-design" />
+        <img src="" alt="" className="project-header__img" />
       </Box>
       <Tabs>
         <TabList aria-label="Groceries">
-          <Tab to="purchase-collection">Kho mua</Tab>
-          <Tab to="sale-collection">Kho bán</Tab>
-          
+          <Tab to="recommend">Được đề xuất</Tab>         
         </TabList>
         <div className="panels">
           <TabPanel>
@@ -92,4 +89,4 @@ function CollectionAll() {
   );
 }
 
-export default CollectionAll;
+export default UnBuyingCollection;

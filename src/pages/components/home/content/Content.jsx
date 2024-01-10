@@ -7,6 +7,8 @@ import {
   useLocation,
   Outlet,
 } from "react-router-dom";
+import Modal from "@mui/material/Modal";
+import './Content.css'
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
@@ -515,6 +517,13 @@ export default function PersistentDrawerLeft() {
     // 23979
     console.log(response.data);
   };
+  function setCookie(name, value, expirationHours) {
+    var date = new Date();
+    value = JSON.stringify(value);
+    date.setTime(date.getTime() + expirationHours * 60 * 60 * 1000); // Chuyển đổi giờ thành mili giây
+    var expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+  }
   const handleFileChange = (event) => {
     const fileInput = event.target;
     const files = fileInput.files;
@@ -545,9 +554,29 @@ export default function PersistentDrawerLeft() {
             : "",
         type: selectedOptionTransaction === "2" ? "ecoin" : "",
       });
-      if (response.data.code === 0) {
+      if (response.data.code === 1) {
         console.log(response.data);
-        setLoadingBuyingLostFunc(false);
+        const response = await axios.post(`${network}/getInfoMemberAPI`, {
+          token: token,
+        });
+        if (response && response.data.code === 0) {
+          setLoadingBuyingLostFunc(false);
+          toast("Tài khoản gia hạn PRO thành công !! 🦄", {
+            position: "top-left",
+            autoClose: 2000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: false,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
+          });
+
+          setTimeout(function () {
+            setCookie("user_login", response.data.data, 1);
+            dispatch(CHANGE_VALUE(response.data.data));
+          }, 2000);
+        }
       } else {
         document.body.style.overflowY = "auto";
 
@@ -1553,7 +1582,7 @@ export default function PersistentDrawerLeft() {
                         location.pathname === "/ordered"
                           ? "#ccc"
                           : "transparent",
-                      borderRadius: "5px",
+                      borderRadius: "10px",
                     }}
                   >
                     <Link
@@ -1587,11 +1616,16 @@ export default function PersistentDrawerLeft() {
                       width: "100%",
                       color: "inherit",
                       backgroundColor:
-                        location.pathname === "/f" ? "#ccc" : "transparent",
+                        location.pathname ===
+                          "/your-collection/purchase-collection" ||
+                        location.pathname === "/your-collection/sale-collection"
+                          ? "#ccc"
+                          : "transparent",
+                      borderRadius: "10px",
                     }}
                   >
                     <Link
-                      to="/"
+                      to="/your-collection/purchase-collection"
                       style={{
                         display: "flex",
                         textDecoration: "none",
@@ -2587,14 +2621,14 @@ export default function PersistentDrawerLeft() {
           </>
         )}
         {openModalCreating && (
-          <>
+          // <Modal>
             <div className="ezpics-pro-modal" style={ezpicsProContainer}>
               <div
                 className="container-modal-create"
                 style={{ animation: "fadeIn 0.5s ease-in-out" }}
               >
-                <div className="card---create-newing">
-                  <div className="card-image---create-newing">
+                <div className="card---create-newing-last">
+                  <div className="card-image---create-newing-last">
                     <h2 className="card-heading---create-newing">
                       Bắt đầu tạo mẫu thiết kế <br></br>
                       <small style={{ fontSize: 15 }}>
@@ -2615,7 +2649,7 @@ export default function PersistentDrawerLeft() {
                       </label>
                     </div> */}
 
-                    <div className="input---create-newing">
+                    <div className="input---create-newing" >
                       {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
                        */}
                       <label className="input-label---create-newing">
@@ -2734,7 +2768,7 @@ export default function PersistentDrawerLeft() {
                 </div>
               </div>
             </div>
-          </>
+          // </Modal>
         )}
         {loadingAwesome && (
           <div

@@ -29,8 +29,7 @@ function PurchaseForm() {
       });
       if (response && response.data.code === 0) {
         setLoadingBuyingFunc(false);
-            setModalBuyingFree(false);
-
+        setModalBuyingFree(false);
         toast.success("Xóa mẫu thiết kế thành công !! 🦄", {
           position: "top-right",
           autoClose: 2000,
@@ -43,6 +42,7 @@ function PurchaseForm() {
         });
         setTimeout(function () {
           window.location.reload();
+          
         }, 1500);
       } else {
         console.error("Invalid response format");

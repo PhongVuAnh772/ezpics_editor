@@ -1381,8 +1381,8 @@ const handleCloseModalFree = () => {
               }}
               onClick={() => {
                 document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-      dispatch(DELETE_ALL_VALUES());
+                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+                dispatch(DELETE_ALL_VALUES());
                 setModalLogoutDevice(false);
                 
                 navigate('/login',{replace:true})

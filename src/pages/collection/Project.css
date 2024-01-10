@@ -1,0 +1,117 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700;800;900&family=Noto+Sans:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Roboto&display=swap');
+.project-header__advertisement {
+  width: 60%;
+  height: 100%;
+  justify-content: center;
+  display: flex;
+  padding-left: 3%;
+  flex-direction: column;
+}
+
+.project-header__img {
+}
+
+.project-header__advertisement---textHeader {
+  color: rgb(13, 18, 22);
+font-family: "Noto Sans", Segoe UI, Helvetica, Arial, sans-serif;  font-size: 34px;
+  font-weight: 800;
+  margin: 0;
+  line-height: 42px;
+}
+
+.project-header__advertisement---textContent {
+  color: rgb(13, 18, 22);
+  font-family: "Noto Sans", Segoe UI, Helvetica, Arial, sans-serif;
+  font-size: 16px;
+  font-weight: 400;
+  margin: 0;
+  padding-top: 3%;
+  padding-right: 20%;
+}
+
+.wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: hsl(204 20% 100%);
+  padding: 0.5rem;
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+:is(.dark .wrapper) {
+  background-color: hsl(204 3% 18%);
+  box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.25), 0 1px 2px -1px rgb(0 0 0 / 0.1);
+}
+
+.tab-list {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.tab {
+  display: flex;
+  height: 2.5rem;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-style: none;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  font-size: 14px;
+  line-height: 1.5rem;
+  font-weight: 600;
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+  color: gray;
+  transition: color 0.3s ease, border-bottom 0.3s ease;
+
+}
+
+.tab:hover {
+  /* background-color: hsl(204 10% 10% / 0.1); */
+  color: black;
+    transition: color 0.3s ease;
+      /* Add transition property */
+}
+
+.tab[aria-disabled="true"] {
+  opacity: 0.5;
+}
+
+.tab[aria-selected="true"] {
+  /* background-color: hsl(204 100% 40%); */
+  border-bottom: 2px solid rgb(255, 66, 78);
+  color: black;
+}
+
+/* .tab:hover[aria-selected="true"] {
+  background-color: hsl(204 100% 32%);
+} */
+
+.tab:focus-visible,
+.tab[data-focus-visible] {
+  outline: 2px solid hsl(204 100% 40%);
+  outline-offset: 2px;
+}
+
+:is(.dark .tab:hover) {
+  background-color: hsl(204 20% 100% / 0.1);
+    transition: background-color 0.3s ease;
+      /* Add transition property */
+}
+
+:is(.dark .tab[aria-selected="true"]) {
+  background-color: hsl(204 100% 40%);
+  color: black;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+:is(.dark .tab:hover[aria-selected="true"]) {
+  background-color: hsl(204 100% 32%);
+    transition: background-color 0.3s ease;
+}
+
+.panels {
+  padding: 0.5rem;
+}

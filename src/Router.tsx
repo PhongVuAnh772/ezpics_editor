@@ -24,14 +24,17 @@ import Table from "./pages/components/transaction/Table.jsx";
 import TableEcoin from "./pages/components/transaction/TableEcoin.jsx";
 import ModalTransaction from "./pages/components/modal/ModalTransaction.jsx";
 import ModalQRCode from "./pages/components/modal/ModalQRCode.jsx";
-import Gift from './pages/components/gift/Gift.jsx'
-import Endow from './pages/components/endow/Endow.jsx'
-import Congratulation from './pages/components/congratulation/Congratulation.jsx'
-import Banner from './pages/components/home/Banner/Banner.jsx'
-import SocialMedia from './pages/components/home/social-media/SocialMedia.jsx'
-import Event from './pages/event/Event.jsx'
-import LiveStream from './pages/components/live-stream/LiveStream.jsx'
-import CollectionAll from './pages/components/collection-all/CollectionAll.jsx'
+import Gift from "./pages/components/gift/Gift.jsx";
+import Endow from "./pages/components/endow/Endow.jsx";
+import Congratulation from "./pages/components/congratulation/Congratulation.jsx";
+import Banner from "./pages/components/home/Banner/Banner.jsx";
+import SocialMedia from "./pages/components/home/social-media/SocialMedia.jsx";
+import Event from "./pages/event/Event.jsx";
+import LiveStream from "./pages/components/live-stream/LiveStream.jsx";
+import CollectionAll from "./pages/components/collection-all/CollectionAll.jsx";
+import PurchaseCollection from "./pages/collection/PurchaseCollection.jsx";
+import SaleCollection from "./pages/collection/SaleCollection.jsx";
+import UnBuyingCollection from "./pages/collection/UnBuyingCollection.jsx";
 
 function Router() {
   const location = useLocation();
@@ -54,12 +57,20 @@ function Router() {
             <Route path="/social-media" element={<SocialMedia />} />
             <Route path="/event" element={<Event />} />
             <Route path="/live-stream" element={<LiveStream />} />
-            {/* <Route path="/for-you" element={<ForYouPage />} /> */}
-
           </Route>
-          {/* <Route path="/author" element={<AuthorDesigner />} /> */}
-                    <Route path="/collection-all" element={<CollectionAll />} />
-
+          <Route path="/collection-all" element={<UnBuyingCollection />}>
+            <Route index path="table-1" element={<Table />} />
+            <Route path="table-2" element={<TableEcoin />} />
+          </Route>
+          <Route
+            path="/your-collection"
+            element={
+              <RequireAuth>
+                <CollectionAll />
+              </RequireAuth>
+            }
+          >
+                  </Route>
           <Route path="/category/:id" element={<Category />} />
           <Route
             path="/user-information"

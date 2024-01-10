@@ -27,7 +27,9 @@ import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
 import {useLocation} from 'react-router-dom';
 import ezpiclogo from './EZPICS (converted)-03.png'
-
+import Button from "@mui/material/Button";
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
 
 function GraphicEditor() {
       const location = useLocation();
@@ -42,6 +44,23 @@ function GraphicEditor() {
   const [loading, setLoading] = React.useState<boolean>(false);
   const { setActiveSubMenu } = useAppContext();
   const typeUser = useAppSelector((state) => state.typeUser.typeUser);
+  const [modalUserSeries,setModalUserSeries] = React.useState<boolean>(false)
+  const styleModalBuyingFree = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "30%",
+    height: "40%",
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    paddingTop: "15px",
+
+    borderRadius: "15px",
+  };
   const {
     setCurrentScene,
     currentScene,
@@ -50,10 +69,12 @@ function GraphicEditor() {
     setScenes,
     setCurrentDesign,
   } = useDesignEditorContext();
-
+  
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const fontInitial = useAppSelector((state) => state.newFont.font);
+    const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+
   const handleLoadFont = async (x: any) => {
     if (editor) {
       let selectedFont;
@@ -538,6 +559,9 @@ function GraphicEditor() {
               setLoading(false);
 
               setActiveSubMenu("Layers");
+              if (dataRes?.type === "user_series") {
+                // setModalUserSeries(true);
+              }
             }, 4000);
           }
         }
@@ -562,6 +586,7 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
+       
         {(token === null || id === null || errorMessage) && (
           <div
             style={{

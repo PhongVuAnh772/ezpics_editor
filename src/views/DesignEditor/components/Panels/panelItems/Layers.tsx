@@ -17,6 +17,7 @@ import { REPLACE_METADATA } from "~/store/slices/variable/variableSlice";
 import { useAppDispatch,useAppSelector } from "~/hooks/hook";
 import ArrowBackOutline from "~/components/Icons/ArrowBackOutline";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
+import Setting from '~/components/Icons/Setting'
 import empty from './empty.jpg'
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -110,7 +111,7 @@ export default function () {
   React.useEffect(() => {
     if (objects) {
       setLayerObjects(objects);
-      console.log(objects);
+      console.log(layerObjects);
     }
   }, [objects]);
 
@@ -285,6 +286,8 @@ const parseGraphicJSON = () => {
               }}
               key={object.id}
                                 onClick={() => editor.objects.select(object.id)}
+                                                  // onClick={() => console.log(object.metadata.variable !== "")}
+
 
             >
               {object.name === "StaticText" ? (
@@ -315,22 +318,22 @@ const parseGraphicJSON = () => {
                   justifyContent: "flex-end",
                 }}
               >
-                {object.metadata.variable && (
-                  <Button
-                    kind={KIND.tertiary}
-                    size={SIZE.mini}
-                    onClick={() => objectMetadata(object)}
-                    overrides={{
-                      Root: {
-                        style: {
-                          paddingLeft: "4px",
-                          paddingRight: "4px",
-                        },
-                      },
-                    }}
-                  >
-                    <img src={Lighting} style={{width: 20,height: 20}} />
-                  </Button>
+                {object.metadata.variable !== "" && (
+                  // <Button
+                  //   kind={KIND.tertiary}
+                  //   size={SIZE.mini}
+                  //   onClick={() => objectMetadata(object)}
+                  //   overrides={{
+                  //     Root: {
+                  //       style: {
+                  //         paddingLeft: "4px",
+                  //         paddingRight: "4px",
+                  //       },
+                  //     },
+                  //   }}
+                  // >
+<img src={Lighting} style={{width: 18,height: 18,paddingLeft: "4px",     paddingRight: "4px",paddingTop: '2px'}} alt=""onClick={()=>objectMetadata(object)} />                    
+                  // </Button>
                 )}
                 {object.locked ? (
                   <Button

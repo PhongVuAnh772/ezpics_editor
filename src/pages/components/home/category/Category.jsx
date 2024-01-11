@@ -444,7 +444,7 @@ function Category({
           theme: "dark",
         });
         setTimeout(function () {
-          navigate(`/design`, { state: { id: id, token: checkTokenCookie() } });
+          navigate(`/design`, { state: { id: response.data.product_id, token: checkTokenCookie() } });
         }, 2000);
       } else {
         console.error("Invalid response format");
@@ -472,12 +472,12 @@ function Category({
         setLoadingBuyingLostFunc(true);
 
         try {
-          const response = await axios.post(`${network}/buyProductAPI`, {
+          const response1 = await axios.post(`${network}/buyProductAPI`, {
             id: id,
             token: checkTokenCookie(),
             type: "ecoin",
           });
-          if (response && response.data && response.data.code === 0) {
+          if (response1 && response1.data && response1.data.code === 0) {
             const response = await axios.post(`${network}/getInfoMemberAPI`, {
               token: checkTokenCookie(),
             });
@@ -497,7 +497,7 @@ function Category({
 
               setTimeout(function () {
                 navigate(`/design`, {
-                  state: { id: id, token: checkTokenCookie() },
+                  state: { id: response1.data.product_id, token: checkTokenCookie() },
                 });
                 setCookie("user_login", response.data.data, 1);
                 dispatch(CHANGE_VALUE(response.data.data));
@@ -521,11 +521,11 @@ function Category({
         console.log("th2");
 
         try {
-          const response = await axios.post(`${network}/buyProductAPI`, {
+          const response1 = await axios.post(`${network}/buyProductAPI`, {
             id: id,
             token: checkTokenCookie(),
           });
-          if (response && response.data && response.data.code === 0) {
+          if (response1 && response1.data && response1.data.code === 0) {
             // saveFavoriteProductAPI
             const response = await axios.post(`${network}/getInfoMemberAPI`, {
               token: token,
@@ -562,7 +562,7 @@ function Category({
 
               setTimeout(function () {
                 navigate(`/design`, {
-                  state: { id: id, token: checkTokenCookie() },
+                  state: { id: response1.data.product_id, token: checkTokenCookie() },
                 });
                 setCookie("user_login", response.data.data, 1);
                 dispatch(CHANGE_VALUE(response.data.data));

@@ -45,6 +45,32 @@ function GraphicEditor() {
   const { setActiveSubMenu } = useAppContext();
   const typeUser = useAppSelector((state) => state.typeUser.typeUser);
   const [modalUserSeries,setModalUserSeries] = React.useState<boolean>(false)
+  function checkTokenCookie() {
+    var allCookies = document.cookie;
+
+    var cookiesArray = allCookies.split("; ");
+
+    var tokenCookie;
+    for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i];
+      var cookieParts = cookie.split("=");
+      var cookieName = cookieParts[0];
+      var cookieValue = cookieParts[1];
+
+      if (cookieName === "token") {
+        tokenCookie = cookieValue;
+        break;
+      }
+    }
+
+    // Kiểm tra nếu đã tìm thấy cookie "token"
+    if (tokenCookie) {
+      console.log('Giá trị của cookie "token" là:', tokenCookie);
+      return tokenCookie.replace(/^"|"$/g, "");
+    } else {
+      console.log('Không tìm thấy cookie có tên là "token"');
+    }
+  }
   const styleModalBuyingFree = {
     position: "absolute",
     top: "50%",
@@ -503,8 +529,8 @@ function GraphicEditor() {
     const fetchDataBanks = async () => {
       try {
         const data = {
-          idproduct: id,
-          token: token,
+          idproduct: parseInt(id),
+          token: checkTokenCookie(),
         };
 
         const response = await axios.post(`${networkAPI}/listLayerAPI`, data);
@@ -611,7 +637,7 @@ function GraphicEditor() {
                 fontFamily: "Arial, Helvetica, sans-serif",
               }}
             >
-              Bạn không có quyền truy cập, hãy thử lại
+              Bạn không có quyền truy cập, hãy thử lại 
             </h2>
           </div>
         )}

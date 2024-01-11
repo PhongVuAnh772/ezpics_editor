@@ -604,7 +604,7 @@ function GraphicEditor() {
                 fontFamily: "Arial, Helvetica, sans-serif",
               }}
             >
-              Bạn không có quyền truy cập, hãy thử lại
+              Bạn không có quyền truy cập, hãy thử lại 
             </h2>
           </div>
         )}

@@ -70,7 +70,9 @@ function Router() {
               </RequireAuth>
             }
           >
-                  </Route>
+            <Route index  path="sale-collection" element={<SaleCollection />} />
+            <Route path="purchase-collection" element={<PurchaseCollection />} />
+          </Route>
           <Route path="/category/:id" element={<Category />} />
           <Route
             path="/user-information"

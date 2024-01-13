@@ -8,6 +8,7 @@ import {
   useLocation,
   Outlet,
   useOutletContext,
+  useNavigate
 } from "react-router-dom";
 import Box from "@mui/material/Box";
 import Drawer from "@mui/material/Drawer";
@@ -57,19 +58,51 @@ import MoreIcons from "../../../assets/MoreIcon";
 import PageIcon from "../../../assets/PageIcon";
 import crownIcon from "../../../assets/crownIcon";
 import axios from "axios";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useAppSelector, useAppDispatch } from "../../../../hooks/hook.ts";
+
 import { useSelector, useDispatch } from "react-redux";
 function Dashboard() {
+    const navigate = useNavigate();
+
   const open = useOutletContext();
   const drawerWidth = 240;
   const location = useLocation();
   const linkRefs = useRef({});
   const activePath = location.pathname;
   const network = useSelector((state) => state.ipv4.network);
-
-  const [indicatorPosition, setIndicatorPosition] = useState({ left: '5%' });
-
+  const [searchText, setSearchText] = React.useState("");
+  const [loadingSearch, setLoadingSearch] = React.useState(false);
+  const [indicatorPosition, setIndicatorPosition] = useState({ left: "5%" });
+  const [dataWarehouse, setDataWarehouse] = React.useState([]);
+  const [enableButtonClear, setEnableButtonClear] = React.useState(false);
+  const [clickedOnDataWarehouse, setClickedOnDataWarehouse] = React.useState(false);
   const handleUlSelect = (position) => {
     setIndicatorPosition({ left: position });
+  };
+  const onChange = (event) => {
+    // console.log(event.target.value);
+    setSearchText(event.target.value);
+    setEnableButtonClear(true);
+    setLoadingSearch(true);
+    console.log(searchText === "");
+
+    if (event.target.value === "") {
+      setEnableButtonClear(false);
+      setLoadingSearch(false);
+    } else {
+      fetchProUser();
+      setEnableButtonClear(true);
+      setLoadingSearch(true);
+    }
+    setTimeout(() => {
+      setLoadingSearch(false);
+    }, 1500);
+  };
+  const onChangeClear = () => {
+    setSearchText("");
+    setEnableButtonClear(false);
   };
   useEffect(() => {
     const getData = async () => {
@@ -89,7 +122,8 @@ function Dashboard() {
 
     getData();
   }, []);
-  
+  const networkAPI = useAppSelector((state) => state.network.ipv4Address);
+
   const Main = styled("main")(({ theme }) => ({
     flexGrow: 1,
     padding: theme.spacing(3),
@@ -106,6 +140,33 @@ function Dashboard() {
       marginLeft: `${drawerWidth}px`,
     }),
   }));
+  const fetchProUser = async () => {
+    try {
+      const response = await axios.post(`${networkAPI}/searchProductAPI`, {
+        limit: 5,
+        page: 1,
+        name: searchText,
+      });
+      if (response.data.listData && response.data) {
+        console.log(response.data.listData);
+        // setDataWarehouse(response.data.data);
+        setDataWarehouse(response.data.listData);
+      }
+    } catch (error) {
+      toast.error("Lỗi lấy thông tin khách hàng", {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setLoading(false);
+    }
+  };
+
   const [isHovered, setIsHovered] = useState(false);
   const handleHover = () => {
     setIsHovered(true);
@@ -115,7 +176,7 @@ function Dashboard() {
     setIsHovered(false);
   };
   return (
-    <Main open={open} style={{ paddingTop: "6%"}}>
+    <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "18%" }}>
       {/* <DrawerHeader /> */}
 
       <Box
@@ -130,7 +191,6 @@ function Dashboard() {
           flexDirection: "column",
           position: "relative",
           marginBottom: "10px",
-          
         }}
       >
         <h1
@@ -151,6 +211,13 @@ function Dashboard() {
             alignItems: "center",
             width: 700,
             marginTop: "10px",
+            position: "relative",
+            
+          }}
+          onBlur={() => {
+            if (!clickedOnDataWarehouse) {
+      setEnableButtonClear(false);
+    }
           }}
         >
           <IconButton sx={{ p: "10px" }} aria-label="menu" style={{}}>
@@ -159,8 +226,128 @@ function Dashboard() {
           <InputBase
             sx={{ ml: 1, flex: 1 }}
             placeholder="Tìm kiếm nội dung trên Ezpics"
+            onChange={onChange}
+            value={searchText}
+            
             // inputProps={{ 'aria-label': 'search google maps' }}
           />
+          {enableButtonClear && (
+            <div
+              style={{
+                width: 700,
+                position: "absolute",
+                bottom: loadingSearch && dataWarehouse.length > 0 ? -150 : -225,
+                left: 0,
+                height: loadingSearch && dataWarehouse.length > 0 ? 150 : 230,
+                boxShadow: "0 2px 4px rgba(0,0,0,0.1)",
+                paddingTop: 10,
+                paddingLeft: 15,
+                alignItems: loadingSearch ? "flex-start" : "center",
+                backgroundColor: "white",
+                cursor: "pointer",
+                zIndex: 9999999999999,
+              }}
+               onMouseEnter={() => setClickedOnDataWarehouse(true)}
+      onMouseLeave={() => setClickedOnDataWarehouse(false)}
+            >
+              {loadingSearch ? (
+                <>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      width: "100%",
+                      alignItems: "center",
+                      paddingTop: 5,
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Skeleton height={30} width={30} />
+                    <Skeleton
+                      height={14}
+                      width={310}
+                      style={{ marginLeft: 20 }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      width: "100%",
+                      alignItems: "center",
+                      paddingTop: 10,
+                    }}
+                  >
+                    <Skeleton height={30} width={30} />
+                    <Skeleton
+                      height={14}
+                      width={310}
+                      style={{ marginLeft: 20 }}
+                    />
+                  </div>
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "row",
+                      width: "100%",
+                      alignItems: "center",
+                      paddingTop: 10,
+                    }}
+                  >
+                    <Skeleton height={30} width={30} />
+                    <Skeleton
+                      height={14}
+                      width={310}
+                      style={{ marginLeft: 20 }}
+                    />
+                  </div>
+                </>
+              ) : (
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    cursor: "pointer",
+                    zIndex: 9999999999999,
+                  }}
+                  onClick={() => console.log(dataWarehouse)}
+                >
+                  {dataWarehouse.length > 0 ? (
+                    <>
+                      {dataWarehouse.map((data, index) => (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: 40,
+                            display: "flex",
+                            flexDirection: "row",
+                            alignItems: "center",
+                          }}
+                          onClick={() => {
+                navigate(`/category/${data.id}`);
+                // console.log(item)
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+                        >
+                          <img
+                            src={data.thumbnail}
+                            alt=""
+                            style={{ width: 40, height: "auto" }}
+                          />
+                          <p style={{ paddingLeft: 20 }}>{data.name}</p>
+                        </div>
+                      ))}
+                    </>
+                  ) : (
+                    <>
+                      <p>Không tìm thấy sản phẩm</p>
+                    </>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
         </Paper>
 
         <ul
@@ -192,8 +379,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                            onClick={() => handleUlSelect('5%')}
-
+              onClick={() => handleUlSelect("5%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}
               {/* <div
@@ -279,8 +465,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                                          onClick={() => handleUlSelect('14%')}
-
+              onClick={() => handleUlSelect("14%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}{" "}
               {/* <DosIcon color="rgb(15, 184, 206)" />
@@ -350,8 +535,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                                                        onClick={() => handleUlSelect('23.85%')}
-
+              onClick={() => handleUlSelect("23.85%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}
 
@@ -420,8 +604,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                                                                      onClick={() => handleUlSelect('34.5%')}
-
+              onClick={() => handleUlSelect("34.5%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}
 
@@ -490,8 +673,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                                                                                    onClick={() => handleUlSelect('45.5%')}
-
+              onClick={() => handleUlSelect("45.5%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}
 
@@ -560,8 +742,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                                                                                                  onClick={() => handleUlSelect('55.5%')}
-
+              onClick={() => handleUlSelect("55.5%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}
               {/* <div
@@ -643,7 +824,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-              onClick={() => handleUlSelect('66.5%')}
+              onClick={() => handleUlSelect("66.5%")}
             >
               {/* <CottageOutlinedIcon style={{ marginRight: 5 }} /> */}
 
@@ -712,8 +893,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                            onClick={() => handleUlSelect('77.85%')}
-
+              onClick={() => handleUlSelect("77.85%")}
             >
               {/* <SpaceDashboardOutlinedIcon style={{ marginRight: 5 }} /> */}
 
@@ -783,8 +963,7 @@ function Dashboard() {
                 lineHeight: "22px",
                 flexDirection: "column",
               }}
-                                          onClick={() => handleUlSelect('87.15%')}
-
+              onClick={() => handleUlSelect("87.15%")}
             >
               {/* <FolderOutlinedIcon style={{ marginRight: 5 }} /> */}
               <svg
@@ -853,13 +1032,12 @@ function Dashboard() {
             marginBottom: "-7px",
 
             left: indicatorPosition.left,
-                transition: "left 0.3s ease", // Smooth transition
-
+            transition: "left 0.3s ease", // Smooth transition
           }}
         ></div>
       </Box>
       <Outlet />
-    </Main>
+    </div>
   );
 }
 

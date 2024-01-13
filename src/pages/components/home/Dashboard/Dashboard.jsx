@@ -275,7 +275,7 @@ function Dashboard() {
                       flexDirection: "row",
                       width: "100%",
                       alignItems: "center",
-                      paddingTop: 10,
+                      paddingTop: 10
                     }}
                   >
                     <Skeleton height={30} width={30} />

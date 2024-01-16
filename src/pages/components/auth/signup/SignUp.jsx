@@ -159,7 +159,7 @@ function SignUp() {
                   textAlign: "center",
                 }}
               >
-                Bạn đã có tài khoản ? - <a href="/sign-up">Đăng nhập</a>
+                Bạn đã có tài khoản ? - <a href="/login">Đăng nhập</a>
               </p>
             </div>
           </div>

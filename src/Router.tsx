@@ -35,6 +35,7 @@ import CollectionAll from "./pages/components/collection-all/CollectionAll.jsx";
 import PurchaseCollection from "./pages/collection/PurchaseCollection.jsx";
 import SaleCollection from "./pages/collection/SaleCollection.jsx";
 import UnBuyingCollection from "./pages/collection/UnBuyingCollection.jsx";
+import DashboardSearch from './pages/components/home/Dashboard/DashboardSearch.jsx'
 
 function Router() {
   const location = useLocation();
@@ -62,6 +63,8 @@ function Router() {
             <Route index path="table-1" element={<Table />} />
             <Route path="table-2" element={<TableEcoin />} />
           </Route>
+                  <Route path="/dashboard-search/:search" element={<DashboardSearch />} />
+
           <Route
             path="/your-collection"
             element={

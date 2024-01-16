@@ -273,7 +273,7 @@ function DashboardSearch() {
       if (response.data.listData && response.data) {
         console.log(response.data.listData);
         // setDataWarehouse(response.data.data);
-              setState({ left: false });
+        setState({ left: false });
 
         setDataConvert(response.data.listData);
       }
@@ -413,7 +413,13 @@ function DashboardSearch() {
             </FormControl>
           </div>
 
-          <div style={{ marginTop: dataConvert.length > 0 ? "-7%" : 0, display: "flex", flexWrap: "wrap" }}>
+          <div
+            style={{
+              marginTop: dataConvert.length > 0 ? "-7%" : 0,
+              display: "flex",
+              flexWrap: "wrap",
+            }}
+          >
             {dataConvert.length > 0 ? (
               dataConvert.map((item, index) => (
                 <div
@@ -560,7 +566,7 @@ function DashboardSearch() {
                       top: 70,
                       behavior: "smooth", // This makes the scroll animation smooth
                     });
-                    navigate('/')
+                    navigate("/");
                   }}
                 >
                   Về trang chủ
@@ -767,16 +773,11 @@ function DashboardSearch() {
                 position: "relative",
               }}
               onClick={() => {
-                if (authentication) {
-                  window.scrollTo({
-                    top: 0,
-                    behavior: "smooth",
-                  });
-                  setCreatingBucket(!creatingBucket);
-                  // setOpenModalCreating(true);
-                } else {
-                  navigate("/login");
-                }
+                setSelectedRadioPrice("");
+                setSelectedRadioFilter("");
+                setSelectedRadio("");
+                setAge("");
+                setValueColor("");
               }}
             >
               Xóa tất cả

@@ -1,4 +1,4 @@
-import React, { useState,useEffect  } from "react";
+import React, { useState, useEffect } from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import {
   BrowserRouter as Router,
@@ -26,16 +26,16 @@ import Button from "@mui/material/Button";
 import editIcon from "./edit.png";
 import warning from "./warning.png";
 import deleteIcon from "./delete.png";
+import hobby from "./hobby (1).png";
 
-
-import axios from 'axios'
+import axios from "axios";
 // import backgroundHeader from
 function UnBuyingCollection() {
   const formatPrice = (price) => {
     // Sử dụng Intl.NumberFormat để định dạng số thành chuỗi có dấu phân cách hàng nghìn
     return new Intl.NumberFormat("vi-VN").format(price);
   };
-  const [dataWarehouse,setDataWarehouse] = React.useState([])
+  const [dataWarehouse, setDataWarehouse] = React.useState([]);
   const navigate = useNavigate();
   const location = useLocation();
   const [enableButtonClear, setEnableButtonClear] = React.useState(false);
@@ -66,20 +66,18 @@ function UnBuyingCollection() {
     setSearchText("");
     setEnableButtonClear(false);
   };
-    const networkAPI = useAppSelector((state) => state.network.ipv4Address);
+  const networkAPI = useAppSelector((state) => state.network.ipv4Address);
 
   useEffect(() => {
     const fetchProUser = async () => {
       try {
         const response = await axios.post(`${networkAPI}/searchWarehousesAPI`, {
           limit: 40,
-          page: 1
+          page: 1,
         });
         if (response.data.data && response.data) {
-              console.log(response.data.data)
-              setDataWarehouse(response.data.data)
-
-         
+          console.log(response.data.data);
+          setDataWarehouse(response.data.data);
         }
       } catch (error) {
         toast.error("Lỗi lấy thông tin khách hàng", {
@@ -92,13 +90,69 @@ function UnBuyingCollection() {
           progress: undefined,
           theme: "dark",
         });
-                setLoading(false);
-
+        setLoading(false);
       }
     };
 
     fetchProUser();
   }, []);
+
+  const getDataWarehouse = async (text) => {
+    try {
+      const response = await axios.post(`${networkAPI}/searchWarehousesAPI`, {
+        limit: 40,
+        page: 1,
+        name: text,
+      });
+      if (response.data.data && response.data) {
+        console.log(response.data.data);
+        setDataWarehouse(response.data.data);
+      } else if (response.data.code === 2 && response.data) {
+        console.log(response.data.data);
+        setDataWarehouse([]);
+      }
+    } catch (error) {
+      toast.error("Lỗi lấy thông tin khách hàng", {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setLoading(false);
+    }
+  };
+  const fetchProUser = async () => {
+    try {
+      const response = await axios.post(`${networkAPI}/searchWarehousesAPI`, {
+        limit: 40,
+        page: 1,
+        name: searchText,
+      });
+      if (response.data.data && response.data) {
+        console.log(response.data.data);
+        setDataWarehouse(response.data.data);
+      } else if (response.data.code === 2 && response.data) {
+        console.log(response.data.data);
+        setDataWarehouse([]);
+      }
+    } catch (error) {
+      toast.error("Lỗi lấy thông tin khách hàng", {
+        position: "top-left",
+        autoClose: 5000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setLoading(false);
+    }
+  };
   const Main = styled("main")(({ theme }) => ({
     // flexGrow: 1,
     // padding: theme.spacing(3),
@@ -115,8 +169,8 @@ function UnBuyingCollection() {
       marginLeft: `${drawerWidth}px`,
     }),
   }));
-  const itemsPerRow = 4; 
-   const rows = [];
+  const itemsPerRow = 4;
+  const rows = [];
   for (let i = 0; i < dataWarehouse.length; i += itemsPerRow) {
     const rowItems = dataWarehouse.slice(i, i + itemsPerRow);
     rows.push(rowItems);
@@ -138,14 +192,14 @@ function UnBuyingCollection() {
       >
         <div className="project-header__advertisement">
           <p className="project-header__advertisement---textHeader">
-            Bắt đầu giàu cảm hứng với Ezpics
+            Biến mỗi khoảnh khắc thành nghệ thuật
           </p>
           <p className="project-header__advertisement---textContent">
-            Với hàng nghìn mẫu thiết kế độc đáo, hãy thổi hồn cho ý tưởng và tác
-            phẩm tuyệt vời nhất của bạn.
+            Ezpics Collection - Tạo nên bộ sưu tập ảnh độc đáo, làm nổi bật câu
+            chuyện của bạn.
           </p>
         </div>
-        <img src="" alt="" className="project-header__img" />
+        <img src={hobby} alt="" style={{ width: 300, height: 300 }} />
       </Box>
       <div
         style={{ display: "flex", flexDirection: "row", position: "relative" }}
@@ -193,8 +247,7 @@ function UnBuyingCollection() {
                 paddingLeft: 15,
                 alignItems: loadingSearch ? "flex-start" : "center",
                 zIndex: 8888888,
-                                backgroundColor:'white'
-
+                backgroundColor: "white",
               }}
             >
               {loadingSearch ? (
@@ -256,7 +309,11 @@ function UnBuyingCollection() {
                     alignItems: "center",
                     cursor: "pointer",
                   }}
-                  onClick={() => console.log("ok")}
+                  onClick={() => {
+                    setEnableButtonClear(false);
+
+                    fetchProUser();
+                  }}
                 >
                   <SearchIcon fontSize="small" />
                   <p style={{ paddingLeft: 10, margin: 0 }}>
@@ -268,6 +325,7 @@ function UnBuyingCollection() {
           )}
         </Paper>
         <div
+          onClick={() => getDataWarehouse("Chạm tay bay nám")}
           style={{
             border: "1px solid gray",
             paddingTop: 20,
@@ -280,32 +338,14 @@ function UnBuyingCollection() {
             paddingLeft: 7,
             paddingRight: 7,
             borderRadius: 5,
-            cursor:"pointer"
+            cursor: "pointer",
           }}
         >
-          <p style={{margin: 0}}>Chạm tay bay nám</p>
+          <p style={{ margin: 0 }}>Chạm tay bay nám</p>
         </div>
-        
-        <div
-          style={{
-            border: "1px solid gray",
-            paddingTop: 20,
-            display: "flex",
-            alignItems: "center",
-            marginTop: 10,
-            height: 43,
-            marginLeft: 10,
-            paddingBottom: 15,
-            paddingLeft: 7,
-            paddingRight: 7,
-            borderRadius: 5,
-            cursor:"pointer"
-          }}
-        >
-                    <p style={{margin: 0}}>Sự kiện - Hội nghị</p>
 
-        </div>
         <div
+          onClick={() => getDataWarehouse("Sự kiện - Chương trình - Cuộc thi")}
           style={{
             border: "1px solid gray",
             paddingTop: 20,
@@ -318,13 +358,13 @@ function UnBuyingCollection() {
             paddingLeft: 7,
             paddingRight: 7,
             borderRadius: 5,
-            cursor:"pointer"
+            cursor: "pointer",
           }}
         >
-                    <p style={{margin: 0}}>Vinh danh</p>
-
+          <p style={{ margin: 0 }}>Sự kiện - Hội nghị</p>
         </div>
         <div
+          onClick={() => getDataWarehouse("Vinh danh")}
           style={{
             border: "1px solid gray",
             paddingTop: 20,
@@ -337,13 +377,13 @@ function UnBuyingCollection() {
             paddingLeft: 7,
             paddingRight: 7,
             borderRadius: 5,
-            cursor:"pointer"
+            cursor: "pointer",
           }}
         >
-                    <p style={{margin: 0}}>Kho tổng</p>
-
+          <p style={{ margin: 0 }}>Vinh danh</p>
         </div>
         <div
+          onClick={() => getDataWarehouse("Kho tổng")}
           style={{
             border: "1px solid gray",
             paddingTop: 20,
@@ -356,32 +396,49 @@ function UnBuyingCollection() {
             paddingLeft: 7,
             paddingRight: 7,
             borderRadius: 5,
-            cursor:"pointer"
+            cursor: "pointer",
           }}
         >
-                    <p style={{margin: 0}}>Mẫu thiết kế đẹp</p>
-        
+          <p style={{ margin: 0 }}>Kho tổng</p>
+        </div>
+        <div
+          onClick={() => getDataWarehouse("Mẫu thiết kế đẹp")}
+          style={{
+            border: "1px solid gray",
+            paddingTop: 20,
+            display: "flex",
+            alignItems: "center",
+            marginTop: 10,
+            height: 43,
+            marginLeft: 10,
+            paddingBottom: 15,
+            paddingLeft: 7,
+            paddingRight: 7,
+            borderRadius: 5,
+            cursor: "pointer",
+          }}
+        >
+          <p style={{ margin: 0 }}>Mẫu thiết kế đẹp</p>
         </div>
       </div>
-          <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
+      <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
+        {dataWarehouse.length > 0 ? (
+          dataWarehouse.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                flex: `0 0 calc(${100 / itemsPerRow}% - 16px)`, // Adjust the margin as needed
 
-      {dataWarehouse.length > 0 ? (
-        dataWarehouse.map((item, index) => (
-          <div
-            key={index}
-            style={{
-              flex: `0 0 calc(${100 / itemsPerRow}% - 16px)`, // Adjust the margin as needed
-
-              marginBottom: "15px",
-              boxSizing: "border-box",
-              padding: "0 8px",
-              position: "relative",
-              maxWidth: 280,
-              marginTop: "2%",
-              marginRight: "1%",
-            }}
-          >
-            {/* <div
+                marginBottom: "15px",
+                boxSizing: "border-box",
+                padding: "0 8px",
+                position: "relative",
+                maxWidth: 280,
+                marginTop: "2%",
+                marginRight: "1%",
+              }}
+            >
+              {/* <div
               style={{
                 position: "absolute",
                 top: 0,
@@ -451,46 +508,34 @@ function UnBuyingCollection() {
                 </p>
               </Button>
             </div> */}
-            <div
-              style={{
-                position: "relative",
-                width: "100%",
-                background: "#f0f0f0",
-                borderRadius: 10,
-                overflow: "hidden",
-                cursor: "pointer",
-              }}
-              onClick={() => {
-                navigate(`/category/${item.id}`);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
-            >
-              <img
-                src={item.thumbnail}
-                alt=""
+              <div
                 style={{
+                  position: "relative",
                   width: "100%",
-                  height: "180px",
-                  objectFit: "contain",
+                  background: "#f0f0f0",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  cursor: "pointer",
                 }}
-              />
-            </div>
+                onClick={() => {
+                  navigate(`/category/${item.id}`);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }}
+              >
+                <img
+                  src={item.thumbnail}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "180px",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
 
-            <div
-              style={{
-                height: 70,
-                maxWidth: "100%",
-                color: "rgb(37, 38, 56)",
-                fontFamily:
-                  "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
-                fontWeight: 600,
-                fontSize: "17px",
-                margin: 0,
-                marginTop: 10,
-              }}
-            >
-              <h5
+              <div
                 style={{
+                  height: 70,
                   maxWidth: "100%",
                   color: "rgb(37, 38, 56)",
                   fontFamily:
@@ -498,12 +543,31 @@ function UnBuyingCollection() {
                   fontWeight: 600,
                   fontSize: "17px",
                   margin: 0,
+                  marginTop: 10,
                 }}
               >
-                {item.name}
-              </h5>
-            </div>
-            <p style={{ margin: 0, color: "black", fontSize: 15,marginTop: 10 }}>
+                <h5
+                  style={{
+                    maxWidth: "100%",
+                    color: "rgb(37, 38, 56)",
+                    fontFamily:
+                      "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
+                    fontWeight: 600,
+                    fontSize: "17px",
+                    margin: 0,
+                  }}
+                >
+                  {item.name}
+                </h5>
+              </div>
+              <p
+                style={{
+                  margin: 0,
+                  color: "black",
+                  fontSize: 15,
+                  marginTop: 10,
+                }}
+              >
                 Số lượng mẫu : {item.number_product}
               </p>
               <div
@@ -531,35 +595,35 @@ function UnBuyingCollection() {
                   {formatPrice(item.price)}₫
                 </p> */}
               </div>
+            </div>
+          ))
+        ) : (
+          <div style={{ textAlign: "center", width: "100%", paddingTop: "3%" }}>
+            <p style={{ textAlign: "center", fontWeight: "bold" }}>
+              Đang tải, đợi xíu nhé
+            </p>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                // marginLeft: "20px",
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+              }}
+              onClick={() => {
+                window.scrollTo({
+                  top: 70,
+                  behavior: "smooth", // This makes the scroll animation smooth
+                });
+              }}
+            >
+              Về trang chủ
+            </Button>
           </div>
-        ))
-      ) : (
-        <div style={{ textAlign: "center", width: "100%", paddingTop: "3%" }}>
-          <p style={{ textAlign: "center", fontWeight: "bold" }}>
-            Bạn chưa có mẫu thiết kế nào
-          </p>
-          <Button
-            variant="contained"
-            size="medium"
-            style={{
-              marginLeft: "20px",
-              height: 40,
-              alignSelf: "center",
-              textTransform: "none",
-              color: "white",
-              backgroundColor: "rgb(255, 66, 78)",
-            }}
-            onClick={() => {
-              window.scrollTo({
-                top: 70,
-                behavior: "smooth", // This makes the scroll animation smooth
-              });
-            }}
-          >
-            Về trang chủ
-          </Button>
-        </div>
-      )}
+        )}
       </div>
     </div>
   );

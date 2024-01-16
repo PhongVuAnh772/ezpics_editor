@@ -499,7 +499,7 @@ function Dashboard() {
 
                     {dataWarehouse.length > 0 && (
                       <p
-                        style={{ margin: 0 }}
+                        style={{ margin: 0,color: "rgb(255, 66, 78)", }}
                         onClick={() => navigate(`/dashboard-search/${searchText}`)}
                       >
                         Xem thêm

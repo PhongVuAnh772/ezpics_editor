@@ -487,6 +487,7 @@ function DashboardSearch() {
                     }}
                   >
                     <img
+                    
                       src={item.image}
                       alt=""
                       style={{
@@ -637,7 +638,10 @@ function DashboardSearch() {
               src={close}
               alt=""
               style={{ width: 20, height: 20, cursor: "pointer" }}
-              onClick={toggleDrawer(true)}
+              onClick={() => {
+                              setState({ left: false });
+
+                    }}
             />
           </div>
 
@@ -664,8 +668,9 @@ function DashboardSearch() {
                 onChange={handleChangeColor}
                 style={{
                   zIndex: 1600,
-                  backgroundColor: valueColor,
+                  background: valueColor ? valueColor : "linear-gradient(180deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0)",
                   marginLeft: 0,
+
                 }}
               >
                 {listColor.length > 0 &&
@@ -686,7 +691,7 @@ function DashboardSearch() {
             </FormControl> */}
 
             <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
-              Màu : <span style={{ color: valueColor }}>{valueColor}</span>
+              Màu : <span style={{ color: valueColor !== "" ? valueColor : "black" }}>{valueColor !== "" ? valueColor : "Chọn màu"}</span>
             </p>
           </div>
           <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
@@ -703,6 +708,11 @@ function DashboardSearch() {
             }}
             style={{ paddingLeft: 10 }}
           >
+            <FormControlLabel
+              value=""
+              control={<BpRadio />}
+              label="Không"
+            />
             <FormControlLabel
               value="desc"
               control={<BpRadio />}
@@ -728,6 +738,11 @@ function DashboardSearch() {
             }}
             style={{ paddingLeft: 10 }}
           >
+            <FormControlLabel
+              value=""
+              control={<BpRadio />}
+              label="Không"
+            />
             <FormControlLabel
               value="0-0"
               control={<BpRadio />}
@@ -763,6 +778,11 @@ function DashboardSearch() {
             }}
             style={{ paddingLeft: 10 }}
           >
+            <FormControlLabel
+              value=""
+              control={<BpRadio />}
+              label="Không"
+            />
             <FormControlLabel
               value="price"
               control={<BpRadio />}

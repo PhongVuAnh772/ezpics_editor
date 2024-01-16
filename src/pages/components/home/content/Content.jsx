@@ -1378,7 +1378,7 @@ export default function PersistentDrawerLeft() {
                   width: "100%",
                   color: "inherit",
                   backgroundColor:
-                    location.pathname === "/category" ? "#ccc" : "transparent",
+                    location.pathname === "/collection-all" ? "#ccc" : "transparent",
                   marginBottom: 5,
                   borderRadius: 5,
                 }}

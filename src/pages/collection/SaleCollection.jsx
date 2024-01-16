@@ -85,6 +85,20 @@ function SaleCollection() {
           }, 1500);
         }
       }
+      if (response && response.data && response.data.code === 4) {
+        
+      setLoadingButtonModalCreate(false);
+      toast.error("Bạn không đủ tiền, hãy nạp tiền và thử lại !! 🦄", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+       }
     } else {
       setModalBuyingFree(false);
       setNewModal(false);

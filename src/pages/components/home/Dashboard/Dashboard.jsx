@@ -70,7 +70,8 @@ import Modal from "@mui/material/Modal";
 import { useSelector, useDispatch } from "react-redux";
 import close from "./close.png";
 import Radio from "@mui/material/Radio";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 function Dashboard() {
   const navigate = useNavigate();
   const [selectedRadio, setSelectedRadio] = React.useState("");
@@ -271,7 +272,6 @@ function Dashboard() {
         progress: undefined,
         theme: "dark",
       });
-      setLoading(false);
     }
   };
   const [state, setState] = React.useState({
@@ -316,7 +316,6 @@ function Dashboard() {
         progress: undefined,
         theme: "dark",
       });
-      setLoading(false);
     }
   };
   const [isHovered, setIsHovered] = useState(false);

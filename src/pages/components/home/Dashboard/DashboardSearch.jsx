@@ -12,7 +12,8 @@ import {
   useParams,
 } from "react-router-dom";
 import { MuiColorInput } from "mui-color-input";
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import filterIcon from "./filter.png";
 import Select from "@mui/material/Select";
 import Box from "@mui/material/Box";
@@ -95,8 +96,29 @@ function DashboardSearch() {
   const [age, setAge] = React.useState("");
   const [dataConvert, setDataConvert] = React.useState([]);
   const itemsPerRow = 4;
-  const handleChange = (event) => {
+  const handleChange = async (event) => {
     setAge(event.target.value);
+    try {
+      const response = await axios.post(`${network}/searchProductAPI`, {
+        limit: 20,
+        page: 1,
+        name: searchText,
+        price: selectedRadioPrice !== "" ? selectedRadioPrice : "",
+        orderBy: selectedRadioFilter !== "" ? selectedRadioFilter : "",
+        orderType: selectedRadio !== "" ? selectedRadio : "",
+        category_id: age !== "" ? age : "",
+        color: valueColor !== "" ? valueColor : "",
+      });
+      if (response.data.listData && response.data) {
+        console.log(response.data.listData);
+        // setDataWarehouse(response.data.data);
+        setState({ left: false });
+
+        setDataConvert(response.data.listData);
+      }
+    } catch (error) {
+      
+    }
   };
   const onChange = (event) => {
     // console.log(event.target.value);
@@ -135,6 +157,9 @@ function DashboardSearch() {
   const [state, setState] = React.useState({
     left: false,
   });
+    const [enableButtonClear, setEnableButtonClear] = React.useState(false);
+  const [loadingSearch, setLoadingSearch] = React.useState(false);
+
   const toggleDrawer = (open) => (event) => {
     const isColorInput = event.target.type === "color";
 
@@ -153,6 +178,7 @@ function DashboardSearch() {
       />
     );
   }
+  
   const BpIcon = styled("span")(({ theme }) => ({
     borderRadius: "50%",
     width: 16,
@@ -181,6 +207,46 @@ function DashboardSearch() {
           : "rgba(206,217,224,.5)",
     },
   }));
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+  const handleScroll = () => {
+    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+
+    if (scrollTop + clientHeight >= scrollHeight - 10 && !loadingMore && hasMore) {
+      setLoadingMore(true);
+    }
+  };
+  useEffect(() => {
+    setSearchText(search);
+  }, []);
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, [handleScroll]);
+  useEffect(() => {
+    const fetchMoreData = async () => {
+      try {
+        const response = await axios.post(`${network}/searchProductAPI`, {
+          limit: dataConvert.length + 20,
+          page: 1,
+          name: search,
+        });
+        if (response.data.listData && response.data) {
+          setDataConvert((prevData) => [...prevData, ...response.data.listData]);
+          setLoadingMore(false);
+          setHasMore(response.data.listData.length > 0);
+        }
+      } catch (error) {
+        console.error("Error fetching more data:", error.message);
+        setLoadingMore(false);
+      }
+    };
+
+    if (loadingMore) {
+      fetchMoreData();
+    }
+  }, [loadingMore]);
   const BpCheckedIcon = styled(BpIcon)({
     backgroundColor: "#137cbd",
     backgroundImage:
@@ -241,17 +307,7 @@ function DashboardSearch() {
           setDataConvert(response.data.listData);
         }
       } catch (error) {
-        toast.error("Lỗi lấy thông tin khách hàng", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setLoading(false);
+        
       }
     };
 
@@ -278,17 +334,7 @@ function DashboardSearch() {
         setDataConvert(response.data.listData);
       }
     } catch (error) {
-      toast.error("Lỗi lấy thông tin khách hàng", {
-        position: "top-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      setLoading(false);
+      
     }
   };
   const fetchProUser = async () => {
@@ -304,17 +350,7 @@ function DashboardSearch() {
         setDataWarehouse(response.data.listData);
       }
     } catch (error) {
-      toast.error("Lỗi lấy thông tin khách hàng", {
-        position: "top-left",
-        autoClose: 5000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      setLoading(false);
+      
     }
   };
   return (

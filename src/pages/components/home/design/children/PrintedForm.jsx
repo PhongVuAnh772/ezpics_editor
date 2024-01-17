@@ -210,7 +210,7 @@ function PurchaseForm() {
               </Button>
               <Button
                 onClick={(e) => {
-                  setModalBuyingFree(true);
+                  setModalCreate(true);
                   setDeletingItemId(item.id);
                 }}
                 style={{
@@ -360,7 +360,7 @@ function PurchaseForm() {
                 marginRight: 10,
               }}
               onClick={() => {
-                setModalBuyingFree(false);
+                  setModalCreate(false);
                 setDeletingItemId(null);
               }}
             >

@@ -18,7 +18,11 @@ import { toast } from "react-toastify";
 
 function PurchaseCollection() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
-  const [itemId,setItemId] = React.useState(0);
+    const [modalExtend, setModalExtend] = React.useState(false);
+const handleCloseModalFreeExtend = () => {
+    setModalExtend(false);
+  };
+  const [itemId, setItemId] = React.useState(0);
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
   const formatPrice = (price) => {
     // Sử dụng Intl.NumberFormat để định dạng số thành chuỗi có dấu phân cách hàng nghìn
@@ -81,6 +85,7 @@ function PurchaseCollection() {
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
   const [specifiedCart, setSpecifiedCart] = React.useState(false);
   const [cartSpecifiedInside, setCartSpecifiedInside] = React.useState([]);
+  
   const handleCloseModalFree = () => {
     setModalBuyingFree(false);
     setDeletingItemId(null);
@@ -93,10 +98,13 @@ function PurchaseCollection() {
   const handleScroll = () => {
     const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
 
-    if (scrollTop + clientHeight >= scrollHeight - 10 && !loadingMore && hasMore) {
+    if (
+      scrollTop + clientHeight >= scrollHeight - 10 &&
+      !loadingMore &&
+      hasMore
+    ) {
       setLoadingMore(true);
     }
-    console.log(itemId)
   };
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -105,14 +113,19 @@ function PurchaseCollection() {
   useEffect(() => {
     const fetchMoreData = async () => {
       try {
-        const response = await axios.post(`${network}/getProductsWarehousesAPI`, {
-          limit: cartSpecifiedInside.length + 20,
-          page: 1,
-          idWarehouse: itemId,
-          
-        });
+        const response = await axios.post(
+          `${network}/getProductsWarehousesAPI`,
+          {
+            limit: cartSpecifiedInside.length + 20,
+            page: 1,
+            idWarehouse: itemId,
+          }
+        );
         if (response.data.data && response.data) {
-          setCartSpecifiedInside((prevData) => [...prevData, ...response.data.data]);
+          setCartSpecifiedInside((prevData) => [
+            ...prevData,
+            ...response.data.data,
+          ]);
           setLoadingMore(false);
           setHasMore(response.data.data.length > 0);
         }
@@ -229,7 +242,7 @@ function PurchaseCollection() {
   }, []);
 
   const getData = async (item) => {
-                          setItemId(item.id);
+    setItemId(item.id);
 
     try {
       const response = await axios.post(`${network}/getProductsWarehousesAPI`, {
@@ -256,29 +269,59 @@ function PurchaseCollection() {
 
   return (
     <>
-      {specifiedCart && (
-        <Button
-          variant="contained"
-          size="medium"
-          style={{
-            marginLeft: "20px",
-            marginTop: "20px",
-            alignSelf: "center",
-            height: 40,
-            alignSelf: "center",
-            textTransform: "none",
-            color: "black",
-            backgroundColor: "white",
-          }}
-          onClick={() => {
-            setSpecifiedCart(false);
-            setCartSpecifiedInside(null);
-            setItemId(0);
-          }}
-        >
-          &lt; Quay lại
-        </Button>
-      )}
+      <div
+        style={{
+          width: "95%",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        {specifiedCart && (
+          <Button
+            variant="contained"
+            size="medium"
+            style={{
+              marginLeft: "20px",
+              marginTop: "20px",
+              alignSelf: "center",
+              height: 40,
+              alignSelf: "center",
+              textTransform: "none",
+              color: "black",
+              backgroundColor: "white",
+            }}
+            onClick={() => {
+              setSpecifiedCart(false);
+              setCartSpecifiedInside(null);
+              setItemId(0);
+            }}
+          >
+            &lt; Quay lại
+          </Button>
+        )}
+        {specifiedCart && (
+          <Button
+            variant="contained"
+            size="medium"
+            style={{
+              marginLeft: "20px",
+              marginTop: "20px",
+              alignSelf: "center",
+              height: 40,
+              alignSelf: "center",
+              textTransform: "none",
+              color: "white",
+              backgroundColor: "rgb(255, 66, 78)",
+            }}
+            onClick={() => {
+              
+            }}
+          >
+            Gia hạn bộ sưu tập
+          </Button>
+        )}
+      </div>
       <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
         {specifiedCart ? (
           <>
@@ -352,39 +395,43 @@ function PurchaseCollection() {
                     </h5>
                   </div>
                   <p style={{ margin: 0, color: "black", fontSize: 15 }}>
-                Đã bán {item.sold}
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  height: "2em",
-                }}
-              >
-                <p
-                  style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
-                >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
-                </p>
-                <p
-                  style={{
-                    margin: 0,
-                    fontSize: 14,
-                    textDecoration: "line-through",
-                    paddingLeft: "5%",
-                    color: "gray",
-                    fontWeight: 300,
-                  }}
-                >
-                  {formatPrice(item.price)}₫
-                </p>
-              </div>
+                    Đã bán {item.sold}
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      height: "2em",
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "rgb(238, 77, 45)",
+                        fontSize: 17,
+                      }}
+                    >
+                      {item.free_pro
+                        ? "Miễn phí"
+                        : `${
+                            item.sale_price
+                              ? `${formatPrice(item.sale_price)} ₫`
+                              : "Miễn phí"
+                          }`}
+                    </p>
+                    <p
+                      style={{
+                        margin: 0,
+                        fontSize: 14,
+                        textDecoration: "line-through",
+                        paddingLeft: "5%",
+                        color: "gray",
+                        fontWeight: 300,
+                      }}
+                    >
+                      {formatPrice(item.price)}₫
+                    </p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -447,7 +494,7 @@ function PurchaseCollection() {
                     onClick={() => {
                       // navigate(`/category/${item.id}`);
                       // window.scrollTo({ top: 0, behavior: "smooth" });
-                    
+
                       getData(item);
                     }}
                   >
@@ -463,56 +510,60 @@ function PurchaseCollection() {
                   </div>
 
                   <div
-                style={{
-                  height: 70,
-                  maxWidth: "100%",
-                  color: "rgb(37, 38, 56)",
-                  fontFamily:
-                    "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
-                  fontWeight: 600,
-                  fontSize: "17px",
-                  margin: 0,
-                  marginTop: 10,
-                }}
-              >
-                <h5
-                  style={{
-                    maxWidth: "100%",
-                    color: "rgb(37, 38, 56)",
-                    fontFamily:
-                      "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
-                    fontWeight: 600,
-                    fontSize: "17px",
-                    margin: 0,
-                  }}
-                >
-                  {item.name}
-                </h5>
-              </div>
-              
-              <p
-                style={{
-                  margin: 0,
-                  color: "black",
-                  fontSize: 15,
-                  marginTop: 10,
-                }}
-              >
-                Số lượng mẫu : {item.number_product}
-              </p>
-              <div
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  height: "2em",
-                }}
-              >
-                <p
-                  style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
-                >
-                  {item.price ? `${formatPrice(item.price)}₫` : "Miễn phí"}
-                </p>
-                </div>
+                    style={{
+                      height: 70,
+                      maxWidth: "100%",
+                      color: "rgb(37, 38, 56)",
+                      fontFamily:
+                        "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
+                      fontWeight: 600,
+                      fontSize: "17px",
+                      margin: 0,
+                      marginTop: 10,
+                    }}
+                  >
+                    <h5
+                      style={{
+                        maxWidth: "100%",
+                        color: "rgb(37, 38, 56)",
+                        fontFamily:
+                          "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
+                        fontWeight: 600,
+                        fontSize: "17px",
+                        margin: 0,
+                      }}
+                    >
+                      {item.name}
+                    </h5>
+                  </div>
+
+                  <p
+                    style={{
+                      margin: 0,
+                      color: "black",
+                      fontSize: 15,
+                      marginTop: 10,
+                    }}
+                  >
+                    Số lượng mẫu : {item.number_product}
+                  </p>
+                  <div
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      height: "2em",
+                    }}
+                  >
+                    <p
+                      style={{
+                        margin: 0,
+                        color: "rgb(238, 77, 45)",
+                        fontSize: 17,
+                      }}
+                    >
+                      {item.price ? `${formatPrice(item.price)}₫` : "Miễn phí"}
+                    </p>
+                  </div>
                 </div>
               ))
             ) : (
@@ -546,6 +597,81 @@ function PurchaseCollection() {
             )}
           </>
         )}
+        <Modal
+          open={modalExtend}
+          onClose={handleCloseModalFreeExtend}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={styleModalBuyingFree}>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 22,
+                fontWeight: "bold",
+                paddingBottom: "10px",
+              }}
+            >
+              Cảnh báo
+            </p>
+            <img
+              src={warning}
+              alt=""
+              style={{ width: "20%", height: "30%", marginBottom: "10px" }}
+            />
+            <p
+              style={{
+                margin: 0,
+                fontSize: 17,
+                fontWeight: "500",
+                paddingTop: "10px",
+              }}
+            >
+              Bạn có chắc chắn xóa mẫu thiết kế này chứ ?
+            </p>
+            <div style={{ display: "flex" }}>
+              <Button
+                variant="contained"
+                size="medium"
+                style={{
+                  height: 40,
+                  alignSelf: "center",
+                  textTransform: "none",
+                  color: "black",
+                  backgroundColor: "white",
+                  marginTop: "40px",
+                  width: "60%",
+                  marginRight: 10,
+                }}
+                onClick={() => {
+                  setModalBuyingFree(false);
+                  setDeletingItemId(null);
+                }}
+              >
+                Hủy
+              </Button>
+              <Button
+                variant="contained"
+                size="medium"
+                style={{
+                  height: 40,
+                  alignSelf: "center",
+                  textTransform: "none",
+                  color: "white",
+                  backgroundColor: "rgb(255, 66, 78)",
+                  marginTop: "40px",
+                  width: "60%",
+                }}
+                onClick={() => {
+                  handleDelete();
+                }}
+              >
+                {" "}
+                {loadingBuyingFunc ? <span class="loaderNew"></span> : "Xóa"}
+              </Button>
+            </div>
+          </Box>
+        </Modal>
         <Modal
           open={modalBuyingFree}
           onClose={handleCloseModalFree}

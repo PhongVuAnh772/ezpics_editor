@@ -426,6 +426,7 @@ function Login() {
     width: 300,
     borderRadius: "8px",
     marginTop: "3%",
+    animation: "fadeIn 0.5s ease-in-out"
   };
   const header = {
     width: "100%",

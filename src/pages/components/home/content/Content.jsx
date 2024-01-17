@@ -43,6 +43,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined";
 import MonitorOutlinedIcon from "@mui/icons-material/MonitorOutlined";
 import "./Content.css";
+import paperRoll from './paper-rolls.png'
 import CrownIcon from "../../../assets/crownIcon";
 import "react-multi-carousel/lib/styles.css";
 import "slick-carousel/slick/slick.css";
@@ -89,6 +90,7 @@ export default function PersistentDrawerLeft() {
   const location = useLocation();
   const [openModalPro, setOpenModalPro] = React.useState(false);
   const [openModalCreating, setOpenModalCreating] = React.useState(false);
+  const [openModalPrintCreating, setOpenModalPrintCreating] = React.useState(false);
   const network = useSelector((state) => state.ipv4.network);
   const infoUser = useSelector((state) => state.user.info);
   const [creatingBucket, setCreatingBucket] = React.useState(false);
@@ -177,7 +179,22 @@ export default function PersistentDrawerLeft() {
     getDataDiscount();
   }, []);
   const [selectedFile, setSelectedFile] = React.useState(null);
+    const [selectedFilePrint, setSelectedFilePrint] = React.useState(null);
 
+const handleFileChangePrint = (event) => {
+    const fileInput = event.target;
+    const files = fileInput.files;
+
+    if (files.length > 0) {
+      const file = files[0];
+      console.log("Selected file:", file);
+
+      // Lưu trữ thông tin về tệp tin trong trạng thái của component
+      setSelectedFilePrint(file);
+
+      // Bạn có thể thực hiện các xử lý khác tại đây
+    }
+  };
   useEffect(() => {
     setLoadingModal(true);
 
@@ -613,6 +630,48 @@ export default function PersistentDrawerLeft() {
       }
     }
   };
+  const handleCreateCustomPrint = async (e) => {
+    e.preventDefault();
+    setLoadingButtonModalCreate(true);
+
+    if (selectedFilePrint) {
+      const response = await axios.post(
+        `${network}/createProductAPI`,
+        {
+          token: checkTokenCookie(),
+          type: "user_series",
+          category_id: 0,
+          sale_price: 0,
+          name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
+          background: selectedFilePrint,
+        },
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+      if (response && response.data && response.data.code === 0) {
+        setLoadingButtonModalCreate(false);
+        setOpenModalCreating(false);
+        setLoadingAwesome(true);
+        document.body.style.overflowY = "auto";
+
+        setTimeout(function () {
+          setLoadingAwesome(false);
+
+          navigate(`/design`, {
+            state: { id: response.data.product_id, token: checkTokenCookie() },
+          });
+        }, 1500);
+      }
+    } else {
+      console.log("Không thấy ảnh");
+    }
+    // 23979
+    // console.log(response.data);
+    // console.log(selectedFile)
+  };
   const handleCreateCustom = async (e) => {
     e.preventDefault();
     setLoadingButtonModalCreate(true);
@@ -794,7 +853,6 @@ export default function PersistentDrawerLeft() {
                         flexDirection: "row",
                         alignItems: "center",
                         paddingBottom: 5,
-                        borderBottom: "0.5px solid rgb(191, 196, 200)",
                         cursor: "pointer",
                       }}
                       onMouseEnter={(e) => {
@@ -833,6 +891,45 @@ export default function PersistentDrawerLeft() {
                         }}
                       >
                         Cỡ tùy chỉnh
+                      </p>
+                    </div>
+                    <div
+                      style={{
+                        paddingLeft: 12,
+                        paddingTop: 5,
+                        overflowX: "hidden",
+                        display: "flex",
+                        flexDirection: "row",
+                        alignItems: "center",
+                        paddingBottom: 5,
+                        borderBottom: "0.5px solid rgb(191, 196, 200)",
+                        cursor: "pointer",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor =
+                          "rgb(242, 243, 245)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "white";
+                      }}
+                      onClick={() => {
+                        setCreatingBucket(false);
+                        setOpenModalPrintCreating(true);
+                        document.body.style.overflowY = "hidden";
+                      }}
+                    >
+                      <img src={paperRoll} alt="" style={{width: 24,height: 24}} />
+                      <p
+                        style={{
+                          margin: 0,
+                          paddingLeft: 10,
+                          color: "rgb(13, 18, 22)",
+                          fontWeight: 400,
+                          fontFamily: "Noto Sans",
+                          fontSize: "14px",
+                        }}
+                      >
+                        Mẫu in hàng loạt
                       </p>
                     </div>
                     <p
@@ -2620,6 +2717,156 @@ export default function PersistentDrawerLeft() {
             </div>
           </>
         )}
+        {openModalPrintCreating && (
+          // <Modal>
+            <div className="ezpics-pro-modal" style={ezpicsProContainer}>
+              <div
+                className="container-modal-create"
+                style={{ animation: "fadeIn 0.5s ease-in-out" }}
+              >
+                <div className="card---create-newing">
+                  <div className="card-image---create-newing">
+                    <h2 className="card-heading---create-newing">
+                      Bắt đầu tạo mẫu in hàng loạt <br></br>
+                      <small style={{ fontSize: 15 }}>
+                        Hãy điền đầy đủ thông tin trước khi tạo nhé
+                      </small>
+                    </h2>
+                  </div>
+
+                  <form className="card-form---create-newing">
+                    {/* <div className="input---create-newing">
+                      <input
+                        type="text"
+                        className="input-field---create-newing"
+                        required
+                      />
+                      <label className="input-label---create-newing">
+                        Tên mẫu thiết kế
+                      </label>
+                    </div> */}
+
+                    <div className="input---create-newing" >
+                      {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
+                       */}
+                      <label className="input-label---create-newing">
+                        Ảnh nền
+                      </label>
+
+                      <form
+                        id="file-upload-form"
+                        class="uploader"
+                        style={{ marginTop: 40 }}
+                      >
+                        <input
+                          id="file-upload"
+                          type="file"
+                          name="fileUpload"
+                          accept="image/*"
+                          onChange={handleFileChangePrint}
+                        />
+
+                        <label
+                          for="file-upload"
+                          id="file-drag"
+                          style={{ height: 200, cursor: "pointer" }}
+                        >
+                          <img
+                            id="file-image"
+                            src="#"
+                            alt="Preview"
+                            class="hidden"
+                          />
+                          <div id="start---create-newing">
+                            <img
+                              src={downloadIcon}
+                              alt=""
+                              style={{
+                                width: 30,
+                                height: 30,
+                                alignSelf: "center",
+                                margin: "0 auto",
+                                marginBottom: "2%",
+                              }}
+                            />
+                            <div id="notimage" class="hidden">
+                              Hãy chọn ảnh
+                            </div>
+                            <span id="file-upload-btn" class="btn btn-primary">
+                              {selectedFilePrint === null ? "Chọn ảnh" :"Chọn lại"}
+                            </span>
+                          </div>
+                          <div id="response" class="hidden">
+                            <div id="messages"></div>
+                            <progress
+                              class="progress"
+                              id="file-progress"
+                              value="0"
+                            >
+                              <span>0</span>%
+                            </progress>
+                          </div>
+                        </label>
+                      </form>
+                    </div>
+
+                    <div className="action---create-newing">
+                      {selectedFilePrint !== null ? (
+                        <button
+                          className="action-button---create-newing"
+                          style={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          onClick={(e) => handleCreateCustomPrint(e)}
+                        >
+                          {loadingButtonModalCreate ? (
+                            <span class="loader-create-film"></span>
+                          ) : (
+                            "Bắt đầu tạo mẫu"
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          className="action-button---create-newing"
+                          style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
+                          disabled
+                        >
+                          Bắt đầu tạo mẫu
+                        </button>
+                      )}
+                    </div>
+                  </form>
+                  <div className="card-info---create-newing">
+                    <p>
+                      Nếu bạn chưa có thông tin, hãy tham khảo
+                      <a href="#"> Mẫu thiết kế có sẵn</a>
+                    </p>
+                  </div>
+                  <img
+                    src={xMark}
+                    alt=""
+                    style={{
+                      width: 20,
+                      height: 20,
+                      marginRight: -30,
+                      right: 0,
+                      top: 0,
+                      cursor: "pointer",
+                      position: "absolute",
+                    }}
+                    onClick={() => {
+                      setOpenModalPrintCreating(false);
+                      document.body.style.overflowY = "auto";
+                    }}
+                  />
+                </div>
+              </div>
+            </div>
+          // </Modal>
+        )}
         {openModalCreating && (
           // <Modal>
             <div className="ezpics-pro-modal" style={ezpicsProContainer}>
@@ -2627,8 +2874,8 @@ export default function PersistentDrawerLeft() {
                 className="container-modal-create"
                 style={{ animation: "fadeIn 0.5s ease-in-out" }}
               >
-                <div className="card---create-newing-last">
-                  <div className="card-image---create-newing-last">
+                <div className="card---create-newing">
+                  <div className="card-image---create-newing">
                     <h2 className="card-heading---create-newing">
                       Bắt đầu tạo mẫu thiết kế <br></br>
                       <small style={{ fontSize: 15 }}>
@@ -2696,7 +2943,7 @@ export default function PersistentDrawerLeft() {
                               Hãy chọn ảnh
                             </div>
                             <span id="file-upload-btn" class="btn btn-primary">
-                              Chọn ảnh
+                              {selectedFile === null ? "Chọn ảnh" :"Chọn lại"}
                             </span>
                           </div>
                           <div id="response" class="hidden">

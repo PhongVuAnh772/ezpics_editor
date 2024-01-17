@@ -351,9 +351,7 @@ const handleCloseModalFreeExtend = () => {
                       cursor: "pointer",
                     }}
                     onClick={() => {
-                      navigate(`/design`, {
-                        state: { id: item.id, token: checkTokenCookie() },
-                      });
+                      navigate(`/category-collection/${item.id}`);
                     }}
                   >
                     <img

@@ -600,7 +600,7 @@ function UnBuyingCollection() {
         ) : (
           <div style={{ textAlign: "center", width: "100%", paddingTop: "3%" }}>
             <p style={{ textAlign: "center", fontWeight: "bold" }}>
-              Đang tải, đợi xíu nhé
+              Không có bộ sưu tập 
             </p>
             <Button
               variant="contained"

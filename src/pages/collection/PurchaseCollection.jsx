@@ -15,12 +15,37 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import warning from "./warning.png";
 import { toast } from "react-toastify";
+import Slider from "@mui/material/Slider";
+import MuiInput from "@mui/material/Input";
+import VolumeUp from "@mui/icons-material/VolumeUp";
+import { styled } from "@mui/material/styles";
 
 function PurchaseCollection() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
-    const [modalExtend, setModalExtend] = React.useState(false);
-const handleCloseModalFreeExtend = () => {
+  const [modalExtend, setModalExtend] = React.useState(false);
+  const [contentSelected, setContentSelected] = React.useState([]);
+  const [contentYear, setContentYear] = React.useState(false);
+  const Input = styled(MuiInput)`
+    width: 42px;
+  `;
+  const [value, setValue] = React.useState(30);
+
+  const handleSliderChange = (event, newValue) => {
+    setValue(newValue);
+  };
+
+  const handleInputChange = (event) => {
+    setValue(event.target.value === "" ? 0 : Number(event.target.value));
+  };
+  const handleCloseModalFreeExtend = () => {
     setModalExtend(false);
+  };
+  const handleBlur = () => {
+    if (value < 0) {
+      setValue(0);
+    } else if (value > 100) {
+      setValue(100);
+    }
   };
   const [itemId, setItemId] = React.useState(0);
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
@@ -61,6 +86,55 @@ const handleCloseModalFreeExtend = () => {
       setLoadingBuyingFunc(false);
     }
   };
+  const handleExtend = async () => {
+    setLoadingBuyingFunc(true);
+    try {
+      const response = await axios.post(`${network}/extendWarehousesAPI`, {
+        token: checkTokenCookie(),
+        idWarehouse: contentSelected.id,
+        number: value
+      });
+      if (response && response.data.code === 1) {
+        setLoadingBuyingFunc(false);
+            setModalExtend(false);
+
+        toast.success("Gia hạn mẫu thiết kế thành công !! 🦄", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setTimeout(function () {
+          window.location.reload();
+        }, 1500);
+      } else if (response && response.data.code === 4) {
+        setLoadingBuyingFunc(false);
+            setModalExtend(false);
+
+        toast.error("Tài khoản không đủ tiền, hãy thử lại !!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        
+      } else {
+        console.error("Invalid response format");
+        setLoadingBuyingFunc(false);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+      setLoadingBuyingFunc(false);
+    }
+  };
   const navigate = useNavigate();
   const styleModalBuyingFree = {
     position: "absolute",
@@ -68,7 +142,23 @@ const handleCloseModalFreeExtend = () => {
     left: "50%",
     transform: "translate(-50%, -50%)",
     width: "30%",
-    height: "40%",
+    height: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    paddingTop: "15px",
+
+    borderRadius: "15px",
+  };
+  const styleModalBuyingFreeBuying = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "30%",
+    height: 400,
     bgcolor: "background.paper",
     boxShadow: 24,
     display: "flex",
@@ -85,7 +175,7 @@ const handleCloseModalFreeExtend = () => {
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
   const [specifiedCart, setSpecifiedCart] = React.useState(false);
   const [cartSpecifiedInside, setCartSpecifiedInside] = React.useState([]);
-  
+
   const handleCloseModalFree = () => {
     setModalBuyingFree(false);
     setDeletingItemId(null);
@@ -243,7 +333,7 @@ const handleCloseModalFreeExtend = () => {
 
   const getData = async (item) => {
     setItemId(item.id);
-
+    setContentSelected(item);
     try {
       const response = await axios.post(`${network}/getProductsWarehousesAPI`, {
         idWarehouse: item.id,
@@ -315,7 +405,7 @@ const handleCloseModalFreeExtend = () => {
               backgroundColor: "rgb(255, 66, 78)",
             }}
             onClick={() => {
-              
+              setModalExtend(true);
             }}
           >
             Gia hạn bộ sưu tập
@@ -595,6 +685,7 @@ const handleCloseModalFreeExtend = () => {
             )}
           </>
         )}
+
         <Modal
           open={modalExtend}
           onClose={handleCloseModalFreeExtend}
@@ -670,13 +761,14 @@ const handleCloseModalFreeExtend = () => {
             </div>
           </Box>
         </Modal>
+
         <Modal
-          open={modalBuyingFree}
-          onClose={handleCloseModalFree}
+          open={modalExtend}
+          onClose={handleCloseModalFreeExtend}
           aria-labelledby="modal-modal-title"
           aria-describedby="modal-modal-description"
         >
-          <Box sx={styleModalBuyingFree}>
+          <Box sx={styleModalBuyingFreeBuying}>
             <p
               style={{
                 margin: 0,
@@ -685,7 +777,7 @@ const handleCloseModalFreeExtend = () => {
                 paddingBottom: "10px",
               }}
             >
-              Cảnh báo
+              Xác nhận
             </p>
             <img
               src={warning}
@@ -700,8 +792,50 @@ const handleCloseModalFreeExtend = () => {
                 paddingTop: "10px",
               }}
             >
-              Bạn có chắc chắn xóa mẫu thiết kế này chứ ?
+              Bạn có muốn gia hạn bộ sưu tập này không ?
             </p>
+            <p
+              style={{
+                margin: 0,
+                fontSize: 17,
+                fontWeight: "500",
+                paddingTop: "10px",
+              }}
+            >
+              Giá bộ sưu tập này trị giá {formatPrice(contentSelected.price)} đ
+            </p>
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                flexDirection: "row",
+                paddingLeft: 30,
+                paddingRight: 30,
+                justifyContent: "space-between",
+                paddingTop: 10
+              }}
+            >
+              <Slider
+                value={typeof value === "number" ? value : 0}
+                onChange={handleSliderChange}
+                aria-labelledby="input-slider"
+                style={{width: '70%'}}
+                min={1}
+              />
+              <Input
+                value={value}
+                size="small"
+                onChange={handleInputChange}
+                onBlur={handleBlur}
+                inputProps={{
+                  step: 1,
+                  min: 1,
+                  max: 100,
+                  type: "number",
+                  "aria-labelledby": "input-slider",
+                }}
+              />
+            </div>
             <div style={{ display: "flex" }}>
               <Button
                 variant="contained"
@@ -713,11 +847,13 @@ const handleCloseModalFreeExtend = () => {
                   color: "black",
                   backgroundColor: "white",
                   marginTop: "40px",
-                  width: "60%",
+                  width: "30%",
                   marginRight: 10,
                 }}
                 onClick={() => {
-                  setModalBuyingFree(false);
+                  // setModalBuyingFree(false);
+                  setModalExtend(false);
+                  console.log(contentSelected);
                   setDeletingItemId(null);
                 }}
               >
@@ -736,11 +872,15 @@ const handleCloseModalFreeExtend = () => {
                   width: "60%",
                 }}
                 onClick={() => {
-                  handleDelete();
+                  handleExtend();
                 }}
               >
                 {" "}
-                {loadingBuyingFunc ? <span class="loaderNew"></span> : "Xóa"}
+                {loadingBuyingFunc ? (
+                  <span class="loaderNew"></span>
+                ) : (
+                  "Gia hạn"
+                )}
               </Button>
             </div>
           </Box>

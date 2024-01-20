@@ -87,21 +87,16 @@ export default function () {
       metadata: {},
       preview: "",
     };
-    // console.log(resultIndex);
-    // console.log(graphicTemplate.scenes)
-    // console.log(currentScene.id)
-    // makeDownload(graphicTemplate);
+    console.log(updatedScenes);
+
     const allLayers = graphicTemplate.scenes.map((scene: any) => scene.layers);
-    console.log(graphicTemplate);
+    // console.log(graphicTemplate);
     console.log(currentDesign.frame, allLayers);
     const newDesign = generateToServer({
       frame: currentDesign.frame,
       data: allLayers,
     });
-    console.log(newDesign);
     return newDesign;
-    // let newArr : any=[];
-    // console.log(newArr)
   };
   const styleModalBuyingFree = {
     position: "absolute",

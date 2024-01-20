@@ -497,14 +497,14 @@ function Dashboard() {
                       </>
                     )}
 
-                    {dataWarehouse.length > 0 && (
+                    <div style={{width:'100%',backgroundColor:'rgb(246, 246, 246)',display:'flex',flexDirection:'row',justifyContent:'center'}}>{dataWarehouse.length > 0 && (
                       <p
                         style={{ margin: 0,color: "rgb(255, 66, 78)", }}
                         onClick={() => navigate(`/dashboard-search/${searchText}`)}
                       >
                         Xem thêm
                       </p>
-                    )}
+                    )}</div>
                   </div>
                 )}
               </div>

@@ -14,6 +14,8 @@ import Recommended from "./pages/components/project/components/Recommended.jsx";
 import Dashboard from "./pages/components/home/Dashboard/Dashboard.jsx";
 import ForYouPage from "./pages/components/home/ForYou/ForYouPage.jsx";
 import Category from "./pages/components/home/category/Category.jsx";
+import CollectionBuying from "./pages/components/home/category/CollectionBuying.jsx";
+
 import CategoryCollection from "./pages/components/home/category-collection/CategoryCollection.jsx";
 
 import YourDesign from "./pages/components/home/design/YourDesign.jsx";
@@ -37,7 +39,7 @@ import CollectionAll from "./pages/components/collection-all/CollectionAll.jsx";
 import PurchaseCollection from "./pages/collection/PurchaseCollection.jsx";
 import SaleCollection from "./pages/collection/SaleCollection.jsx";
 import UnBuyingCollection from "./pages/collection/UnBuyingCollection.jsx";
-import DashboardSearch from './pages/components/home/Dashboard/DashboardSearch.jsx'
+import DashboardSearch from "./pages/components/home/Dashboard/DashboardSearch.jsx";
 
 function Router() {
   const location = useLocation();
@@ -65,7 +67,10 @@ function Router() {
             <Route index path="table-1" element={<Table />} />
             <Route path="table-2" element={<TableEcoin />} />
           </Route>
-                  <Route path="/dashboard-search/:search" element={<DashboardSearch />} />
+          <Route
+            path="/dashboard-search/:search"
+            element={<DashboardSearch />}
+          />
 
           <Route
             path="/your-collection"
@@ -81,9 +86,15 @@ function Router() {
               element={<PurchaseCollection />}
             />
           </Route>
-          <Route path="/category-collection/:id" element={<CategoryCollection />} />
+          <Route
+            path="/category-collection/:id"
+            element={<CategoryCollection />}
+          />
 
           <Route path="/category/:id" element={<Category />} />
+                    <Route path="/collection-buying/:id" element={<CollectionBuying />} />
+
+          
           <Route
             path="/user-information"
             element={

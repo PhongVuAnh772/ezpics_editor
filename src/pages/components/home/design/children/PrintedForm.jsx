@@ -15,11 +15,17 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import warning from "./warning.png";
 import { toast } from "react-toastify";
+import printer from "./printer.png";
+import MuiInput from "@mui/material/Input";
+import { styled } from "@mui/material/styles";
 
 function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
-  const [modalCreate,setModalCreate] = React.useState(false);
+  const [modalCreate, setModalCreate] = React.useState(false);
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+  const Input = styled(MuiInput)`
+    width: 42px;
+  `;
   const handleDelete = async () => {
     setLoadingBuyingFunc(true);
     try {
@@ -29,7 +35,7 @@ function PurchaseForm() {
       });
       if (response && response.data.code === 0) {
         setLoadingBuyingFunc(false);
-            setModalBuyingFree(false);
+        setModalBuyingFree(false);
 
         toast.success("Xóa mẫu thiết kế thành công !! 🦄", {
           position: "top-right",
@@ -59,8 +65,8 @@ function PurchaseForm() {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "30%",
-    height: "40%",
+    width: "70%",
+    height: 400,
     bgcolor: "background.paper",
     boxShadow: 24,
     display: "flex",
@@ -70,17 +76,46 @@ function PurchaseForm() {
 
     borderRadius: "15px",
   };
+  const [modalPrinted, setModalPrinted] = React.useState(false);
   const [loading, setLoading] = React.useState(true);
   const network = useSelector((state) => state.ipv4.network);
   const [data, setData] = useState([]);
   const itemsPerRow = 4; // Number of items per row
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
+  const [dataFilter, setDataFilter] = React.useState([]);
 
   const handleCloseModalFree = () => {
     setModalBuyingFree(false);
     setDeletingItemId(null);
   };
-  // deleteProductAPI
+  const handleModalPrinted = () => {
+    setModalPrinted(false);
+  };
+  const handlePrintFormCalling = async (item) => {
+    const response = await axios.post(`${network}/listLayerAPI`, {
+      idproduct: item.id,
+      token: checkTokenCookie(),
+    });
+    if (response && response.data && response.data.code === 1) {
+      const dataPrint = response.data.data.productDetail.filter((layer) => {
+        return (
+          layer?.content?.variable !== "" &&
+          layer?.content?.variableLabel !== ""
+        );
+      });
+      if (dataPrint) {
+        setDataFilter(dataPrint);
+        const updatedInputValues = dataPrint.map(() => "");
+        setInputValues(updatedInputValues);
+
+        setModalPrinted(true);
+      }
+    }
+  };
+  useEffect(() => {
+    console.log(dataFilter);
+  }, [dataFilter]);
+
   function checkTokenCookie() {
     // Lấy tất cả các cookies
     var allCookies = document.cookie;
@@ -143,6 +178,23 @@ function PurchaseForm() {
     const rowItems = data.slice(i, i + itemsPerRow);
     rows.push(rowItems);
   }
+const [inputValues, setInputValues] = useState({});
+  const handleInputChange = (e, index) => {
+  const variableLabel = dataFilter[index]?.content?.variableLabel;
+  setInputValues((prevValues) => ({
+    ...prevValues,
+    [variableLabel]: e.target.value,
+  }));
+};
+
+const handleFileInputChange = (e, index) => {
+  const variableLabel = dataFilter[index]?.content?.variableLabel;
+  setInputValues((prevValues) => ({
+    ...prevValues,
+    [variableLabel]: e.target.files[0],
+  }));
+};
+
 
   return (
     <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
@@ -200,7 +252,6 @@ function PurchaseForm() {
                   cursor: "pointer",
                   borderRadius: 10,
                   backgroundColor: "white",
-                  width: 80,
                 }}
               >
                 <img src={editIcon} alt="" style={{ width: 20, height: 20 }} />
@@ -219,7 +270,6 @@ function PurchaseForm() {
                   cursor: "pointer",
                   borderRadius: 10,
                   backgroundColor: "white",
-                  width: 80,
                 }}
               >
                 <img
@@ -229,6 +279,21 @@ function PurchaseForm() {
                 />
                 <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
                   Xóa
+                </p>
+              </Button>
+              <Button
+                onClick={(e) => handlePrintFormCalling(item)}
+                style={{
+                  color: "black",
+                  margin: "5px",
+                  cursor: "pointer",
+                  borderRadius: 10,
+                  backgroundColor: "white",
+                }}
+              >
+                <img src={printer} alt="" style={{ width: 20, height: 20 }} />
+                <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
+                  In ảnh
                 </p>
               </Button>
             </div>
@@ -360,8 +425,9 @@ function PurchaseForm() {
                 marginRight: 10,
               }}
               onClick={() => {
-                  setModalCreate(false);
+                setModalCreate(false);
                 setDeletingItemId(null);
+                
               }}
             >
               Hủy
@@ -388,9 +454,9 @@ function PurchaseForm() {
           </div>
         </Box>
       </Modal>
-      {/* <Modal
-        open={modalBuyingFree}
-        onClose={handleCloseModalFree}
+      <Modal
+        open={modalPrinted}
+        onClose={handleModalPrinted}
         aria-labelledby="modal-modal-title"
         aria-describedby="modal-modal-description"
       >
@@ -403,23 +469,60 @@ function PurchaseForm() {
               paddingBottom: "10px",
             }}
           >
-            Tạo ảnh
+            Tạo ảnh hàng loạt
           </p>
-          <img
-            src={warning}
-            alt=""
-            style={{ width: "20%", height: "30%", marginBottom: "10px" }}
-          />
-          <p
+          <div
             style={{
-              margin: 0,
-              fontSize: 17,
-              fontWeight: "500",
-              paddingTop: "10px",
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              flexWrap: "wrap",
+              justifyContent: "center",
+              alignItems: "center",
+              paddingLeft: 50,
+              paddingRight: 50,
             }}
           >
-            Bạn 
-          </p>
+            {dataFilter &&
+  dataFilter.map((data, index) => (
+    <div key={index}>
+      <p>{data.content.variableLabel}</p>
+      {data.content.type === "text" ? (
+        <input
+          value={inputValues[data.content.variableLabel] || ""}
+          onChange={(e) => handleInputChange(e, index)}
+          style={{ width: "80%" }}
+        />
+      ) : (
+        <div>
+          <input
+            type="file"
+            style={{ display: "none" }}
+            id={`fileInput-${index}`}
+            onChange={(e) => handleFileInputChange(e, index)}
+          />
+          <label htmlFor={`fileInput-${index}`}>
+            <Button
+              variant="contained"
+              component="span"
+              size="medium"
+              style={{
+                height: 40,
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+                marginRight: 20,
+              }}
+            >
+              Choose File
+            </Button>
+          </label>
+        </div>
+      )}
+    </div>
+  ))}
+          </div>
+
           <div style={{ display: "flex" }}>
             <Button
               variant="contained"
@@ -434,10 +537,7 @@ function PurchaseForm() {
                 width: "60%",
                 marginRight: 10,
               }}
-              onClick={() => {
-                setModalBuyingFree(false);
-                setDeletingItemId(null);
-              }}
+              onClick={() => handleModalPrinted()}
             >
               Hủy
             </Button>
@@ -454,7 +554,10 @@ function PurchaseForm() {
                 width: "60%",
               }}
               onClick={() => {
-                handleDelete();
+                const filteredInputValues = Object.fromEntries(
+    Object.entries(inputValues).filter(([_, value]) => value !== "")
+  );
+                console.log(filteredInputValues);
               }}
             >
               {" "}
@@ -462,7 +565,7 @@ function PurchaseForm() {
             </Button>
           </div>
         </Box>
-      </Modal> */}
+      </Modal>
     </div>
   );
 }

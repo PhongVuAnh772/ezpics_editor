@@ -8,7 +8,7 @@ import {
   Outlet,
 } from "react-router-dom";
 import Modal from "@mui/material/Modal";
-import './Content.css'
+import "./Content.css";
 import { useSelector, useDispatch } from "react-redux";
 import { toast } from "react-toastify";
 import Cookies from "js-cookie";
@@ -43,7 +43,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined";
 import MonitorOutlinedIcon from "@mui/icons-material/MonitorOutlined";
 import "./Content.css";
-import paperRoll from './paper-rolls.png'
+import paperRoll from "./paper-rolls.png";
 import CrownIcon from "../../../assets/crownIcon";
 import "react-multi-carousel/lib/styles.css";
 import "slick-carousel/slick/slick.css";
@@ -90,7 +90,8 @@ export default function PersistentDrawerLeft() {
   const location = useLocation();
   const [openModalPro, setOpenModalPro] = React.useState(false);
   const [openModalCreating, setOpenModalCreating] = React.useState(false);
-  const [openModalPrintCreating, setOpenModalPrintCreating] = React.useState(false);
+  const [openModalPrintCreating, setOpenModalPrintCreating] =
+    React.useState(false);
   const network = useSelector((state) => state.ipv4.network);
   const infoUser = useSelector((state) => state.user.info);
   const [creatingBucket, setCreatingBucket] = React.useState(false);
@@ -179,9 +180,9 @@ export default function PersistentDrawerLeft() {
     getDataDiscount();
   }, []);
   const [selectedFile, setSelectedFile] = React.useState(null);
-    const [selectedFilePrint, setSelectedFilePrint] = React.useState(null);
+  const [selectedFilePrint, setSelectedFilePrint] = React.useState(null);
 
-const handleFileChangePrint = (event) => {
+  const handleFileChangePrint = (event) => {
     const fileInput = event.target;
     const files = fileInput.files;
 
@@ -492,17 +493,21 @@ const handleFileChangePrint = (event) => {
     paddingRight: 20,
     position: "relative",
   };
-  const handleLogout = () => {
+  const handleLogout = async () => {
     setLoading(true);
-
-    setTimeout(() => {
+    const response = await axios.post(`${network}/logoutMemberAPI`, {
+      token: checkTokenCookie(),
+    });
+    if (response && response.data.code === 0) {
+      handleCloseUserMenu();
+      navigate("/", { replace: true });
       document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
       dispatch(DELETE_ALL_VALUES());
+      setModalLogoutDevice(false);
       setLoading(false);
-      handleCloseUserMenu();
-      navigate("/", { replace: true });
-    }, 1500);
+
+    }
   };
   const [loadingButtonModalCreate, setLoadingButtonModalCreate] =
     React.useState(false);
@@ -918,7 +923,11 @@ const handleFileChangePrint = (event) => {
                         document.body.style.overflowY = "hidden";
                       }}
                     >
-                      <img src={paperRoll} alt="" style={{width: 24,height: 24}} />
+                      <img
+                        src={paperRoll}
+                        alt=""
+                        style={{ width: 24, height: 24 }}
+                      />
                       <p
                         style={{
                           margin: 0,
@@ -1475,7 +1484,9 @@ const handleFileChangePrint = (event) => {
                   width: "100%",
                   color: "inherit",
                   backgroundColor:
-                    location.pathname === "/collection-all" ? "#ccc" : "transparent",
+                    location.pathname === "/collection-all"
+                      ? "#ccc"
+                      : "transparent",
                   marginBottom: 5,
                   borderRadius: 5,
                 }}
@@ -2719,23 +2730,23 @@ const handleFileChangePrint = (event) => {
         )}
         {openModalPrintCreating && (
           // <Modal>
-            <div className="ezpics-pro-modal" style={ezpicsProContainer}>
-              <div
-                className="container-modal-create"
-                style={{ animation: "fadeIn 0.5s ease-in-out" }}
-              >
-                <div className="card---create-newing">
-                  <div className="card-image---create-newing">
-                    <h2 className="card-heading---create-newing">
-                      Bắt đầu tạo mẫu in hàng loạt <br></br>
-                      <small style={{ fontSize: 15 }}>
-                        Hãy điền đầy đủ thông tin trước khi tạo nhé
-                      </small>
-                    </h2>
-                  </div>
+          <div className="ezpics-pro-modal" style={ezpicsProContainer}>
+            <div
+              className="container-modal-create"
+              style={{ animation: "fadeIn 0.5s ease-in-out" }}
+            >
+              <div className="card---create-newing">
+                <div className="card-image---create-newing">
+                  <h2 className="card-heading---create-newing">
+                    Bắt đầu tạo mẫu in hàng loạt <br></br>
+                    <small style={{ fontSize: 15 }}>
+                      Hãy điền đầy đủ thông tin trước khi tạo nhé
+                    </small>
+                  </h2>
+                </div>
 
-                  <form className="card-form---create-newing">
-                    {/* <div className="input---create-newing">
+                <form className="card-form---create-newing">
+                  {/* <div className="input---create-newing">
                       <input
                         type="text"
                         className="input-field---create-newing"
@@ -2746,146 +2757,148 @@ const handleFileChangePrint = (event) => {
                       </label>
                     </div> */}
 
-                    <div className="input---create-newing" >
-                      {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
-                       */}
-                      <label className="input-label---create-newing">
-                        Ảnh nền
-                      </label>
+                  <div className="input---create-newing">
+                    {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
+                     */}
+                    <label className="input-label---create-newing">
+                      Ảnh nền
+                    </label>
 
-                      <form
-                        id="file-upload-form"
-                        class="uploader"
-                        style={{ marginTop: 40 }}
+                    <form
+                      id="file-upload-form"
+                      class="uploader"
+                      style={{ marginTop: 40 }}
+                    >
+                      <input
+                        id="file-upload"
+                        type="file"
+                        name="fileUpload"
+                        accept="image/*"
+                        onChange={handleFileChangePrint}
+                      />
+
+                      <label
+                        for="file-upload"
+                        id="file-drag"
+                        style={{ height: 200, cursor: "pointer" }}
                       >
-                        <input
-                          id="file-upload"
-                          type="file"
-                          name="fileUpload"
-                          accept="image/*"
-                          onChange={handleFileChangePrint}
+                        <img
+                          id="file-image"
+                          src="#"
+                          alt="Preview"
+                          class="hidden"
                         />
-
-                        <label
-                          for="file-upload"
-                          id="file-drag"
-                          style={{ height: 200, cursor: "pointer" }}
-                        >
+                        <div id="start---create-newing">
                           <img
-                            id="file-image"
-                            src="#"
-                            alt="Preview"
-                            class="hidden"
+                            src={downloadIcon}
+                            alt=""
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              margin: "0 auto",
+                              marginBottom: "2%",
+                            }}
                           />
-                          <div id="start---create-newing">
-                            <img
-                              src={downloadIcon}
-                              alt=""
-                              style={{
-                                width: 30,
-                                height: 30,
-                                alignSelf: "center",
-                                margin: "0 auto",
-                                marginBottom: "2%",
-                              }}
-                            />
-                            <div id="notimage" class="hidden">
-                              Hãy chọn ảnh
-                            </div>
-                            <span id="file-upload-btn" class="btn btn-primary">
-                              {selectedFilePrint === null ? "Chọn ảnh" :"Chọn lại"}
-                            </span>
+                          <div id="notimage" class="hidden">
+                            Hãy chọn ảnh
                           </div>
-                          <div id="response" class="hidden">
-                            <div id="messages"></div>
-                            <progress
-                              class="progress"
-                              id="file-progress"
-                              value="0"
-                            >
-                              <span>0</span>%
-                            </progress>
-                          </div>
-                        </label>
-                      </form>
-                    </div>
-
-                    <div className="action---create-newing">
-                      {selectedFilePrint !== null ? (
-                        <button
-                          className="action-button---create-newing"
-                          style={{
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          onClick={(e) => handleCreateCustomPrint(e)}
-                        >
-                          {loadingButtonModalCreate ? (
-                            <span class="loader-create-film"></span>
-                          ) : (
-                            "Bắt đầu tạo mẫu"
-                          )}
-                        </button>
-                      ) : (
-                        <button
-                          className="action-button---create-newing"
-                          style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
-                          disabled
-                        >
-                          Bắt đầu tạo mẫu
-                        </button>
-                      )}
-                    </div>
-                  </form>
-                  <div className="card-info---create-newing">
-                    <p>
-                      Nếu bạn chưa có thông tin, hãy tham khảo
-                      <a href="#"> Mẫu thiết kế có sẵn</a>
-                    </p>
+                          <span id="file-upload-btn" class="btn btn-primary">
+                            {selectedFilePrint === null
+                              ? "Chọn ảnh"
+                              : "Chọn lại"}
+                          </span>
+                        </div>
+                        <div id="response" class="hidden">
+                          <div id="messages"></div>
+                          <progress
+                            class="progress"
+                            id="file-progress"
+                            value="0"
+                          >
+                            <span>0</span>%
+                          </progress>
+                        </div>
+                      </label>
+                    </form>
                   </div>
-                  <img
-                    src={xMark}
-                    alt=""
-                    style={{
-                      width: 20,
-                      height: 20,
-                      marginRight: -30,
-                      right: 0,
-                      top: 0,
-                      cursor: "pointer",
-                      position: "absolute",
-                    }}
-                    onClick={() => {
-                      setOpenModalPrintCreating(false);
-                      document.body.style.overflowY = "auto";
-                    }}
-                  />
+
+                  <div className="action---create-newing">
+                    {selectedFilePrint !== null ? (
+                      <button
+                        className="action-button---create-newing"
+                        style={{
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                        onClick={(e) => handleCreateCustomPrint(e)}
+                      >
+                        {loadingButtonModalCreate ? (
+                          <span class="loader-create-film"></span>
+                        ) : (
+                          "Bắt đầu tạo mẫu"
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        className="action-button---create-newing"
+                        style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
+                        disabled
+                      >
+                        Bắt đầu tạo mẫu
+                      </button>
+                    )}
+                  </div>
+                </form>
+                <div className="card-info---create-newing">
+                  <p>
+                    Nếu bạn chưa có thông tin, hãy tham khảo
+                    <a href="#"> Mẫu thiết kế có sẵn</a>
+                  </p>
                 </div>
+                <img
+                  src={xMark}
+                  alt=""
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginRight: -30,
+                    right: 0,
+                    top: 0,
+                    cursor: "pointer",
+                    position: "absolute",
+                  }}
+                  onClick={() => {
+                    setOpenModalPrintCreating(false);
+                    document.body.style.overflowY = "auto";
+                  }}
+                />
               </div>
             </div>
+          </div>
           // </Modal>
         )}
         {openModalCreating && (
           // <Modal>
-            <div className="ezpics-pro-modal" style={ezpicsProContainer}>
-              <div
-                className="container-modal-create"
-                style={{ animation: "fadeIn 0.5s ease-in-out" }}
-              >
-                <div className="card---create-newing">
-                  <div className="card-image---create-newing">
-                    <h2 className="card-heading---create-newing">
-                      Bắt đầu tạo mẫu thiết kế <br></br>
-                      <small style={{ fontSize: 15 }}>
-                        Hãy điền đầy đủ thông tin trước khi tạo nhé
-                      </small>
-                    </h2>
-                  </div>
+          <div className="ezpics-pro-modal" style={ezpicsProContainer}>
+            <div
+              className="container-modal-create"
+              style={{ animation: "fadeIn 0.5s ease-in-out" }}
+            >
+              <div className="card---create-newing">
+                <div className="card-image---create-newing">
+                  <h2 className="card-heading---create-newing">
+                    Bắt đầu tạo mẫu thiết kế <br></br>
+                    <small style={{ fontSize: 15 }}>
+                      Hãy điền đầy đủ thông tin trước khi tạo nhé
+                    </small>
+                  </h2>
+                </div>
 
-                  <form className="card-form---create-newing">
-                    {/* <div className="input---create-newing">
+                <form className="card-form---create-newing">
+                  {/* <div className="input---create-newing">
                       <input
                         type="text"
                         className="input-field---create-newing"
@@ -2896,125 +2909,125 @@ const handleFileChangePrint = (event) => {
                       </label>
                     </div> */}
 
-                    <div className="input---create-newing" >
-                      {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
-                       */}
-                      <label className="input-label---create-newing">
-                        Ảnh nền
-                      </label>
+                  <div className="input---create-newing">
+                    {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
+                     */}
+                    <label className="input-label---create-newing">
+                      Ảnh nền
+                    </label>
 
-                      <form
-                        id="file-upload-form"
-                        class="uploader"
-                        style={{ marginTop: 40 }}
+                    <form
+                      id="file-upload-form"
+                      class="uploader"
+                      style={{ marginTop: 40 }}
+                    >
+                      <input
+                        id="file-upload"
+                        type="file"
+                        name="fileUpload"
+                        accept="image/*"
+                        onChange={handleFileChange}
+                      />
+
+                      <label
+                        for="file-upload"
+                        id="file-drag"
+                        style={{ height: 200, cursor: "pointer" }}
                       >
-                        <input
-                          id="file-upload"
-                          type="file"
-                          name="fileUpload"
-                          accept="image/*"
-                          onChange={handleFileChange}
+                        <img
+                          id="file-image"
+                          src="#"
+                          alt="Preview"
+                          class="hidden"
                         />
-
-                        <label
-                          for="file-upload"
-                          id="file-drag"
-                          style={{ height: 200, cursor: "pointer" }}
-                        >
+                        <div id="start---create-newing">
                           <img
-                            id="file-image"
-                            src="#"
-                            alt="Preview"
-                            class="hidden"
+                            src={downloadIcon}
+                            alt=""
+                            style={{
+                              width: 30,
+                              height: 30,
+                              alignSelf: "center",
+                              margin: "0 auto",
+                              marginBottom: "2%",
+                            }}
                           />
-                          <div id="start---create-newing">
-                            <img
-                              src={downloadIcon}
-                              alt=""
-                              style={{
-                                width: 30,
-                                height: 30,
-                                alignSelf: "center",
-                                margin: "0 auto",
-                                marginBottom: "2%",
-                              }}
-                            />
-                            <div id="notimage" class="hidden">
-                              Hãy chọn ảnh
-                            </div>
-                            <span id="file-upload-btn" class="btn btn-primary">
-                              {selectedFile === null ? "Chọn ảnh" :"Chọn lại"}
-                            </span>
+                          <div id="notimage" class="hidden">
+                            Hãy chọn ảnh
                           </div>
-                          <div id="response" class="hidden">
-                            <div id="messages"></div>
-                            <progress
-                              class="progress"
-                              id="file-progress"
-                              value="0"
-                            >
-                              <span>0</span>%
-                            </progress>
-                          </div>
-                        </label>
-                      </form>
-                    </div>
-
-                    <div className="action---create-newing">
-                      {selectedFile !== null ? (
-                        <button
-                          className="action-button---create-newing"
-                          style={{
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          onClick={(e) => handleCreateCustom(e)}
-                        >
-                          {loadingButtonModalCreate ? (
-                            <span class="loader-create-film"></span>
-                          ) : (
-                            "Bắt đầu tạo mẫu"
-                          )}
-                        </button>
-                      ) : (
-                        <button
-                          className="action-button---create-newing"
-                          style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
-                          disabled
-                        >
-                          Bắt đầu tạo mẫu
-                        </button>
-                      )}
-                    </div>
-                  </form>
-                  <div className="card-info---create-newing">
-                    <p>
-                      Nếu bạn chưa có thông tin, hãy tham khảo
-                      <a href="#"> Mẫu thiết kế có sẵn</a>
-                    </p>
+                          <span id="file-upload-btn" class="btn btn-primary">
+                            {selectedFile === null ? "Chọn ảnh" : "Chọn lại"}
+                          </span>
+                        </div>
+                        <div id="response" class="hidden">
+                          <div id="messages"></div>
+                          <progress
+                            class="progress"
+                            id="file-progress"
+                            value="0"
+                          >
+                            <span>0</span>%
+                          </progress>
+                        </div>
+                      </label>
+                    </form>
                   </div>
-                  <img
-                    src={xMark}
-                    alt=""
-                    style={{
-                      width: 20,
-                      height: 20,
-                      marginRight: -30,
-                      right: 0,
-                      top: 0,
-                      cursor: "pointer",
-                      position: "absolute",
-                    }}
-                    onClick={() => {
-                      setOpenModalCreating(false);
-                      document.body.style.overflowY = "auto";
-                    }}
-                  />
+
+                  <div className="action---create-newing">
+                    {selectedFile !== null ? (
+                      <button
+                        className="action-button---create-newing"
+                        style={{
+                          cursor: "pointer",
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                        onClick={(e) => handleCreateCustom(e)}
+                      >
+                        {loadingButtonModalCreate ? (
+                          <span class="loader-create-film"></span>
+                        ) : (
+                          "Bắt đầu tạo mẫu"
+                        )}
+                      </button>
+                    ) : (
+                      <button
+                        className="action-button---create-newing"
+                        style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
+                        disabled
+                      >
+                        Bắt đầu tạo mẫu
+                      </button>
+                    )}
+                  </div>
+                </form>
+                <div className="card-info---create-newing">
+                  <p>
+                    Nếu bạn chưa có thông tin, hãy tham khảo
+                    <a href="#"> Mẫu thiết kế có sẵn</a>
+                  </p>
                 </div>
+                <img
+                  src={xMark}
+                  alt=""
+                  style={{
+                    width: 20,
+                    height: 20,
+                    marginRight: -30,
+                    right: 0,
+                    top: 0,
+                    cursor: "pointer",
+                    position: "absolute",
+                  }}
+                  onClick={() => {
+                    setOpenModalCreating(false);
+                    document.body.style.overflowY = "auto";
+                  }}
+                />
               </div>
             </div>
+          </div>
           // </Modal>
         )}
         {loadingAwesome && (

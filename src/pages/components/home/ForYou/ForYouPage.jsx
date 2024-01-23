@@ -299,6 +299,19 @@ function ForYouPage() {
     // Sử dụng Intl.NumberFormat để định dạng số thành chuỗi có dấu phân cách hàng nghìn
     return new Intl.NumberFormat("vi-VN").format(price);
   };
+  const handleLogout = async () => {
+    const response = await axios.post(`${network}/logoutMemberAPI`, {
+      token: checkTokenCookie(),
+    });
+    if (response && response.data.code === 0) {
+      document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      dispatch(DELETE_ALL_VALUES());
+      setModalLogoutDevice(false);
+
+      navigate("/login", { replace: true });
+    }
+  };
   const CustomRightArrow = ({ onClick, ...rest }) => {
     const {
       onMove,
@@ -1381,14 +1394,7 @@ function ForYouPage() {
                 marginTop: "40px",
                 width: "100%",
               }}
-              onClick={() => {
-                document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                dispatch(DELETE_ALL_VALUES());
-                setModalLogoutDevice(false);
-
-                navigate("/login", { replace: true });
-              }}
+              onClick={() => handleLogout()}
             >
               Đăng xuất
             </Button>

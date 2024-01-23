@@ -226,6 +226,7 @@ function SaleCollection() {
     paddingRight: "15px",
     borderRadius: "15px",
     height: "45%",
+
   };
   const styleModalBuyingFreeNew = {
     position: "absolute",
@@ -252,7 +253,6 @@ function SaleCollection() {
     setDeletingItemId(null);
     setNewModal(false);
   };
-  // deleteProductAPI
   function checkTokenCookie() {
     var allCookies = document.cookie;
 

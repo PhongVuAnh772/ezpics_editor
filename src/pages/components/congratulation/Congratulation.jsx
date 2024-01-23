@@ -26,8 +26,8 @@ import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../store/slice/infoUser";
 function Congratulation() {
   const dispatch = useDispatch();
 
-    const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
-    const [modalLogoutDevice,setModalLogoutDevice] = React.useState(false);
+  const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+  const [modalLogoutDevice, setModalLogoutDevice] = React.useState(false);
   const styleModalBuyingFree = {
     position: "absolute",
     top: "50%",
@@ -76,7 +76,7 @@ function Congratulation() {
       console.error("Error fetching data:", error.message);
       setLoadingBuyingFunc(false);
     }
-  };  
+  };
   useEffect(() => {
     const getData = async () => {
       try {
@@ -88,7 +88,6 @@ function Congratulation() {
           responseCategory.data &&
           responseCategory.data.listData
         ) {
-         
           const thumbnailYoutubeCategory = responseCategory.data.listData.find(
             (category) => category.name === "Thiệp chúc mừng"
           );
@@ -99,20 +98,20 @@ function Congratulation() {
               {
                 limit: 30,
                 page: 1,
-                category_id: categoryId
+                category_id: categoryId,
               }
             );
             if (response && response.data) {
               // setData(response.data.listData[5].listData);
               // setData2(response.data.listData[8].listData);
               // setLoading(false);
-              
-              setDataEndow(response.data.listData)
+
+              setDataEndow(response.data.listData);
             } else {
               console.error("Invalid response format");
               setLoading(false);
             }
-            console.log(categoryId)
+            console.log(categoryId);
           } else {
             console.log('Category "Thumnail Youtube" not found.');
           }
@@ -125,11 +124,24 @@ function Congratulation() {
     };
 
     getData();
-  }, []);const [dataEndow,setDataEndow] = React.useState([])
+  }, []);
+  const [dataEndow, setDataEndow] = React.useState([]);
 
   const [loading, setLoading] = React.useState(true);
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
+  const handleLogout = async () => {
+    const response = await axios.post(`${network}/logoutMemberAPI`, {
+      token: checkTokenCookie(),
+    });
+    if (response && response.data.code === 0) {
+      document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      dispatch(DELETE_ALL_VALUES());
+      setModalLogoutDevice(false);
 
+      navigate("/login", { replace: true });
+    }
+  };
   const responsive = {
     desktop: {
       breakpoint: { max: 3000, min: 1024 },
@@ -187,7 +199,7 @@ function Congratulation() {
     //return unescape(dc.substring(begin + prefix.length, end));
     return decodeURI(dc.substring(begin + prefix.length, end));
   }
-  const [dataNewest,setDataNewest] = React.useState([])
+  const [dataNewest, setDataNewest] = React.useState([]);
   function checkAvailableLogin() {
     var token = getCookie("token");
     var userLogin = getCookie("user_login");
@@ -198,10 +210,10 @@ function Congratulation() {
       return true;
     }
   }
-    const [deletingItemId, setDeletingItemId] = React.useState(null);
+  const [deletingItemId, setDeletingItemId] = React.useState(null);
 
   const authentication = checkAvailableLogin();
-const handleCloseModalFree = () => {
+  const handleCloseModalFree = () => {
     setModalBuyingFree(false);
     setDeletingItemId(null);
   };
@@ -288,7 +300,7 @@ const handleCloseModalFree = () => {
       getData();
     }
   }, []);
-  const [loadingNewest,setLoadingNewest] = React.useState(false)
+  const [loadingNewest, setLoadingNewest] = React.useState(false);
   useEffect(() => {
     setLoadingNewest(true);
 
@@ -1140,143 +1152,144 @@ const handleCloseModalFree = () => {
           ))}
         </Carousel>
       )}
-      
-      {authentication && <p style={{ fontSize: 18, fontWeight: "bold",marginBottom:0 }}>Thiết kế gần đây</p>}
-      {authentication && <div style={{ paddingTop: "0px", display: "flex", flexWrap: "wrap" }}>
-        {dataForYou.length > 0 ? (
-          dataForYou.map((item, index) => (
-            <div
-              key={index}
-              style={{
-                flex: `0 0 calc(${100 / itemsPerRow}% - 16px)`,
 
-                marginBottom: "15px",
-                boxSizing: "border-box",
-                padding: "0 8px",
-                position: "relative",
-                maxWidth: 280,
-                marginTop: "2%",
-                marginRight: "1%",
-              }}
-            >
+      {authentication && (
+        <p style={{ fontSize: 18, fontWeight: "bold", marginBottom: 0 }}>
+          Thiết kế gần đây
+        </p>
+      )}
+      {authentication && (
+        <div style={{ paddingTop: "0px", display: "flex", flexWrap: "wrap" }}>
+          {dataForYou.length > 0 ? (
+            dataForYou.map((item, index) => (
               <div
+                key={index}
                 style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  bottom: 0,
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "center",
-                  alignItems: "center",
-                  background: "rgba(0, 0, 0, 0.7)",
-                  borderRadius: 10,
-                  opacity: 0,
-                  transition: "opacity 0.3s",
-                  zIndex: 1000,
-                  display: "flex",
-                  flexDirection: "row",
-                }}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.opacity = 1;
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.opacity = 0;
-                }}
-              >
-                <Button
-                  onClick={(e) => {
-                    navigate(`/design`, {
-                      state: { id: item.id, token: checkTokenCookie() },
-                    });
-                  }}
-                  style={{
-                    color: "black",
-                    margin: "5px",
-                    cursor: "pointer",
-                    borderRadius: 10,
-                    backgroundColor: "white",
-                    width: 80,
-                  }}
-                >
-                  <img
-                    src={editIcon}
-                    alt=""
-                    style={{ width: 20, height: 20 }}
-                  />
-                  <p
-                    style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}
-                  >
-                    Sửa
-                  </p>
-                </Button>
-                <Button
-                  onClick={(e) => {
-                    setModalBuyingFree(true);
-                    setDeletingItemId(item.id);
-                  }}
-                  style={{
-                    color: "black",
-                    margin: "5px",
-                    cursor: "pointer",
-                    borderRadius: 10,
-                    backgroundColor: "white",
-                    width: 80,
-                  }}
-                >
-                  <img
-                    src={deleteIcon}
-                    alt=""
-                    style={{ width: 20, height: 20 }}
-                  />
-                  <p
-                    style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}
-                  >
-                    Xóa
-                  </p>
-                </Button>
-              </div>
-              <div
-                style={{
+                  flex: `0 0 calc(${100 / itemsPerRow}% - 16px)`,
+
+                  marginBottom: "15px",
+                  boxSizing: "border-box",
+                  padding: "0 8px",
                   position: "relative",
-                  width: "100%",
-                  background: "#f0f0f0",
-                  borderRadius: 10,
-                  overflow: "hidden",
-                  cursor: "pointer",
-                }}
-                onClick={() => {
-                  navigate(`/category/${item.id}`);
-                  window.scrollTo({ top: 0, behavior: "smooth" });
+                  maxWidth: 280,
+                  marginTop: "2%",
+                  marginRight: "1%",
                 }}
               >
-                <img
-                  src={item.image}
-                  alt=""
+                <div
                   style={{
-                    width: "100%",
-                    height: "180px",
-                    objectFit: "contain",
+                    position: "absolute",
+                    top: 0,
+                    left: 0,
+                    right: 0,
+                    bottom: 0,
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    alignItems: "center",
+                    background: "rgba(0, 0, 0, 0.7)",
+                    borderRadius: 10,
+                    opacity: 0,
+                    transition: "opacity 0.3s",
+                    zIndex: 1000,
+                    display: "flex",
+                    flexDirection: "row",
                   }}
-                />
-              </div>
-
-              <div
-                style={{
-                  height: 70,
-                  maxWidth: "100%",
-                  color: "rgb(37, 38, 56)",
-                  fontFamily:
-                    "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
-                  fontWeight: 600,
-                  fontSize: "17px",
-                  margin: 0,
-                  marginTop: 10,
-                }}
-              >
-                <h5
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.opacity = 1;
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.opacity = 0;
+                  }}
+                >
+                  <Button
+                    onClick={(e) => {
+                      navigate(`/design`, {
+                        state: { id: item.id, token: checkTokenCookie() },
+                      });
+                    }}
+                    style={{
+                      color: "black",
+                      margin: "5px",
+                      cursor: "pointer",
+                      borderRadius: 10,
+                      backgroundColor: "white",
+                      width: 80,
+                    }}
+                  >
+                    <img
+                      src={editIcon}
+                      alt=""
+                      style={{ width: 20, height: 20 }}
+                    />
+                    <p
+                      style={{
+                        margin: 0,
+                        paddingLeft: 5,
+                        textTransform: "none",
+                      }}
+                    >
+                      Sửa
+                    </p>
+                  </Button>
+                  <Button
+                    onClick={(e) => {
+                      setModalBuyingFree(true);
+                      setDeletingItemId(item.id);
+                    }}
+                    style={{
+                      color: "black",
+                      margin: "5px",
+                      cursor: "pointer",
+                      borderRadius: 10,
+                      backgroundColor: "white",
+                      width: 80,
+                    }}
+                  >
+                    <img
+                      src={deleteIcon}
+                      alt=""
+                      style={{ width: 20, height: 20 }}
+                    />
+                    <p
+                      style={{
+                        margin: 0,
+                        paddingLeft: 5,
+                        textTransform: "none",
+                      }}
+                    >
+                      Xóa
+                    </p>
+                  </Button>
+                </div>
+                <div
                   style={{
+                    position: "relative",
+                    width: "100%",
+                    background: "#f0f0f0",
+                    borderRadius: 10,
+                    overflow: "hidden",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => {
+                    navigate(`/category/${item.id}`);
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }}
+                >
+                  <img
+                    src={item.image}
+                    alt=""
+                    style={{
+                      width: "100%",
+                      height: "180px",
+                      objectFit: "contain",
+                    }}
+                  />
+                </div>
+
+                <div
+                  style={{
+                    height: 70,
                     maxWidth: "100%",
                     color: "rgb(37, 38, 56)",
                     fontFamily:
@@ -1284,17 +1297,30 @@ const handleCloseModalFree = () => {
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
+                    marginTop: 10,
                   }}
                 >
-                  {item.name}
-                </h5>
+                  <h5
+                    style={{
+                      maxWidth: "100%",
+                      color: "rgb(37, 38, 56)",
+                      fontFamily:
+                        "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
+                      fontWeight: 600,
+                      fontSize: "17px",
+                      margin: 0,
+                    }}
+                  >
+                    {item.name}
+                  </h5>
+                </div>
               </div>
-            </div>
-          ))
-        ) : (
-          <></>
-        )}
-      </div>}
+            ))
+          ) : (
+            <></>
+          )}
+        </div>
+      )}
 
       {authentication && (
         <div
@@ -1332,7 +1358,7 @@ const handleCloseModalFree = () => {
           </Button>
         </div>
       )}
-      
+
       <Modal
         open={modalLogoutDevice}
         onClose={handleLogoutDevice}
@@ -1366,7 +1392,6 @@ const handleCloseModalFree = () => {
             Tài khoản đã bị đăng nhập ở thiết bị khác
           </p>
           <div style={{ display: "flex" }}>
-            
             <Button
               variant="contained"
               size="medium"
@@ -1379,14 +1404,7 @@ const handleCloseModalFree = () => {
                 marginTop: "40px",
                 width: "100%",
               }}
-              onClick={() => {
-                document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                dispatch(DELETE_ALL_VALUES());
-                setModalLogoutDevice(false);
-                
-                navigate('/login',{replace:true})
-              }}
+              onClick={() => handleLogout()}
             >
               Đăng xuất
             </Button>

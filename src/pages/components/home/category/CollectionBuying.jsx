@@ -636,6 +636,19 @@ function CollectionBuying({
       setLoadingFavorite(false);
     }
   };
+  const handleLogout = async () => {
+    const response = await axios.post(`${network}/logoutMemberAPI`, {
+      token: checkTokenCookie(),
+    });
+    if (response && response.data.code === 0) {
+      document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      dispatch(DELETE_ALL_VALUES());
+      setModalLogoutDevice(false);
+
+      navigate("/login", { replace: true });
+    }
+  };
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
   const handleBuyingFreeFunc = async () => {
     setLoadingBuyingFunc(true);
@@ -1787,14 +1800,7 @@ function CollectionBuying({
                 marginTop: "40px",
                 width: "100%",
               }}
-              onClick={() => {
-                document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                dispatch(DELETE_ALL_VALUES());
-                setModalLogoutDevice(false);
-
-                navigate("/login", { replace: true });
-              }}
+              onClick={() => handleLogout()}
             >
               Đăng xuất
             </Button>
@@ -2126,14 +2132,7 @@ function CollectionBuying({
                 marginTop: "40px",
                 width: "100%",
               }}
-              onClick={() => {
-                document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                dispatch(DELETE_ALL_VALUES());
-                setModalLogoutDevice(false);
-
-                navigate("/login", { replace: true });
-              }}
+              onClick={() => handleLogout()}
             >
               Đăng xuất
             </Button>

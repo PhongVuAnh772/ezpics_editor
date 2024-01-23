@@ -184,6 +184,19 @@ function Category({
     }
   }
   const [loadingBuying, setLoadingBuying] = React.useState(false);
+  const handleLogout = async () => {
+    const response = await axios.post(`${network}/logoutMemberAPI`, {
+      token: checkTokenCookie(),
+    });
+    if (response && response.data.code === 0) {
+      document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
+      dispatch(DELETE_ALL_VALUES());
+      setModalLogoutDevice(false);
+
+      navigate("/login", { replace: true });
+    }
+  };
   function checkTokenCookieTrue() {
     // Lấy tất cả các cookies
     var allCookies = document.cookie;
@@ -1595,14 +1608,7 @@ function Category({
                 marginTop: "40px",
                 width: "100%",
               }}
-              onClick={() => {
-                document.cookie = `user_login=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                document.cookie = `token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;`;
-                dispatch(DELETE_ALL_VALUES());
-                setModalLogoutDevice(false);
-
-                navigate("/login", { replace: true });
-              }}
+              onClick={() => handleLogout()}
             >
               Đăng xuất
             </Button>

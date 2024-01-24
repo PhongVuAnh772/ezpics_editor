@@ -11,6 +11,6 @@ const request_config = {
   }
 };
 
-const res = axios.post("http://apis.ezpics.vn/apis/removeBackgroundImageAPI", form, request_config).then(ress => {
+const res = axios.post("https://apis.ezpics.vn/apis/removeBackgroundImageAPI", form, request_config).then(ress => {
 console.log(ress);
 })

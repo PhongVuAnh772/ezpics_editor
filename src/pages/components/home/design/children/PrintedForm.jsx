@@ -23,6 +23,7 @@ function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
   const [modalCreate, setModalCreate] = React.useState(false);
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+  const [choosingItem, setChoosingItem] = React.useState([]);
   const Input = styled(MuiInput)`
     width: 42px;
   `;
@@ -92,6 +93,7 @@ function PurchaseForm() {
     setModalPrinted(false);
   };
   const handlePrintFormCalling = async (item) => {
+    setChoosingItem(item);
     const response = await axios.post(`${network}/listLayerAPI`, {
       idproduct: item.id,
       token: checkTokenCookie(),
@@ -145,6 +147,53 @@ function PurchaseForm() {
       console.log('Không tìm thấy cookie có tên là "token"');
     }
   }
+  const handleClickNavigate = async () => {
+  try {
+    const filteredInputValues = Object.fromEntries(
+      Object.entries(inputValues).filter(([_, value]) => value !== "")
+    );
+
+    const promises = Object.entries(filteredInputValues).map(async ([key, value]) => {
+      if (value instanceof File) {
+        try {
+          const formData = new FormData();
+          formData.append('idproduct', choosingItem.id);
+          formData.append('file', value);
+          formData.append('token', checkTokenCookie());
+          formData.append('page', 0);
+
+          const response = await axios.post(`${network}/addLayerImageAPI`, formData);
+
+          if (response && response.data) {
+            console.log('API Response:', response.data);
+            // 
+            filteredInputValues[key] = response.data?.data?.content?.banner
+          } else {
+            console.error('Invalid API response format');
+          }
+        } catch (error) {
+          console.error('Error calling API:', error);
+        }
+      } else {
+        console.log('This is text:', value);
+      }
+    });
+
+    // Wait for all promises to resolve
+    await Promise.all(promises);
+
+    // Now, all values in filteredInputValues are updated, you can navigate
+    navigate(`/printed-image`, {
+      state: {
+        id: choosingItem.id,
+        token: checkTokenCookie(),
+        stateData: filteredInputValues,
+      },
+    });
+  } catch (error) {
+    console.error('Error during processing:', error);
+  }
+};
 
   useEffect(() => {
     setLoading(true);
@@ -178,23 +227,22 @@ function PurchaseForm() {
     const rowItems = data.slice(i, i + itemsPerRow);
     rows.push(rowItems);
   }
-const [inputValues, setInputValues] = useState({});
+  const [inputValues, setInputValues] = useState({});
   const handleInputChange = (e, index) => {
-  const variableLabel = dataFilter[index]?.content?.variableLabel;
-  setInputValues((prevValues) => ({
-    ...prevValues,
-    [variableLabel]: e.target.value,
-  }));
-};
+    const variableLabel = dataFilter[index]?.content?.variableLabel;
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [variableLabel]: e.target.value,
+    }));
+  };
 
-const handleFileInputChange = (e, index) => {
-  const variableLabel = dataFilter[index]?.content?.variableLabel;
-  setInputValues((prevValues) => ({
-    ...prevValues,
-    [variableLabel]: e.target.files[0],
-  }));
-};
-
+  const handleFileInputChange = (e, index) => {
+    const variableLabel = dataFilter[index]?.content?.variableLabel;
+    setInputValues((prevValues) => ({
+      ...prevValues,
+      [variableLabel]: e.target.files[0],
+    }));
+  };
 
   return (
     <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
@@ -427,7 +475,6 @@ const handleFileInputChange = (e, index) => {
               onClick={() => {
                 setModalCreate(false);
                 setDeletingItemId(null);
-                
               }}
             >
               Hủy
@@ -484,43 +531,43 @@ const handleFileInputChange = (e, index) => {
             }}
           >
             {dataFilter &&
-  dataFilter.map((data, index) => (
-    <div key={index}>
-      <p>{data.content.variableLabel}</p>
-      {data.content.type === "text" ? (
-        <input
-          value={inputValues[data.content.variableLabel] || ""}
-          onChange={(e) => handleInputChange(e, index)}
-          style={{ width: "80%" }}
-        />
-      ) : (
-        <div>
-          <input
-            type="file"
-            style={{ display: "none" }}
-            id={`fileInput-${index}`}
-            onChange={(e) => handleFileInputChange(e, index)}
-          />
-          <label htmlFor={`fileInput-${index}`}>
-            <Button
-              variant="contained"
-              component="span"
-              size="medium"
-              style={{
-                height: 40,
-                textTransform: "none",
-                color: "white",
-                backgroundColor: "rgb(255, 66, 78)",
-                marginRight: 20,
-              }}
-            >
-              Choose File
-            </Button>
-          </label>
-        </div>
-      )}
-    </div>
-  ))}
+              dataFilter.map((data, index) => (
+                <div key={index}>
+                  <p>{data.content.variableLabel}</p>
+                  {data.content.type === "text" ? (
+                    <input
+                      value={inputValues[data.content.variableLabel] || ""}
+                      onChange={(e) => handleInputChange(e, index)}
+                      style={{ width: "80%" }}
+                    />
+                  ) : (
+                    <div>
+                      <input
+                        type="file"
+                        style={{ display: "none" }}
+                        id={`fileInput-${index}`}
+                        onChange={(e) => handleFileInputChange(e, index)}
+                      />
+                      <label htmlFor={`fileInput-${index}`}>
+                        <Button
+                          variant="contained"
+                          component="span"
+                          size="medium"
+                          style={{
+                            height: 40,
+                            textTransform: "none",
+                            color: "white",
+                            backgroundColor: "rgb(255, 66, 78)",
+                            marginRight: 20,
+                          }}
+                        >
+                          Chọn ảnh
+                        </Button>
+                      </label>
+                    </div>
+                  )}
+                </div>
+              ))}
           </div>
 
           <div style={{ display: "flex" }}>
@@ -551,17 +598,12 @@ const handleFileInputChange = (e, index) => {
                 color: "white",
                 backgroundColor: "rgb(255, 66, 78)",
                 marginTop: "40px",
-                width: "60%",
+                width: "100%",
               }}
-              onClick={() => {
-                const filteredInputValues = Object.fromEntries(
-    Object.entries(inputValues).filter(([_, value]) => value !== "")
-  );
-                console.log(filteredInputValues);
-              }}
+              onClick={() => handleClickNavigate()}
             >
               {" "}
-              {loadingBuyingFunc ? <span class="loaderNew"></span> : "Xóa"}
+              {loadingBuyingFunc ? <span class="loaderNew"></span> : "Tạo ảnh"}
             </Button>
           </div>
         </Box>

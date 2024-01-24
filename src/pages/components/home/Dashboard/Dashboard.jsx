@@ -101,6 +101,8 @@ function Dashboard() {
 
   const onChange = (event) => {
     // console.log(event.target.value);
+      // event.preventDefault();
+
     setSearchText(event.target.value);
     setEnableButtonClear(true);
     setLoadingSearch(true);
@@ -194,6 +196,12 @@ function Dashboard() {
     borderRadius: "15px",
     paddingRight: "15px",
   };
+  const handleKeyDown = (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    console.log('Enter key pressed')
+  }
+};
   const BpIcon = styled("span")(({ theme }) => ({
     borderRadius: "50%",
     width: 16,
@@ -377,7 +385,10 @@ function Dashboard() {
             <InputBase
               sx={{ ml: 1, flex: 1 }}
               placeholder="Tìm kiếm nội dung trên Ezpics"
-              onChange={onChange}
+              onChange={(e) => {
+                e.preventDefault();
+                onChange(e)
+              }}
               value={searchText}
 
               // inputProps={{ 'aria-label': 'search google maps' }}
@@ -1235,6 +1246,7 @@ function Dashboard() {
                 placeholder="Tìm kiếm nội dung trên Ezpics"
                 onChange={onChange}
                 value={searchText}
+  onKeyDown={handleKeyDown}
 
                 // inputProps={{ 'aria-label': 'search google maps' }}
               />

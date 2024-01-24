@@ -25,12 +25,12 @@ import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
-import {useLocation} from 'react-router-dom';
-import ezpiclogo from './EZPICS (converted)-03.png'
+import { useLocation } from "react-router-dom";
+import ezpiclogo from "./EZPICS (converted)-03.png";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
-function GraphicEditor() {
+function GraphicPrinted() {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
@@ -42,7 +42,7 @@ function GraphicEditor() {
   const [loading, setLoading] = React.useState<boolean>(false);
   const { setActiveSubMenu } = useAppContext();
   const typeUser = useAppSelector((state) => state.typeUser.typeUser);
-  const [modalUserSeries,setModalUserSeries] = React.useState<boolean>(false)
+  const [modalUserSeries, setModalUserSeries] = React.useState<boolean>(false);
   function checkTokenCookie() {
     var allCookies = document.cookie;
 
@@ -93,12 +93,65 @@ function GraphicEditor() {
     setScenes,
     setCurrentDesign,
   } = useDesignEditorContext();
-  
+
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const fontInitial = useAppSelector((state) => state.newFont.font);
-    const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+  const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+useEffect(() => {
+    const fetchDataBanks = async () => {
+      try {
+        const data = {
+          idproduct: parseInt(id),
+          token: checkTokenCookie(),
+        };
 
+        const response = await axios.post(`${networkAPI}/listLayerAPI`, data);
+
+        if (response && response.data.code === 1) {
+          const promises = Object.entries(stateData).map(
+            async ([key, value]) => {
+              const itemToUpdate = response.data?.data.productDetail.forEach(
+                (item) => {
+                  // if (value.includes("http")) {
+                  //   if (itemToUpdate) {
+                  //     // Update the url property with the value
+                  //     item.content.banner = value;
+                  //   }
+                  // } else {
+                  //   if (itemToUpdate) {
+                  //     // Update the url property with the value
+                  //     item.content.text = value;
+                  //   }
+                  // }
+                }
+              );
+              console.log(response.data?.data.productDetail)
+              setDataRes(response.data?.data);
+            }
+          );
+          await Promise.all(promises);
+        } else {
+          setError(true);
+          setLoading(false);
+        }
+      } catch (error) {
+        toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
+          position: "top-left",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setError(true);
+        setLoading(false);
+      }
+    };
+    fetchDataBanks();
+  }, [])
   const handleLoadFont = async (x: any) => {
     if (editor) {
       let selectedFont;
@@ -316,13 +369,56 @@ function GraphicEditor() {
     return dataString;
   };
   const queryString = window.location.search;
-  
-  
+
   const urlParams = new URLSearchParams(queryString);
   // const token = urlParams.get("token");
   // const id = urlParams.get("id");
-    const { id, token } = location.state;
+  const { id, token, stateData } = location.state;
+  useEffect(() => {
+    console.log(stateData);
+  }, []);
 
+  //   useEffect(() => {
+  //   console.log("Received state:", stateData);
+
+  //   // Iterate over the key-value pairs of stateData
+  //   Object.entries(stateData).forEach(async ([key, value]) => {
+  //     console.log(`Key: ${key}, Value:`, value);
+
+  //     // Check if the value is a File
+  //     if (value instanceof File) {
+  //       console.log(`File value:`, value);
+
+  //       try {
+  //         // Assuming you have an API endpoint for file upload
+  //         const formData = new FormData();
+  //         formData.append('file', value);
+
+  //         const response = await axios.post('your/upload/api/endpoint', formData);
+
+  //         // Check if the API call was successful
+  //         if (response && response.data && response.data.url) {
+  //           console.log('API Response:', response.data);
+
+  //           // Replace the File value with the URL received from the API
+  //           // setStateData((prevData) => ({
+  //           //   ...prevData,
+  //           //   [key]: response.data.url,
+  //           // }));
+  //         } else {
+  //           console.error('Invalid API response format');
+  //         }
+  //       } catch (error) {
+  //         console.error('Error calling API:', error);
+  //         // Handle API call error
+  //       }
+  //     } else {
+  //       console.log(`Non-File value: ${value}`);
+  //     }
+
+  //     // Add more conditions or processing based on your keys
+  //   });
+  // }, [stateData]);
   if (token && id) {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));
@@ -450,22 +546,20 @@ function GraphicEditor() {
       dataString.scenes = scenesArray.filter((scene) => scene !== null);
     }
     dataString.scenes.forEach((data, index) => {
-  let shouldRemove = false; // Biến cờ để xác định xem có nên xóa hay không
+      let shouldRemove = false; // Biến cờ để xác định xem có nên xóa hay không
 
-  if (index > 0) {
-    if (data.layers[1].metadata.backgroundLayer) {
-      shouldRemove = true;
-    }
-  } else {
-    console.log(data + " vế phụ");
-  }
+      if (index > 0) {
+        if (data.layers[1].metadata.backgroundLayer) {
+          shouldRemove = true;
+        }
+      } else {
+        console.log(data + " vế phụ");
+      }
 
-  // Xóa phần tử nếu biến cờ là true
-  if (shouldRemove) {
-    data.layers.splice(1, 1);
-  }
-});
-
+      if (shouldRemove) {
+        data.layers.splice(1, 1);
+      }
+    });
 
     return dataString;
   };
@@ -523,39 +617,7 @@ function GraphicEditor() {
 
     fetchProUser();
   }, []);
-  useEffect(() => {
-    const fetchDataBanks = async () => {
-      try {
-        const data = {
-          idproduct: parseInt(id),
-          token: checkTokenCookie(),
-        };
 
-        const response = await axios.post(`${networkAPI}/listLayerAPI`, data);
-
-        if (response && response.data.code === 1) {
-          setDataRes(response.data.data);
-        } else {
-          setError(true);
-          setLoading(false);
-        }
-      } catch (error) {
-        toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setError(true);
-        setLoading(false);
-      }
-    };
-    fetchDataBanks();
-  }, []);
   useEffect(() => {
     setActiveSubMenu("FontSelector");
   }, []);
@@ -576,16 +638,13 @@ function GraphicEditor() {
             const dataSceneImport = dataScenes(dataRender);
             // await loadTemplate(dataRender);
             if (dataSceneImport) {
-              console.log(dataSceneImport)
+              console.log(dataSceneImport);
               await handleImportTemplate(dataSceneImport);
             }
             setTimeout(() => {
               setLoading(false);
 
-              setActiveSubMenu("Layers");
-              if (dataRes?.type === "user_series") {
-                // setModalUserSeries(true);
-              }
+              console.log(dataRes)
             }, 4000);
           }
         }
@@ -610,68 +669,42 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
-       
-        {(token === null || id === null || errorMessage) && (
+
+        {/* {
           <div
             style={{
-              position: "absolute",
               width: "100%",
               height: "100%",
               backgroundColor: "white",
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-              flexDirection: "column",
-            }}
-          >
-            <img
-              src="../../../assets/error.jpg"
-              alt="lỗi"
-              style={{ width: 300, height: 300, alignSelf: "center" }}
-            />
-            <h2
-              style={{
-                color: "black",
-                fontFamily: "Arial, Helvetica, sans-serif",
-              }}
-            >
-              Bạn không có quyền truy cập, hãy thử lại 
-            </h2>
-          </div>
-        )}
-        {loading && (
-          <div
-            style={{
-              width: "100%",
-              height: "100%",
-              backgroundColor: "rgba(0,0,0,0.9)",
               position: "absolute",
               zIndex: 20000000000,
             }}
           >
-            <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
-              <div className="ldio-4qpid53rus92">
-                <div></div>
-                <div>
+            {loading && (
+              <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+                <div className="ldio-4qpid53rus92">
                   <div></div>
+                  <div>
+                    <div></div>
+                  </div>
+                  <img
+                    style={{
+                      position: "absolute",
+                      top: "12%",
+                      left: "16%",
+                      width: 40,
+                      height: 40,
+                    }}
+                    src={ezpiclogo}
+                  />
                 </div>
-                <img
-                  style={{
-                    position: "absolute",
-                    top: "12%",
-                    left: "16%",
-                    width: 40,
-                    height: 40,
-                  }}
-                  src={ezpiclogo}
-                />
               </div>
-            </div>
+            )}
           </div>
-        )}
+        } */}
       </EditorContainer>
     </>
   );
 }
 
-export default GraphicEditor;
+export default GraphicPrinted;

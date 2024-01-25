@@ -156,21 +156,22 @@ function PurchaseForm() {
     const promises = Object.entries(filteredInputValues).map(async ([key, value]) => {
       if (value instanceof File) {
         try {
-          const formData = new FormData();
-          formData.append('idproduct', choosingItem.id);
-          formData.append('file', value);
-          formData.append('token', checkTokenCookie());
-          formData.append('page', 0);
+          // const formData = new FormData();
+          // formData.append('idproduct', choosingItem.id);
+          // formData.append('file', value);
+          // formData.append('token', checkTokenCookie());
+          // formData.append('page', 0);
 
-          const response = await axios.post(`${network}/addLayerImageAPI`, formData);
+          // const response = await axios.post(`${network}/addLayerImageAPI`, formData);
 
-          if (response && response.data) {
-            console.log('API Response:', response.data);
-            // 
-            filteredInputValues[key] = response.data?.data?.content?.banner
-          } else {
-            console.error('Invalid API response format');
-          }
+          // if (response && response.data) {
+          //   console.log('API Response:', response.data);
+          //   // 
+          //   filteredInputValues[key] = response.data?.data?.content?.banner
+          // } else {
+          //   console.error('Invalid API response format');
+          // }
+          filteredInputValues[key] = URL.createObjectURL(value);
         } catch (error) {
           console.error('Error calling API:', error);
         }
@@ -190,6 +191,7 @@ function PurchaseForm() {
         stateData: filteredInputValues,
       },
     });
+    // console.log(filteredInputValues)
   } catch (error) {
     console.error('Error during processing:', error);
   }

@@ -30,8 +30,11 @@ import ezpiclogo from "./EZPICS (converted)-03.png";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
+import { useNavigate } from "react-router-dom";
+
 function GraphicPrinted() {
   const location = useLocation();
+  const navigate = useNavigate();
   const dispatch = useAppDispatch();
   const [commonFonts, setCommonFonts] = React.useState<any[]>([]);
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
@@ -43,6 +46,7 @@ function GraphicPrinted() {
   const { setActiveSubMenu } = useAppContext();
   const typeUser = useAppSelector((state) => state.typeUser.typeUser);
   const [modalUserSeries, setModalUserSeries] = React.useState<boolean>(false);
+
   function checkTokenCookie() {
     var allCookies = document.cookie;
 
@@ -98,7 +102,15 @@ function GraphicPrinted() {
   const [isLoading, setIsLoading] = useState(true);
   const fontInitial = useAppSelector((state) => state.newFont.font);
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
-useEffect(() => {
+  const [imageData, setImageData] = React.useState("");
+  const downloadImage = async (fileName: any) => {
+    const link = document.createElement("a");
+    link.href = imageData;
+    link.download = fileName;
+    link.click();
+    setLoading(false);
+  };
+  useEffect(() => {
     const fetchDataBanks = async () => {
       try {
         const data = {
@@ -111,32 +123,55 @@ useEffect(() => {
         if (response && response.data.code === 1) {
           const promises = Object.entries(stateData).map(
             async ([key, value]) => {
-              const itemToUpdate = response.data?.data.productDetail.forEach(
-                (item) => {
-                  // if (value.includes("http")) {
-                  //   if (itemToUpdate) {
-                  //     // Update the url property with the value
-                  //     item.content.banner = value;
-                  //   }
-                  // } else {
-                  //   if (itemToUpdate) {
-                  //     // Update the url property with the value
-                  //     item.content.text = value;
-                  //   }
-                  // }
+              response.data?.data.productDetail.forEach(
+                (item: any, index: any) => {
+                  if (value.includes("http")) {
+                    if (item.content.variableLabel === key) {
+                      item.content.banner = value;
+                      console.log(item.content.banner);
+                    }
+                    console.log(value);
+                  } else {
+                    if (item.content.variableLabel === key) {
+                      item.content.text = value;
+                      console.log(item.content.banner);
+                    }
+                    console.log(value);
+                  }
+                  console.log(item);
                 }
               );
-              console.log(response.data?.data.productDetail)
-              setDataRes(response.data?.data);
             }
           );
           await Promise.all(promises);
+
+          const dataRender = dataFunction(
+            [...response.data?.data.productDetail],
+            response.data?.data?.width,
+            response.data?.data?.height,
+
+            response.data?.data?.thumn,
+            response.data?.data?.id
+          );
+          console.log(dataRender);
+          if (dataRender) {
+            const dataSceneImport = dataScenes(dataRender);
+            console.log(dataSceneImport);
+            // await loadTemplate(dataRender);
+            if (dataSceneImport) {
+              console.log(dataSceneImport);
+              await handleImportTemplate(dataSceneImport);
+              const template = editor.scene.exportToJSON();
+              const image = (await editor.renderer.render(template)) as string;
+              setImageData(image);
+            }
+          }
         } else {
           setError(true);
           setLoading(false);
         }
       } catch (error) {
-        toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
+        toast.error("Lỗi Render Layer", {
           position: "top-left",
           autoClose: 5000,
           hideProgressBar: false,
@@ -151,7 +186,7 @@ useEffect(() => {
       }
     };
     fetchDataBanks();
-  }, [])
+  }, []);
   const handleLoadFont = async (x: any) => {
     if (editor) {
       let selectedFont;
@@ -242,23 +277,31 @@ useEffect(() => {
     async (data: any) => {
       let template;
       // const { scenes: scns, ...design } = data;
-
       template = await loadGraphicTemplate(data);
-      //   @ts-ignore
+      // //   @ts-ignore
+      console.log(template);
       setScenes(template.scenes);
-      //   @ts-ignore
+      // //   @ts-ignore
       setCurrentDesign(template.design);
     },
     [editor]
   );
-  const dataFunction = (data: any) => {
+
+  const dataFunction = (
+    data: any,
+    width: any,
+    height: any,
+    srcBackground: any,
+    idBackground: any
+  ) => {
+    console.log(width, height);
     const dataString = {
-      frame: { initialWidth: data.width, initialHeight: data.height },
+      frame: { initialWidth: width, initialHeight: height },
       content: [] as any,
     };
 
-    if (data.productDetail) {
-      data.productDetail.forEach(async (detail: any, index: number) => {
+    if (data) {
+      data.forEach(async (detail: any, index: number) => {
         if (detail.content.type == "text") {
           let stringMerged;
           stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
@@ -268,8 +311,8 @@ useEffect(() => {
             angle: 0,
             stroke: null,
             strokeWidth: 0,
-            left: (detail.content.postion_left / 100) * data.width,
-            top: (detail.content.postion_top / 100) * data.height,
+            left: (detail.content.postion_left / 100) * width,
+            top: (detail.content.postion_top / 100) * height,
             opacity: detail.content.opacity,
             originX: "left",
             originY: "top",
@@ -286,15 +329,13 @@ useEffect(() => {
                 ? detail.content.gradient_color[0]?.color
                 : detail.content.color,
             width:
-              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
-              100,
+              (parseInt(detail.content.width.replace(/vw/g, "")) * width) / 100,
             // height: null,
             // fontFamily: detail.content.font,
             fontFamily: detail.content.font,
             fontSize:
-              (parseInt(detail.content.size.replace(/vw/g, "")) * data.width) /
-              100,
-            // (parseInt(detail.content.width, 10) / data.width) * 10000
+              (parseInt(detail.content.size.replace(/vw/g, "")) * width) / 100,
+            // (parseInt(detail.content.width, 10) / parseInt(width)) * 10000
             lineHeight: parseInt(detail.content.gianchu),
             text: stringMerged,
             textAlign: detail.content.text_align,
@@ -307,8 +348,8 @@ useEffect(() => {
               uppercase: detail.content.typeShowTextVariable,
               sort: detail.sort,
               page: detail.content.page,
-              srcBackground: data.thumn,
-              idBackground: data?.id,
+              srcBackground: srcBackground,
+              idBackground: idBackground,
             },
           });
         } else if (detail.content.type == "image") {
@@ -318,22 +359,22 @@ useEffect(() => {
             angle: 0,
             stroke: null,
             strokeWidth: 0,
-            left: (detail.content.postion_left / 100) * data.width,
-            top: (detail.content.postion_top / 100) * data.height,
+            left: (detail.content.postion_left / 100) * width,
+            top: (detail.content.postion_top / 100) * height,
             opacity: detail.content.opacity,
             originX: "left",
             originY: "top",
             scaleX:
-              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+              (parseInt(detail.content.width.replace(/vw/g, "")) * width) /
               100 /
               detail.content.naturalWidth,
             // img.naturalWidth,
             scaleY:
-              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+              (parseInt(detail.content.width.replace(/vw/g, "")) * width) /
               100 /
               detail.content.naturalWidth,
             // img.naturalWidth,
-            // data.width,
+            // parseInt(width),
             type: "StaticImage",
             flipX: detail.content.lat_anh,
             flipY: false,
@@ -358,8 +399,8 @@ useEffect(() => {
               brightness: 0,
               sort: detail.sort,
               page: detail.content.page,
-              srcBackground: data?.thumn,
-              idBackground: data?.id,
+              srcBackground: srcBackground,
+              idBackground: idBackground,
             },
           });
         }
@@ -497,7 +538,7 @@ useEffect(() => {
               // left: 0,
               // top: 0,
               // width: data.width,
-              // height: data.height,
+              // height: parseInt(height),
               opacity: 1,
               originX: "left",
               originY: "top",
@@ -587,36 +628,36 @@ useEffect(() => {
 
   let convertData;
   const currentListFont = useAppSelector((state) => state.newFont.font);
-  useEffect(() => {
-    const fetchProUser = async () => {
-      try {
-        const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
-          token: token,
-        });
-        if (response.data.data) {
-          dispatch(
-            REPLACE_PRO_USER(
-              response.data?.data?.member_pro === 1 ? true : false
-            )
-          );
-        }
-      } catch (error) {
-        toast.error("Lỗi lấy thông tin khách hàng", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setLoading(false);
-      }
-    };
+  // useEffect(() => {
+  //   const fetchProUser = async () => {
+  //     try {
+  //       const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
+  //         token: token,
+  //       });
+  //       if (response.data.data) {
+  //         dispatch(
+  //           REPLACE_PRO_USER(
+  //             response.data?.data?.member_pro === 1 ? true : false
+  //           )
+  //         );
+  //       }
+  //     } catch (error) {
+  //       toast.error("Lỗi lấy thông tin khách hàng", {
+  //         position: "top-left",
+  //         autoClose: 5000,
+  //         hideProgressBar: false,
+  //         closeOnClick: true,
+  //         pauseOnHover: true,
+  //         draggable: true,
+  //         progress: undefined,
+  //         theme: "dark",
+  //       });
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchProUser();
-  }, []);
+  //   fetchProUser();
+  // }, []);
 
   useEffect(() => {
     setActiveSubMenu("FontSelector");
@@ -626,37 +667,41 @@ useEffect(() => {
       setLoading(false);
     }
   });
-  useEffect(() => {
-    const fetchDataBanks = async () => {
-      setLoading(true);
-      try {
-        dispatch(REPLACE_TYPE_USER(dataRes?.type));
+  // useEffect(() => {
+  //   const fetchDataBanks = async () => {
+  //     setLoading(true);
+  //     try {
+  //       dispatch(REPLACE_TYPE_USER(dataRes?.type));
 
-        if (dataRes) {
-          const dataRender = dataFunction(dataRes);
-          if (dataRender) {
-            const dataSceneImport = dataScenes(dataRender);
-            // await loadTemplate(dataRender);
-            if (dataSceneImport) {
-              console.log(dataSceneImport);
-              await handleImportTemplate(dataSceneImport);
-            }
-            setTimeout(() => {
-              setLoading(false);
+  //       if (dataRes) {
+  //         const dataRender = dataFunction(dataRes);
+  //         if (dataRender) {
+  //           const dataSceneImport = dataScenes(dataRender);
+  //           // await loadTemplate(dataRender);
+  //           if (dataSceneImport) {
+  //             console.log(dataSceneImport);
+  //             await handleImportTemplate(dataSceneImport);
+  //           }
+  //           setTimeout(() => {
+  //             setLoading(false);
 
-              console.log(dataRes)
-            }, 4000);
-          }
-        }
+  //             console.log(dataRes);
+  //           }, 4000);
+  //         }
+  //       }
 
-        // //   @ts-ignore
-      } catch (error) {
-        setLoading(false);
-      }
-    };
-    fetchDataBanks();
-  }, [dataRes]);
+  //       // //   @ts-ignore
+  //     } catch (error) {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchDataBanks();
+  // }, [dataRes]);
+  const handleDownloadImage = async (e: any) => {
+    e.preventDefault();
 
+    downloadImage("preview.png");
+  };
   return (
     <>
       <EditorContainer>
@@ -670,7 +715,7 @@ useEffect(() => {
           </div>
         </div>
 
-        {/* {
+        {
           <div
             style={{
               width: "100%",
@@ -680,6 +725,76 @@ useEffect(() => {
               zIndex: 20000000000,
             }}
           >
+            <div
+              style={{
+                width: "100%",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                paddingTop: "2%",
+              }}
+            >
+              <button
+                onClick={(e) => handleDownloadImage(e)}
+                style={{
+                  marginLeft: "20px",
+                  height: 50,
+                  alignSelf: "center",
+                  textTransform: "none",
+                  color: "white",
+                  backgroundColor: "rgb(255, 66, 78)",
+                  position: "relative",
+                  border: 0,
+                  paddingLeft: 30,
+                  paddingRight: 30,
+                  fontSize: 17,
+                  fontWeight: "500",
+                  borderRadius: 5,
+                  cursor: "pointer"
+                }}
+              >
+                Tải ảnh
+              </button>
+              <button
+                onClick={() => navigate("/your-design/printed-form")}
+                style={{
+                  marginLeft: "20px",
+                  height: 50,
+                  alignSelf: "center",
+                  textTransform: "none",
+                  color: "white",
+                  backgroundColor: "rgb(255, 66, 78)",
+                  position: "relative",
+                  border: 0,
+                  paddingLeft: 30,
+                  paddingRight: 30,
+                  fontSize: 17,
+                  fontWeight: "500",
+                  borderRadius: 5,
+                                    cursor: "pointer"
+                }}
+              >
+                Nhập lại thông tin
+              </button>
+            </div>
+            <div
+              style={{
+                width: "100%",
+                height: "80%",
+                display: "flex",
+                alignSelf: "center",
+                justifyContent: "center",
+              }}
+            >
+              <img
+                style={{
+                  alignSelf: "center",
+                  width: "auto",
+                  height: "80%",
+                }}
+                src={imageData}
+              />
+            </div>
             {loading && (
               <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
                 <div className="ldio-4qpid53rus92">
@@ -701,7 +816,7 @@ useEffect(() => {
               </div>
             )}
           </div>
-        } */}
+        }
       </EditorContainer>
     </>
   );

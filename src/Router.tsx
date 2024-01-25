@@ -8,6 +8,8 @@ import PageSatisfied from "../src/pages/components/page-satisfied/PageSatisfied.
 import Login from "./pages/components/auth/login/Login.jsx";
 import SignUp from "./pages/components/auth/signup/SignUp.jsx";
 import RequireAuth from "./pages/components/auth/RequireAuth.jsx";
+import RequireLogin from "./pages/components/auth/RequireLogin.jsx";
+
 import InformationPersonal from "./pages/components/information/InformationPersonal.jsx";
 import Project from "./pages/components/project/Project.jsx";
 import Recommended from "./pages/components/project/components/Recommended.jsx";
@@ -47,7 +49,9 @@ function Router() {
   return (
     <div className="app">
       <Routes location={previousLocation || location}>
-        <Route path="/login" element={<Login />} />
+        <Route path="/login" element={<RequireLogin>
+                <Login />
+              </RequireLogin>} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/manage" element={<DesignEditor />} />
         <Route path="/design" element={<DesignEditor />} />

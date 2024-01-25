@@ -23,13 +23,113 @@ import Lighting from '../Panels/panelItems/setting.png'
 import { useAppDispatch, useAppSelector } from "~/hooks/hook"
 import useAppContext from "~/hooks/useAppContext"
 import { REPLACE_METADATA } from "~/store/slices/variable/variableSlice"
+import useDesignEditorContext from "~/hooks/useDesignEditorContext";
+import axios from 'axios'
+
 export default function () {
   const [state, setState] = React.useState({ isGroup: false, isMultiple: false })
   const activeObject = useActiveObject() as any
   const variables = useAppSelector(state => state.variable.metadataVariables)
-
+ const {
+    setDisplayPreview,
+    setScenes,
+    setCurrentDesign,
+    currentDesign,
+    scenes,
+  } = useDesignEditorContext();
   const editor = useEditor()
+  function findIndexById(arr: any, targetId: any) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i].id === targetId) {
+        return i;
+      }
+    }
+    return -1; // Trả về -1 nếu không tìm thấy
+  }
+  const parseGraphicJSON = () => {
+    const currentScene = editor.scene.exportToJSON();
 
+    console.log(currentScene);
+    const updatedScenes = scenes.map((scn) => {
+      if (scn.id === currentScene.id) {
+        return {
+          id: currentScene.id,
+          layers: currentScene.layers,
+          name: currentScene.name,
+        };
+      }
+      return {
+        id: scn.id,
+        layers: scn.layers,
+        name: scn.name,
+      };
+    });
+
+    if (currentDesign) {
+      const graphicTemplate: any = {
+        id: currentDesign.id,
+        type: "GRAPHIC",
+        name: currentDesign.name,
+        frame: currentDesign.frame,
+        scenes: updatedScenes,
+        metadata: {},
+        preview: "",
+      };
+
+      let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
+      console.log(resultIndex);
+    
+      return resultIndex;
+
+    } else {
+      console.log("NO CURRENT DESIGN");
+    }
+  };
+    const network = useAppSelector((state) => state.network.ipv4Address);
+
+  // const handleCopy = async () => {
+  //   // editor.objects.clone()
+  //   console.log(activeObject)
+  //   const res = await axios.post(
+  //     `${network}/addLayerImageAPI`,
+  //     {
+  //       idproduct: idProduct,
+  //       token: token,
+  //       imageUrl: file,
+  //       page: Number(parseGraphicJSON()),
+  //     },
+  //     {
+  //       headers: {
+  //         "Content-Type": "multipart/form-data",
+  //       },
+  //     }
+  //   );
+  //   console.log(res.data);
+  //   console.log(files);
+
+  //   if (res.data.code === 1) {
+  //     console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
+
+  //     const options = {
+  //       type: "StaticImage",
+  //       src: res.data.data.content.banner,
+  //       id: res.data.data.id,
+  //       metadata: {
+  //         brightness: 20,
+  //         naturalWidth: res.data.data.content.naturalWidth,
+  //         naturalHeight: res.data.data.content.naturalHeight,
+  //         initialHeight: res.data.data.content.height,
+  //         initialWidth: res.data.data.content.width,
+  //         lock: false,
+  //         variable: res.data.data.content.variable,
+  //         variableLabel: res.data.data.content.variableLabel,
+  //         page:  Number(res.data.data.content.page),
+  //       },
+  //     };
+  //     editor.objects.add(options);
+  //     setLoading(false);
+  //   }
+  // }
   React.useEffect(() => {
     if (activeObject) {
       console.log(activeObject)
@@ -73,7 +173,7 @@ export default function () {
         <Button
           onClick={() => {
             editor.objects.group()
-            setState({ ...state, isGroup: true })
+            // setState({ ...state, isGroup: true })
           }}
           size={SIZE.compact}
           kind={KIND.tertiary}
@@ -87,7 +187,8 @@ export default function () {
       <Opacity />
       <LockUnlock />
       <StatefulTooltip placement={PLACEMENT.bottom} showArrow={true} accessibilityType={"tooltip"} content="Nhân bản Layers đã chọn">
-        <Button onClick={() => editor.objects.clone()} size={SIZE.mini} kind={KIND.tertiary}>
+        <Button onClick={() => console.log('ok')} size={SIZE.mini} kind={KIND.tertiary}>
+          {/* handleCopy() */}
           <DuplicateIcon size={22} />
         </Button>
       </StatefulTooltip>

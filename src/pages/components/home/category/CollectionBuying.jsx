@@ -1002,7 +1002,7 @@ function CollectionBuying({
               <Skeleton style={{ height: 30, width: 100, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----deleted">
-                ₫{formatPrice(tinhGiaBanDau(dataProduct.price, discountFake))}
+                {formatPrice(tinhGiaBanDau(dataProduct.price, discountFake))}₫
               </p>
             )}
             {loading ? (
@@ -1011,7 +1011,7 @@ function CollectionBuying({
               <p className="category-wrapper__block---title----price-----newer">
                 {dataProduct.price === 0
                   ? "Miễn phí"
-                  : `₫ ${formatPrice(dataProduct.price)}`}
+                  : `${formatPrice(dataProduct.price)} ₫`}
               </p>
             )}
 
@@ -1019,7 +1019,7 @@ function CollectionBuying({
               <Skeleton style={{ height: 30, width: 100, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----discount">
-                {discountFake}% GIẢM
+                GIẢM {discountFake} % 
               </p>
             )}
           </div>

@@ -13,7 +13,17 @@ import TableRow from "@mui/material/TableRow";
 import Paper from "@mui/material/Paper";
 import confirmBuying from "./shopping-bag.png";
 import { toast, ToastContainer } from "react-toastify";
-
+import {
+  FacebookIcon,
+  FacebookMessengerIcon,
+  FacebookMessengerShareButton,
+  FacebookShareButton,
+  FacebookShareCount,
+  TwitterShareButton,
+  PinterestIcon,
+  PinterestShareButton,
+  PinterestShareCount,
+} from "react-share";
 import {
   BrowserRouter as Router,
   Route,
@@ -457,12 +467,14 @@ function Category({
           theme: "dark",
         });
         setTimeout(function () {
-          navigate(`/design`, { state: { id: response.data.product_id, token: checkTokenCookie() } });
+          navigate(`/design`, {
+            state: { id: response.data.product_id, token: checkTokenCookie() },
+          });
         }, 2000);
       } else {
         console.error("Invalid response format");
         setLoadingBuyingFunc(false);
-        setModalLogoutDevice(true)
+        setModalLogoutDevice(true);
       }
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -510,7 +522,10 @@ function Category({
 
               setTimeout(function () {
                 navigate(`/design`, {
-                  state: { id: response1.data.product_id, token: checkTokenCookie() },
+                  state: {
+                    id: response1.data.product_id,
+                    token: checkTokenCookie(),
+                  },
                 });
                 setCookie("user_login", response.data.data, 1);
                 dispatch(CHANGE_VALUE(response.data.data));
@@ -519,8 +534,7 @@ function Category({
           } else {
             console.error("Invalid response format");
             setLoadingBuyingLostFunc(false);
-                    setModalLogoutDevice(true)
-
+            setModalLogoutDevice(true);
           }
         } catch (error) {
           console.error("Error fetching data:", error.message);
@@ -575,7 +589,10 @@ function Category({
 
               setTimeout(function () {
                 navigate(`/design`, {
-                  state: { id: response1.data.product_id, token: checkTokenCookie() },
+                  state: {
+                    id: response1.data.product_id,
+                    token: checkTokenCookie(),
+                  },
                 });
                 setCookie("user_login", response.data.data, 1);
                 dispatch(CHANGE_VALUE(response.data.data));
@@ -585,9 +602,7 @@ function Category({
             console.error("Invalid response format");
             setLoadingBuyingLostFunc(false);
             setErrMessageMoney(true);
-                    setModalLogoutDevice(true)
-
-
+            setModalLogoutDevice(true);
           }
         } catch (error) {
           console.error("Error fetching data:", error.message);
@@ -713,30 +728,44 @@ function Category({
                 <p className="category-wrapper__block---title----price-----information------desc--------creator------name">
                   Chia sẻ:
                 </p>
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={fbicon}
-                />
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={twitter}
-                />
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={messicon}
-                />
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={pinterest}
-                />
+
+                <FacebookShareButton url={`https://ezpics.vn/category/${id}`}>
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={fbicon}
+                  />
+                </FacebookShareButton>
+
+                <TwitterShareButton url={`https://ezpics.vn/category/${id}`}>
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={twitter}
+                  />
+                </TwitterShareButton>
+
+                <FacebookMessengerShareButton
+                  // class="fb-xfbml-parse-ignore"
+                  url={`https://ezpics.vn/category/${id}`}
+                >
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={messicon}
+                  />
+                </FacebookMessengerShareButton>
+                <PinterestShareButton url={`https://ezpics.vn/category/${id}`} media={dataProduct.image}>
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={pinterest}
+                  />
+                </PinterestShareButton>
               </div>
               {/* <div></div> */}
               <div
@@ -781,7 +810,7 @@ function Category({
               <Skeleton style={{ height: 30, width: 100, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----deleted">
-                ₫{formatPrice(dataProduct.price)}
+                {formatPrice(dataProduct.price)} ₫
               </p>
             )}
             {loading ? (
@@ -791,7 +820,7 @@ function Category({
                 {dataProduct.sale_price === 0 ||
                 (dataProduct.free_pro && infoUser[0]?.member_pro)
                   ? "Miễn phí"
-                  : `₫ ${formatPrice(dataProduct.sale_price)}`}
+                  : `${formatPrice(dataProduct.sale_price)} ₫`}
               </p>
             )}
 
@@ -799,12 +828,13 @@ function Category({
               <Skeleton style={{ height: 30, width: 100, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----discount">
+                GIẢM{" "}
                 {!(dataProduct.free_pro && infoUser[0]?.member_pro)
                   ? Math.round(
                       100 - (dataProduct.sale_price / dataProduct.price) * 100
                     )
                   : "100"}
-                % GIẢM
+                %
               </p>
             )}
           </div>

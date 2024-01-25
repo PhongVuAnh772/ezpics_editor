@@ -318,7 +318,7 @@ const parseGraphicJSON = () => {
                   justifyContent: "flex-end",
                 }}
               >
-                {object.metadata.variable !== "" && (
+                {object?.metadata?.variable !== "" && (
                   // <Button
                   //   kind={KIND.tertiary}
                   //   size={SIZE.mini}

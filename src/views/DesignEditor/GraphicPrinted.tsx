@@ -746,7 +746,7 @@ function GraphicPrinted() {
               }}
             >
               <button
-                onClick={(e) => console.log(imageData)}
+                onClick={(e) => handleDownloadImage(e)}
                 style={{
                   marginLeft: "20px",
                   height: 50,

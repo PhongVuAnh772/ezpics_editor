@@ -46,6 +46,7 @@ function GraphicPrinted() {
   const { setActiveSubMenu } = useAppContext();
   const typeUser = useAppSelector((state) => state.typeUser.typeUser);
   const [modalUserSeries, setModalUserSeries] = React.useState<boolean>(false);
+  const editor = useEditor();
 
   function checkTokenCookie() {
     var allCookies = document.cookie;
@@ -110,7 +111,24 @@ function GraphicPrinted() {
     link.click();
     setLoading(false);
   };
+  const imageRender = React.useCallback(
+    async () => {
+      const template = editor.scene.exportToJSON();
+              const image = (await editor.renderer.render(template)) as string;
+              if (image !== null) {
+                setImageData(image);
+                  setLoading(false);
+                  console.log("không có lỗi" + image)
+                  console.log(typeof(image))
+              }
+              else {
+                await imageRender()
+              }
+    },
+    [editor]
+  );
   useEffect(() => {
+    setLoading(true);
     const fetchDataBanks = async () => {
       try {
         const data = {
@@ -161,9 +179,8 @@ function GraphicPrinted() {
             if (dataSceneImport) {
               console.log(dataSceneImport);
               await handleImportTemplate(dataSceneImport);
-              const template = editor.scene.exportToJSON();
-              const image = (await editor.renderer.render(template)) as string;
-              setImageData(image);
+              
+              await imageRender()
             }
           }
         } else {
@@ -251,7 +268,6 @@ function GraphicPrinted() {
     }
   };
 
-  const editor = useEditor();
   const [dataRes, setDataRes] = useState<any>(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
     const scenes = [];
@@ -662,11 +678,6 @@ function GraphicPrinted() {
   useEffect(() => {
     setActiveSubMenu("FontSelector");
   }, []);
-  useEffect(() => {
-    if (errorMessage) {
-      setLoading(false);
-    }
-  });
   // useEffect(() => {
   //   const fetchDataBanks = async () => {
   //     setLoading(true);
@@ -735,7 +746,7 @@ function GraphicPrinted() {
               }}
             >
               <button
-                onClick={(e) => handleDownloadImage(e)}
+                onClick={(e) => console.log(imageData)}
                 style={{
                   marginLeft: "20px",
                   height: 50,
@@ -795,8 +806,8 @@ function GraphicPrinted() {
                 src={imageData}
               />
             </div>
-            {loading && (
-              <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
+            {(
+              loading && <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
                 <div className="ldio-4qpid53rus92">
                   <div></div>
                   <div>

@@ -86,50 +86,50 @@ export default function () {
     }
   };
     const network = useAppSelector((state) => state.network.ipv4Address);
+    const idProduct = useAppSelector((state) => state.token.id);
+  const token = useAppSelector((state) => state.token.token);
 
-  // const handleCopy = async () => {
-  //   // editor.objects.clone()
-  //   console.log(activeObject)
-  //   const res = await axios.post(
-  //     `${network}/addLayerImageAPI`,
-  //     {
-  //       idproduct: idProduct,
-  //       token: token,
-  //       imageUrl: file,
-  //       page: Number(parseGraphicJSON()),
-  //     },
-  //     {
-  //       headers: {
-  //         "Content-Type": "multipart/form-data",
-  //       },
-  //     }
-  //   );
-  //   console.log(res.data);
-  //   console.log(files);
+  const handleCopy = async () => {
+    // editor.objects.clone()
+    console.log(activeObject)
+    const res = await axios.post(
+      `${network}/addLayerImageUrlAPI`,
+      {
+        idproduct: idProduct,
+        token: token,
+        // file: file,
+        page: Number(parseGraphicJSON()),
+      },
+      {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }
+    );
+    console.log(res.data);
 
-  //   if (res.data.code === 1) {
-  //     console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
+    if (res.data.code === 1) {
+      console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
 
-  //     const options = {
-  //       type: "StaticImage",
-  //       src: res.data.data.content.banner,
-  //       id: res.data.data.id,
-  //       metadata: {
-  //         brightness: 20,
-  //         naturalWidth: res.data.data.content.naturalWidth,
-  //         naturalHeight: res.data.data.content.naturalHeight,
-  //         initialHeight: res.data.data.content.height,
-  //         initialWidth: res.data.data.content.width,
-  //         lock: false,
-  //         variable: res.data.data.content.variable,
-  //         variableLabel: res.data.data.content.variableLabel,
-  //         page:  Number(res.data.data.content.page),
-  //       },
-  //     };
-  //     editor.objects.add(options);
-  //     setLoading(false);
-  //   }
-  // }
+      const options = {
+        type: "StaticImage",
+        src: res.data.data.content.banner,
+        id: res.data.data.id,
+        metadata: {
+          brightness: 20,
+          naturalWidth: res.data.data.content.naturalWidth,
+          naturalHeight: res.data.data.content.naturalHeight,
+          initialHeight: res.data.data.content.height,
+          initialWidth: res.data.data.content.width,
+          lock: false,
+          variable: res.data.data.content.variable,
+          variableLabel: res.data.data.content.variableLabel,
+          page:  Number(res.data.data.content.page),
+        },
+      };
+      editor.objects.add(options);
+    }
+  }
   React.useEffect(() => {
     if (activeObject) {
       console.log(activeObject)
@@ -187,8 +187,7 @@ export default function () {
       <Opacity />
       <LockUnlock />
       <StatefulTooltip placement={PLACEMENT.bottom} showArrow={true} accessibilityType={"tooltip"} content="Nhân bản Layers đã chọn">
-        <Button onClick={() => console.log('ok')} size={SIZE.mini} kind={KIND.tertiary}>
-          {/* handleCopy() */}
+        <Button onClick={() => handleCopy()} size={SIZE.mini} kind={KIND.tertiary}>
           <DuplicateIcon size={22} />
         </Button>
       </StatefulTooltip>

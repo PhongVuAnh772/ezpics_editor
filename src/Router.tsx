@@ -49,9 +49,10 @@ function Router() {
   return (
     <div className="app">
       <Routes location={previousLocation || location}>
-        <Route path="/login" element={<RequireLogin>
+        {/* <Route path="/login" element={<RequireLogin>
                 <Login />
-              </RequireLogin>} />
+              </RequireLogin>} /> */}
+              <Route path="/login" element={<Login /> } />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/manage" element={<DesignEditor />} />
         <Route path="/design" element={<DesignEditor />} />

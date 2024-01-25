@@ -96,7 +96,7 @@ function GraphicPrinted() {
     scenes,
     currentDesign,
     setScenes,
-    setCurrentDesign,
+    setCurrentDesign,setDisplayPreview
   } = useDesignEditorContext();
 
   const [templates, setTemplates] = useState<any[]>([]);
@@ -111,22 +111,33 @@ function GraphicPrinted() {
     link.click();
     setLoading(false);
   };
-  const imageRender = React.useCallback(
-    async () => {
-      const template = editor.scene.exportToJSON();
-              const image = (await editor.renderer.render(template)) as string;
-              if (image !== null) {
-                setImageData(image);
-                  setLoading(false);
-                  console.log("không có lỗi" + image)
-                  console.log(typeof(image))
-              }
-              else {
-                await imageRender()
-              }
-    },
-    [editor]
-  );
+
+  const imageRender = React.useCallback(async () => {
+  if (editor) {
+    const template = editor.scene.exportToJSON();
+
+    try {
+      const image = await new Promise((resolve, reject) => {
+        const rendered = editor.renderer.render(template);
+        if (rendered !== null) {
+          resolve(rendered as string);
+        } else {
+          reject("Error rendering image");
+        }
+      });
+
+      console.log("Rendered image:", image);
+      setImageData(image);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error rendering image:", error);
+      setLoading(false);
+    }
+  }
+}, [editor]);
+
+
+
   useEffect(() => {
     setLoading(true);
     const fetchDataBanks = async () => {
@@ -152,7 +163,8 @@ function GraphicPrinted() {
                   } else {
                     if (item.content.variableLabel === key) {
                       item.content.text = value;
-                      console.log(item.content.banner);
+                      console.log(item.content.text);
+                      console.log(value)
                     }
                     console.log(value);
                   }
@@ -179,94 +191,30 @@ function GraphicPrinted() {
             if (dataSceneImport) {
               console.log(dataSceneImport);
               await handleImportTemplate(dataSceneImport);
-              
-              await imageRender()
+              await imageRender();
+
+              if (imageData === null) {
+                              await fetchDataBanks()
+              }
             }
+
           }
+
         } else {
           setError(true);
           setLoading(false);
         }
+
       } catch (error) {
-        toast.error("Lỗi Render Layer", {
-          position: "top-left",
-          autoClose: 5000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
+        
         setError(true);
         setLoading(false);
       }
     };
     fetchDataBanks();
-  }, []);
-  const handleLoadFont = async (x: any) => {
-    if (editor) {
-      let selectedFont;
+  }, [imageData,editor]);
 
-      if (x.font) {
-        selectedFont = {
-          name: x.name,
-          url: x.font,
-        };
-      } else if (x.font_woff) {
-        selectedFont = {
-          name: x.name,
-          url: x.font_woff,
-        };
-      } else if (x.font_woff2) {
-        selectedFont = {
-          name: x.name,
-          url: x.font_woff2,
-        };
-      } else if (x.font_otf) {
-        selectedFont = {
-          name: x.name,
-          url: x.font_otf,
-        };
-      } else if (x.font_ttf) {
-        selectedFont = {
-          name: x.name,
-          url: x.font_ttf,
-        };
-      }
 
-      if (selectedFont) {
-        await loadFonts([selectedFont]);
-        // @ts-ignore
-      }
-    }
-  };
-
-  const getDataFontTextInitial = async (fontInitial: any) => {
-    //
-    setLoading(true);
-    try {
-      const response = await axios.post(`${networkAPI}/listFont`, {
-        token: token,
-      });
-      const data = response.data.data;
-      setCommonFonts(data);
-      dispatch(REPLACE_font(data));
-      if (response.data.data) {
-        response.data.data.map(function (font: any) {
-          if (font.name.includes(fontInitial)) {
-            setFontURLInitial(font.font_ttf);
-            return fontURLInitial;
-          }
-        });
-        setLoading(false);
-      }
-    } catch (error) {
-      console.error("Error fetching fonts:", error);
-      // setError(true
-      setLoading(false);
-    }
-  };
 
   const [dataRes, setDataRes] = useState<any>(null);
   const loadGraphicTemplate = async (payload: IDesign) => {
@@ -284,6 +232,7 @@ function GraphicPrinted() {
       const loadedScene = await loadVideoEditorAssets(scene);
 
       const preview = (await editor.renderer.render(loadedScene)) as string;
+      console.log(preview);
       scenes.push({ ...loadedScene, preview });
     }
 
@@ -425,57 +374,9 @@ function GraphicPrinted() {
 
     return dataString;
   };
-  const queryString = window.location.search;
 
-  const urlParams = new URLSearchParams(queryString);
-  // const token = urlParams.get("token");
-  // const id = urlParams.get("id");
   const { id, token, stateData } = location.state;
-  useEffect(() => {
-    console.log(stateData);
-  }, []);
 
-  //   useEffect(() => {
-  //   console.log("Received state:", stateData);
-
-  //   // Iterate over the key-value pairs of stateData
-  //   Object.entries(stateData).forEach(async ([key, value]) => {
-  //     console.log(`Key: ${key}, Value:`, value);
-
-  //     // Check if the value is a File
-  //     if (value instanceof File) {
-  //       console.log(`File value:`, value);
-
-  //       try {
-  //         // Assuming you have an API endpoint for file upload
-  //         const formData = new FormData();
-  //         formData.append('file', value);
-
-  //         const response = await axios.post('your/upload/api/endpoint', formData);
-
-  //         // Check if the API call was successful
-  //         if (response && response.data && response.data.url) {
-  //           console.log('API Response:', response.data);
-
-  //           // Replace the File value with the URL received from the API
-  //           // setStateData((prevData) => ({
-  //           //   ...prevData,
-  //           //   [key]: response.data.url,
-  //           // }));
-  //         } else {
-  //           console.error('Invalid API response format');
-  //         }
-  //       } catch (error) {
-  //         console.error('Error calling API:', error);
-  //         // Handle API call error
-  //       }
-  //     } else {
-  //       console.log(`Non-File value: ${value}`);
-  //     }
-
-  //     // Add more conditions or processing based on your keys
-  //   });
-  // }, [stateData]);
   if (token && id) {
     dispatch(REPLACE_TOKEN(token));
     dispatch(REPLACE_ID_USER(id));
@@ -622,62 +523,12 @@ function GraphicPrinted() {
   };
 
   const networkAPI = useAppSelector((state) => state.network.ipv4Address);
-  const loadTemplate = React.useCallback(
-    async (template: any) => {
-      if (editor) {
-        const fonts: any[] = [];
-        template.layers.forEach((object: any) => {
-          if (object.type === "StaticText") {
-            fonts.push({
-              name: object.fontFamily,
-              url: object.fontURL,
-              // options: { style: "normal", weight: 400 },
-            });
-          }
-        });
-        setCurrentScene({ ...template, id: currentScene?.id });
-      }
-    },
-    // editor,
-    [scenes, currentScene, currentDesign]
-  );
-
-  let convertData;
-  const currentListFont = useAppSelector((state) => state.newFont.font);
-  // useEffect(() => {
-  //   const fetchProUser = async () => {
-  //     try {
-  //       const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
-  //         token: token,
-  //       });
-  //       if (response.data.data) {
-  //         dispatch(
-  //           REPLACE_PRO_USER(
-  //             response.data?.data?.member_pro === 1 ? true : false
-  //           )
-  //         );
-  //       }
-  //     } catch (error) {
-  //       toast.error("Lỗi lấy thông tin khách hàng", {
-  //         position: "top-left",
-  //         autoClose: 5000,
-  //         hideProgressBar: false,
-  //         closeOnClick: true,
-  //         pauseOnHover: true,
-  //         draggable: true,
-  //         progress: undefined,
-  //         theme: "dark",
-  //       });
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchProUser();
-  // }, []);
+ 
 
   useEffect(() => {
     setActiveSubMenu("FontSelector");
   }, []);
+
   // useEffect(() => {
   //   const fetchDataBanks = async () => {
   //     setLoading(true);
@@ -713,6 +564,8 @@ function GraphicPrinted() {
 
     downloadImage("preview.png");
   };
+ 
+  
   return (
     <>
       <EditorContainer>
@@ -797,14 +650,15 @@ function GraphicPrinted() {
                 justifyContent: "center",
               }}
             >
-              <img
+              
+              {imageData ? <img
                 style={{
                   alignSelf: "center",
                   width: "auto",
                   height: "80%",
                 }}
                 src={imageData}
-              />
+              /> : "Chưa có ảnh, đợi tí"}
             </div>
             {(
               loading && <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">

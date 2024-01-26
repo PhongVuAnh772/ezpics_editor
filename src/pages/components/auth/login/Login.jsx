@@ -226,9 +226,13 @@ function Login() {
     const tokenResponseDecode = jwtDecode(tokenResponse.access_token)
     console.log(tokenResponse + "- tokenResponse")
     console.log(tokenResponseDecode + "- tokenResponseDecode")
+
     // const response = await axios.post(`${network}/checkLoginGoogleAPI`, {
     //   id_google: tokenResponseDecode
     // })
+  },
+  onError:  (errorResponse) => {
+    console.log(errorResponse)
   },
 });
   return (

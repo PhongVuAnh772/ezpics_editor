@@ -12,6 +12,7 @@ import {
 } from "../../../store/slice/authSlice";
 import "./SignUp.css";
 import { useGoogleLogin  } from '@react-oauth/google';
+import { jwtDecode } from "jwt-decode";
 
 function Login() {
   const dispatch = useDispatch();
@@ -137,6 +138,7 @@ function Login() {
     flex: 1,
     minHeight: "100vh", // Set minimum height to 100% of the viewport height
     width: "100%",
+    height:'100vh',
     backgroundSize: "contain",
   };
   const overlayStyle = {
@@ -220,7 +222,14 @@ function Login() {
       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
   };
   const handleGoogleLogin = useGoogleLogin({
-  onSuccess: tokenResponse => console.log(tokenResponse),
+  onSuccess: async (tokenResponse) => {
+    const tokenResponseDecode = jwtDecode(tokenResponse.access_token)
+    console.log(tokenResponse + "- tokenResponse")
+    console.log(tokenResponseDecode + "- tokenResponseDecode")
+    // const response = await axios.post(`${network}/checkLoginGoogleAPI`, {
+    //   id_google: tokenResponseDecode
+    // })
+  },
 });
   return (
     <div style={backgroundStyle}>

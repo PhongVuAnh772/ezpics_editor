@@ -5,8 +5,11 @@ import Container from "./Container";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { BrowserRouter, Routes, Route,useLocation } from "react-router-dom";
+import { GoogleOAuthProvider } from '@react-oauth/google';
 
 ReactDOM.createRoot(document.getElementById("root")!).render(
+  <GoogleOAuthProvider clientId="637094275991-2f53f5g9ls2d34r05ugshhugb57ng4rm.apps.googleusercontent.com">
+
   <Provider>
     <ToastContainer
       position="top-left"
@@ -24,5 +27,7 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
       <BrowserRouter><Router /></BrowserRouter>
       
     </Container>
+    
   </Provider>
+  </GoogleOAuthProvider>
 );

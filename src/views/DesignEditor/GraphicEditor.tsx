@@ -199,12 +199,12 @@ function GraphicEditor() {
     [editor]
   );
   const dataFunction = (data: any) => {
+
     const dataString = {
       frame: { initialWidth: data.width, initialHeight: data.height },
       content: [] as any,
     };
-
-    if (data.productDetail) {
+    if (data.productDetail && data.productDetail.length > 0) {
       data.productDetail.forEach(async (detail: any, index: number) => {
         if (detail.content.type == "text") {
           let stringMerged;
@@ -311,6 +311,10 @@ function GraphicEditor() {
           });
         }
       });
+    }
+    else {
+      console.log(data)
+      console.log('thiếu data')
     }
 
     return dataString;

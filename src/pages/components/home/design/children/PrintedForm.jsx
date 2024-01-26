@@ -378,6 +378,8 @@ function PurchaseForm() {
                   fontWeight: 600,
                   fontSize: "17px",
                   margin: 0,
+                  textOverflow:'ellipsis',
+                    overflow: "hidden"
                 }}
               >
                 {item.name}

@@ -213,6 +213,35 @@ function ForYouPage() {
 
     getData();
   }, []);
+  const [loadingPrinted,setLoadingPrinted] = useState(false)
+  const [dataPrintedList,setDataPrintedList] = useState([])
+  useEffect(() => {
+    setLoadingPrinted(true);
+
+    const getData = async () => {
+      try {
+        const response = await axios.post(
+          `${network}/listProductSeriesAPI`,
+          {
+            limit: 30,
+            page: 1
+          }
+        );
+        if (response && response.data) {
+          setDataPrintedList(response.data.data);
+          setLoadingPrinted(false);
+        } else {
+          console.error("Invalid response format");
+          setLoadingPrinted(false);
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+        setLoadingPrinted(false);
+      }
+    };
+
+    getData();
+  }, []);
   function checkTokenCookie() {
     // Lấy tất cả các cookies
     var allCookies = document.cookie;
@@ -488,6 +517,8 @@ function ForYouPage() {
                   marginBottom: 15,
                   marginTop: 10,
                   height: 70,
+                  textOverflow:'ellipsis',
+                    overflow: "hidden"
                 }}
               >
                 <h5
@@ -537,6 +568,204 @@ function ForYouPage() {
                 >
                   {formatPrice(item.price)}₫
                 </p>
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      )}
+      <div
+        style={{
+          width: "100%",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "space-between",
+        }}
+      >
+        <p style={{ fontSize: 18, fontWeight: "bold" }}>
+          Mẫu thiết kế in hàng loạt
+        </p>
+        <p style={{ fontSize: 15, fontWeight: "bold",color:'rgb(255, 66, 78)',cursor:'pointer' }} onClick={() => console.log('ok')}>Xem thêm</p>
+      </div>
+       
+      {loadingPrinted ? (
+        // Display loading skeletons while data is being fetched
+        <Carousel
+          swipeable={false}
+          responsive={responsive}
+          ssr={true}
+          infinite={true}
+          autoPlaySpeed={1000}
+          keyBoardControl={true}
+          transitionDuration={500}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {[...Array(4).keys()].map((index) => (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+                width: "100%",
+                justifyContent: "center",
+                borderRadius: 10,
+                marginLeft: "12px",
+              }}
+            >
+              <div
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "80%",
+                  height: 180,
+                  background: "#f0f0f0",
+                  justifyContent: "center",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                }}
+              >
+                <Skeleton height={180} />
+              </div>
+              <div
+                style={{
+                  minHeight: 70,
+                  maxWidth: "100%",
+                  color: "rgb(37, 38, 56)",
+                  fontWeight: 600,
+                  fontSize: "17px",
+                  margin: 0,
+                  marginBottom: 15,
+                  marginTop: 10,
+                }}
+              >
+                <Skeleton height={17} width="80%" />
+              </div>
+              <Skeleton height={15} width="100%" />
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "2em",
+                }}
+              >
+                <Skeleton height={17} width="50%" />
+                <Skeleton height={14} width="40%" />
+              </div>
+            </div>
+          ))}
+        </Carousel>
+      ) : (
+        // Display actual content once data is available
+
+        <Carousel
+          swipeable={false}
+          responsive={responsive}
+          ssr={true}
+          infinite={true}
+          autoPlaySpeed={1000}
+          keyBoardControl={true}
+          transitionDuration={500}
+          containerClass="carousel-container"
+          removeArrowOnDeviceType={["tablet", "mobile"]}
+        >
+          {dataPrintedList.map((item, index) => (
+            <div
+              key={index}
+              style={{
+                position: "relative",
+                width: "100%",
+                justifyContent: "center",
+                borderRadius: 10,
+                marginLeft: "12px",
+                cursor: "pointer",
+              }}
+              onClick={() => {
+                navigate(`/category/${item.id}`);
+                // console.log(item)
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }}
+            >
+              <div
+                className="carousel-item"
+                style={{
+                  position: "relative",
+                  width: "80%",
+                  height: 180,
+                  background: "#f0f0f0",
+                  justifyContent: "center",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                }}
+              >
+                <img
+                  src={item.image}
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+                {item.free_pro && (
+                  <div class="ribbon-1 left-ribbon">
+                    {/* <p style={{ color: "white", margin: 0, fontSize: 13 }}>Pro</p> */}
+                    <img
+                      alt=""
+                      src={crown}
+                      style={{
+                        width: 14,
+                        height: 15,
+                        transform: "translate(-0.3%) rotate(45deg)",
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+              <div
+                style={{
+                  maxWidth: "100%",
+                  color: "rgb(37, 38, 56)",
+                  fontFamily:
+                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                  fontWeight: 600,
+                  fontSize: "17px",
+                  margin: 0,
+                  marginBottom: 15,
+                  marginTop: 10,
+                  height: 70,
+                  textOverflow:'ellipsis',
+                    overflow: "hidden"
+                }}
+              >
+                <h5
+                  style={{
+                    color: "rgb(37, 38, 56)",
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontWeight: 600,
+                    fontSize: "17px",
+                    margin: 0,
+                    width: "80%",
+                  }}
+                >
+                  {item.name}
+                </h5>
+              </div>
+              <p style={{ margin: 0, color: "black", fontSize: 15 }}>
+                Đã tạo ảnh:  {item.export_image} lượt
+              </p>
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  height: "2em",
+                }}
+              >
+                <p
+                  style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
+                >
+                  Miễn phí
+                </p>
+                
               </div>
             </div>
           ))}
@@ -701,7 +930,9 @@ function ForYouPage() {
                   margin: 0,
                   marginBottom: 15,
                   marginTop: 10,
-                  height: 70,
+                  height: 80,
+                  textOverflow:'ellipsis',
+                    overflow: "hidden"
                 }}
               >
                 <h5
@@ -712,7 +943,10 @@ function ForYouPage() {
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
-                    width: "80%",
+                    width: "90%",
+                                        // textOverflow:'ellipsis',
+                                        // overflow: "hidden"
+
                   }}
                 >
                   {item.name}
@@ -886,7 +1120,9 @@ function ForYouPage() {
                   margin: 0,
                   marginBottom: 15,
                   marginTop: 10,
-                  height: 70,
+                  height: 80,
+                  textOverflow:'ellipsis',
+                    overflow: "hidden"
                 }}
               >
                 <h5
@@ -898,6 +1134,9 @@ function ForYouPage() {
                     fontSize: "17px",
                     margin: 0,
                     width: "80%",
+                                        textOverflow:'ellipsis',
+                                        overflow: "hidden"
+
                   }}
                 >
                   {item.name}
@@ -1087,7 +1326,10 @@ function ForYouPage() {
                   margin: 0,
                   marginBottom: 15,
                   marginTop: 10,
-                  height: 70,
+                  height: 80,
+                  textOverflow:'ellipsis',
+                    overflow: "hidden"
+                  
                 }}
               >
                 <h5
@@ -1099,7 +1341,8 @@ function ForYouPage() {
                     fontWeight: 600,
                     fontSize: "17px",
                     margin: 0,
-                    width: "80%",
+                    width: "90%",
+                    
                   }}
                 >
                   {item.name}
@@ -1289,6 +1532,8 @@ function ForYouPage() {
                     fontSize: "17px",
                     margin: 0,
                     marginTop: 10,
+                    textOverflow:'ellipsis',
+                    overflow: "hidden"
                   }}
                 >
                   <h5

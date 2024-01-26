@@ -49,19 +49,17 @@ function Router() {
   return (
     <div className="app">
       <Routes location={previousLocation || location}>
-        {/* <Route path="/login" element={<RequireLogin>
-                <Login />
-              </RequireLogin>} /> */}
-              <Route path="/login" element={<Login /> } />
+        <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
         <Route path="/manage" element={<DesignEditor />} />
         <Route path="/design" element={<DesignEditor />} />
-        <Route path="/printed-image" element={<DesignPrinted />} />
         <Route path="/download" element={<Download />} />
+        <Route path="/printed-image" element={<DesignPrinted />} />
         <Route path="/" element={<HomePage />}>
           <Route path="/" element={<Dashboard />}>
             <Route path="/" element={<ForYouPage />} />
             <Route path="/endow" element={<Endow />} />
+
             <Route path="/gift" element={<Gift />} />
             <Route path="/congratulation" element={<Congratulation />} />
             <Route path="/banner" element={<Banner />} />
@@ -69,6 +67,7 @@ function Router() {
             <Route path="/event" element={<Event />} />
             <Route path="/live-stream" element={<LiveStream />} />
           </Route>
+
           <Route path="/collection-all" element={<UnBuyingCollection />}>
             <Route index path="table-1" element={<Table />} />
             <Route path="table-2" element={<TableEcoin />} />

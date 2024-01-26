@@ -268,6 +268,8 @@ function PurchaseForm() {
                 fontSize: "17px",
                 margin: 0,
                 marginTop: 10,
+                textOverflow:'ellipsis',
+                    overflow: "hidden"
               }}
             >
               <h5

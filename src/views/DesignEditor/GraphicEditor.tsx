@@ -199,13 +199,13 @@ function GraphicEditor() {
     [editor]
   );
   const dataFunction = (data: any) => {
-
     const dataString = {
       frame: { initialWidth: data.width, initialHeight: data.height },
       content: [] as any,
     };
+
     if (data.productDetail) {
-        data.productDetail.forEach(async (detail: any, index: number) => {
+      data.productDetail.forEach(async (detail: any, index: number) => {
         if (detail.content.type == "text") {
           let stringMerged;
           stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
@@ -311,11 +311,6 @@ function GraphicEditor() {
           });
         }
       });
-      
-    }
-    else {
-      console.log(data)
-      console.log('thiếu data')
     }
 
     return dataString;

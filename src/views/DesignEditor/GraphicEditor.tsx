@@ -205,7 +205,6 @@ function GraphicEditor() {
       content: [] as any,
     };
     if (data.productDetail) {
-      if (data.productDetail.length > 0) {
         data.productDetail.forEach(async (detail: any, index: number) => {
         if (detail.content.type == "text") {
           let stringMerged;
@@ -312,7 +311,7 @@ function GraphicEditor() {
           });
         }
       });
-      }
+      
     }
     else {
       console.log(data)

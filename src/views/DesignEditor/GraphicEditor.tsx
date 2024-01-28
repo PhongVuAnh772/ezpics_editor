@@ -312,7 +312,7 @@ function GraphicEditor() {
         }
       });
     }
-
+    
     return dataString;
   };
   const queryString = window.location.search;

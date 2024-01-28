@@ -16,6 +16,8 @@ import Recommended from "./pages/components/project/components/Recommended.jsx";
 import Dashboard from "./pages/components/home/Dashboard/Dashboard.jsx";
 import ForYouPage from "./pages/components/home/ForYou/ForYouPage.jsx";
 import Category from "./pages/components/home/category/Category.jsx";
+import SpecifiedPrint from "./pages/components/home/category/SpecifiedPrint.jsx";
+
 import CollectionBuying from "./pages/components/home/category/CollectionBuying.jsx";
 
 import CategoryCollection from "./pages/components/home/category-collection/CategoryCollection.jsx";
@@ -97,6 +99,8 @@ function Router() {
           />
 
           <Route path="/category/:id" element={<Category />} />
+                    <Route path="/specified-printed/:id" element={<SpecifiedPrint />} />
+
           <Route path="/collection-buying/:id" element={<CollectionBuying />} />
 
           <Route

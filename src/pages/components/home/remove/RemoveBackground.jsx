@@ -211,6 +211,8 @@ function RemoveBackground() {
               config
             );
             if (response && response.data) {
+                            setLoading(false);
+
               setUploadedImageUrl(response.data.linkOnline); // Set the uploaded image URL
 
               setModalExtend(true);

@@ -31,6 +31,8 @@ import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import { useNavigate } from "react-router-dom";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
 
 function GraphicPrinted() {
   const location = useLocation();
@@ -658,9 +660,10 @@ function GraphicPrinted() {
                   height: "80%",
                 }}
                 src={imageData}
-              /> : "Chưa có ảnh, đợi tí"}
+              /> : <Skeleton height={400} width={400} style={{marginTop: 50}}/>}
+              
             </div>
-            {(
+            {/* {(
               loading && <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
                 <div className="ldio-4qpid53rus92">
                   <div></div>
@@ -679,7 +682,7 @@ function GraphicPrinted() {
                   />
                 </div>
               </div>
-            )}
+            )} */}
           </div>
         }
       </EditorContainer>

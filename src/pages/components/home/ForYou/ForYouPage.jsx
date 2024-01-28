@@ -679,7 +679,7 @@ function ForYouPage() {
                 cursor: "pointer",
               }}
               onClick={() => {
-                navigate(`/category/${item.id}`);
+                navigate(`/specified-printed/${item.id}`);
                 // console.log(item)
                 window.scrollTo({ top: 0, behavior: "smooth" });
               }}

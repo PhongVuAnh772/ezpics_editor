@@ -148,38 +148,39 @@ function PurchaseForm() {
     }
   }
   const handleClickNavigate = async () => {
-  try {
-    const filteredInputValues = Object.fromEntries(
-      Object.entries(inputValues).filter(([_, value]) => value !== "")
-    );
+    try {
+      const filteredInputValues = Object.fromEntries(
+        Object.entries(inputValues).filter(([_, value]) => value !== "")
+      );
 
-    const promises = Object.entries(filteredInputValues).map(async ([key, value]) => {
-      if (value instanceof File) {
-        try {
-          
-          filteredInputValues[key] = URL.createObjectURL(value);
-        } catch (error) {
-          console.error('Error calling API:', error);
+      const promises = Object.entries(filteredInputValues).map(
+        async ([key, value]) => {
+          if (value instanceof File) {
+            try {
+              filteredInputValues[key] = URL.createObjectURL(value);
+            } catch (error) {
+              console.error("Error calling API:", error);
+            }
+          }
         }
-      } 
-    });
+      );
 
-    // Wait for all promises to resolve
-    await Promise.all(promises);
+      // Wait for all promises to resolve
+      await Promise.all(promises);
 
-    // Now, all values in filteredInputValues are updated, you can navigate
-    navigate(`/printed-image`, {
-      state: {
-        id: choosingItem.id,
-        token: checkTokenCookie(),
-        stateData: filteredInputValues,
-      },
-    });
-    // console.log(filteredInputValues)
-  } catch (error) {
-    console.error('Error during processing:', error);
-  }
-};
+      // Now, all values in filteredInputValues are updated, you can navigate
+      navigate(`/printed-image`, {
+        state: {
+          id: choosingItem.id,
+          token: checkTokenCookie(),
+          stateData: filteredInputValues,
+        },
+      });
+      // console.log(filteredInputValues)
+    } catch (error) {
+      console.error("Error during processing:", error);
+    }
+  };
 
   useEffect(() => {
     setLoading(true);
@@ -263,8 +264,6 @@ function PurchaseForm() {
                 opacity: 0,
                 transition: "opacity 0.3s",
                 zIndex: 1000,
-                display: "flex",
-                flexDirection: "row",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.opacity = 1;
@@ -273,12 +272,71 @@ function PurchaseForm() {
                 e.currentTarget.style.opacity = 0;
               }}
             >
-              <Button
-                onClick={(e) => {
-                  navigate(`/design`, {
-                    state: { id: item.id, token: checkTokenCookie() },
-                  });
-                  // setModalCreate(true)
+              <div style={{ display: "flex", flexDirection: "row" }}>
+                <Button
+                  onClick={(e) => {
+                    navigate(`/design`, {
+                      state: { id: item.id, token: checkTokenCookie() },
+                    });
+                    // setModalCreate(true)
+                  }}
+                  style={{
+                    color: "black",
+                    margin: "5px",
+                    cursor: "pointer",
+                    borderRadius: 10,
+                    backgroundColor: "white",
+                                      width: 80,
+
+                  }}
+                >
+                  <img
+                    src={editIcon}
+                    alt=""
+                    style={{ width: 20, height: 20 }}
+                  />
+                  <p
+                    style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}
+                  >
+                    Sửa
+                  </p>
+                </Button>
+                <Button
+                  onClick={(e) => {
+                    setModalCreate(true);
+                    setDeletingItemId(item.id);
+                  }}
+                  style={{
+                    color: "black",
+                    margin: "5px",
+                    cursor: "pointer",
+                    borderRadius: 10,
+                    backgroundColor: "white",
+                                      width: 80,
+
+                  }}
+                >
+                  <img
+                    src={deleteIcon}
+                    alt=""
+                    style={{ width: 20, height: 20 }}
+                  />
+                  <p
+                    style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}
+                  >
+                    Xóa
+                  </p>
+                </Button>
+              </div>
+              {item.status === 2 && <Button
+                // onClick={(e) => handlePrintFormCalling(item)}
+                onClick={() => {
+                  navigate(`/specified-printed/${item.id}`)
+                  // console.log(item)
+                  window.scrollTo({
+                      top: 0,
+                      behavior: "smooth", // This makes the scroll animation smooth
+                    });
                 }}
                 style={{
                   color: "black",
@@ -286,50 +344,14 @@ function PurchaseForm() {
                   cursor: "pointer",
                   borderRadius: 10,
                   backgroundColor: "white",
-                }}
-              >
-                <img src={editIcon} alt="" style={{ width: 20, height: 20 }} />
-                <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
-                  Sửa
-                </p>
-              </Button>
-              <Button
-                onClick={(e) => {
-                  setModalCreate(true);
-                  setDeletingItemId(item.id);
-                }}
-                style={{
-                  color: "black",
-                  margin: "5px",
-                  cursor: "pointer",
-                  borderRadius: 10,
-                  backgroundColor: "white",
-                }}
-              >
-                <img
-                  src={deleteIcon}
-                  alt=""
-                  style={{ width: 20, height: 20 }}
-                />
-                <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
-                  Xóa
-                </p>
-              </Button>
-              <Button
-                onClick={(e) => handlePrintFormCalling(item)}
-                style={{
-                  color: "black",
-                  margin: "5px",
-                  cursor: "pointer",
-                  borderRadius: 10,
-                  backgroundColor: "white",
+
                 }}
               >
                 <img src={printer} alt="" style={{ width: 20, height: 20 }} />
                 <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
                   In ảnh
                 </p>
-              </Button>
+              </Button>}
             </div>
             <div
               style={{
@@ -340,10 +362,7 @@ function PurchaseForm() {
                 overflow: "hidden",
                 cursor: "pointer",
               }}
-              onClick={() => {
-                navigate(`/category/${item.id}`);
-                window.scrollTo({ top: 0, behavior: "smooth" });
-              }}
+              
             >
               <img
                 src={item.image}
@@ -378,8 +397,8 @@ function PurchaseForm() {
                   fontWeight: 600,
                   fontSize: "17px",
                   margin: 0,
-                  textOverflow:'ellipsis',
-                    overflow: "hidden"
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
                 }}
               >
                 {item.name}

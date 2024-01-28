@@ -15,6 +15,7 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import warning from "./warning.png";
 import { toast } from "react-toastify";
+import watchingIcon from './binoculars.png'
 
 function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
@@ -178,7 +179,6 @@ function PurchaseForm() {
                 transition: "opacity 0.3s",
                 zIndex: 1000,
                 display: "flex",
-                flexDirection: "row",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.opacity = 1;
@@ -187,7 +187,7 @@ function PurchaseForm() {
                 e.currentTarget.style.opacity = 0;
               }}
             >
-              <Button
+              <div style={{display:'flex',flexDirection:'row'}}><Button
                 onClick={(e) => {
                   navigate(`/design`, {
                     state: { id: item.id, token: checkTokenCookie() },
@@ -229,7 +229,31 @@ function PurchaseForm() {
                 <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
                   Xóa
                 </p>
-              </Button>
+              </Button></div>
+              {item.status === 2 && <Button
+                onClick={(e) => {
+                  navigate(`/category/${item.id}`)
+                  // console.log(item)
+                }}
+                style={{
+                  color: "black",
+                  margin: "5px",
+                  cursor: "pointer",
+                  borderRadius: 10,
+                  backgroundColor: "white",
+                  width: 80,marginTop: 10
+                }}
+              >
+                <img
+                  src={watchingIcon}
+                  alt=""
+                  style={{ width: 20, height: 20 }}
+                />
+                <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
+                  Xem
+                </p>
+              </Button>}
+              
             </div>
             <div
               style={{

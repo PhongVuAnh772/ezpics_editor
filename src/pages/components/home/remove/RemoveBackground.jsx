@@ -10,6 +10,7 @@ import {
   useOutletContext,
   Navigate,
 } from "react-router-dom";
+import './loadingFavorite.css'
 import Modal from "@mui/material/Modal";
 import axios from 'axios'
 import videoRemoving2 from "./background-remover1.mp4";
@@ -95,7 +96,6 @@ function RemoveBackground() {
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "30%",
     bgcolor: "background.paper",
     boxShadow: 24,
     display: "flex",
@@ -105,7 +105,7 @@ function RemoveBackground() {
     paddingLeft: "15px",
     paddingRight: "15px",
     borderRadius: "15px",
-    height: "45%",
+    paddingBottom: "15px",
   };
   const open = useOutletContext();
   const drawerWidth = 240;
@@ -182,12 +182,14 @@ function RemoveBackground() {
       console.log('Không tìm thấy cookie có tên là "token"');
     }
   }
+  const [loadingRemove,setLoadingRemove] = useState(false)
   const handleDropFiles = async (files) => {
+    setLoadingRemove(true)
     const file = files[0];
     const url = URL.createObjectURL(file);
     if (!/(png|jpg|jpeg)$/i.test(file.name)) {
       toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
-      setLoading(false);
+    setLoadingRemove(false)
 
       return;
     } else {
@@ -211,7 +213,7 @@ function RemoveBackground() {
               config
             );
             if (response && response.data) {
-                            setLoading(false);
+    setLoadingRemove(false)
 
               setUploadedImageUrl(response.data.linkOnline); // Set the uploaded image URL
 
@@ -222,7 +224,7 @@ function RemoveBackground() {
 
   return (
     <>
-      <Main open={open} style={{ paddingTop: "3%", flex: 1 }}>
+      <Main style={{ paddingTop: "3%", flex: 1 }}>
         <div className="header">
           <div className="header-text">
             <h1 className="header-text__content">Xóa hình ảnh</h1>
@@ -249,7 +251,8 @@ function RemoveBackground() {
               }}
               onClick={() => handleRemoveBackground()}
             >
-              Dùng thử ngay
+              {loadingRemove ? <span class="loaderNewPrinting"></span> : "Dùng thử ngay"}
+              {/* <span class="loaderNewPrinting"></span> */}
             </Button>
             <input
               onChange={handleFileInput}
@@ -581,7 +584,9 @@ function RemoveBackground() {
               style={{ cursor: "pointer" }}
               onClick={(e) => handleRemoveBackgroundSecond(e)}
             >
-              Bắt đầu bây giờ
+              
+                            {loadingRemove ? <span class="loaderNewPrinting"></span> : "Bắt đầu bây giờ"}
+
             </button>
           </div>
           <img
@@ -664,8 +669,7 @@ function RemoveBackground() {
                 marginRight: 10,
               }}
               onClick={() => {
-                setModalBuyingFree(false);
-                setDeletingItemId(null);
+                setModalExtend(false);
               }}
             >
               Vào Editor

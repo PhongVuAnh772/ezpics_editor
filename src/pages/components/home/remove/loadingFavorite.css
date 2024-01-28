@@ -1,0 +1,119 @@
+.loader-favorite {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: rgb(255, 66, 78);
+    box-sizing: border-box;
+    animation: animloader 2s linear infinite;
+}
+
+.loaderNew {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: white;
+    box-sizing: border-box;
+    animation: animloader 2s linear infinite;
+}
+
+.loaderNewPrinting {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: white;
+    box-sizing: border-box;
+    animation: animloader 2s linear infinite;
+}
+
+@keyframes animloader {
+    0% {
+        box-shadow: 14px 0 0 -2px, 38px 0 0 -2px, -14px 0 0 -2px, -38px 0 0 -2px;
+    }
+
+    25% {
+        box-shadow: 14px 0 0 -2px, 38px 0 0 -2px, -14px 0 0 -2px, -38px 0 0 2px;
+    }
+
+    50% {
+        box-shadow: 14px 0 0 -2px, 38px 0 0 -2px, -14px 0 0 2px, -38px 0 0 -2px;
+    }
+
+    75% {
+        box-shadow: 14px 0 0 2px, 38px 0 0 -2px, -14px 0 0 -2px, -38px 0 0 -2px;
+    }
+
+    100% {
+        box-shadow: 14px 0 0 -2px, 38px 0 0 2px, -14px 0 0 -2px, -38px 0 0 -2px;
+    }
+}
+
+
+
+.container form {
+    display: flex;
+    flex-wrap: wrap;
+    flex-direction: row;
+    align-content: flex-end;
+    justify-content: flex-end;
+    padding-top: 3%;
+}
+
+.container label {
+    display: flex;
+    cursor: pointer;
+    font-weight: 500;
+    position: relative;
+    overflow: hidden;
+    margin-bottom: 0.375em;
+}
+
+.container label input {
+    position: absolute;
+    left: -9999px;
+}
+
+.container label input:checked+span {
+    /* background-color: rgb(255, 66, 78); */
+    color: rgb(255, 66, 78);
+}
+
+.container label input:checked+span:before {
+    box-shadow: inset 0 0 0 0.4375em rgb(255, 66, 78);
+    ;
+}
+
+.container label span {
+    display: flex;
+    align-items: center;
+    padding: 0.25em 0.75em 0.25em 0.2em;
+    border-radius: 99em;
+    transition: 0.25s ease;
+    color: black;
+}
+
+.container label span:hover {
+}
+
+.container label span:before {
+    display: flex;
+    flex-shrink: 0;
+    content: "";
+    background-color: #fff;
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    margin-right: 0.375em;
+    transition: 0.25s ease;
+    box-shadow: inset 0 0 0 0.125em black;
+}
+
+

@@ -623,7 +623,7 @@ function GraphicPrinted() {
                 Tải ảnh
               </button>
               <button
-                onClick={() => navigate("/your-design/printed-form")}
+                onClick={() => navigate(-1)}
                 style={{
                   marginLeft: "20px",
                   height: 50,

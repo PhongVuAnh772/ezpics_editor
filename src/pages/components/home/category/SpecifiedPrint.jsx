@@ -271,7 +271,7 @@ function SpecifiedPrint({
     setChoosingItem(item);
     const response = await axios.post(`${network}/listLayerAPI`, {
       idproduct: id,
-      token: checkTokenCookie(),
+      // token: checkTokenCookie(),
     });
     if (response && response.data && response.data.code === 1) {
       const dataPrint = response.data.data.productDetail.filter((layer) => {
@@ -908,7 +908,7 @@ function SpecifiedPrint({
               </p>
             )}
 
-            {loading ? (
+            {/* {loading ? (
               <Skeleton style={{ height: 30, width: 100, marginLeft: 10 }} />
             ) : (
               <p className="category-wrapper__block---title----price-----discount">
@@ -920,7 +920,7 @@ function SpecifiedPrint({
                   : "100"}
                 %
               </p>
-            )}
+            )} */}
           </div>
           {loading ? (
             <Skeleton
@@ -929,28 +929,23 @@ function SpecifiedPrint({
           ) : (
             <div
               className="category-wrapper__block---title----price-----information------desc"
-              style={{ marginBottom: "10px", paddingTop: "10px" }}
+              style={{ paddingTop: "10px" }}
             >
               <div className="category-wrapper__block---title----price-----information------desc--------title">
                 <p className="category-wrapper__block---title----price-----information------desc--------title-------content">
-                  Khuyến mãi
+                  Lượt tạo :
                 </p>
               </div>
               <p
-                className="category-wrapper__block---title----price-----discount"
+                // className="category-wrapper__block---title----price-----information------desc--------title-------content"
                 style={{
-                  backgroundColor: "rgb(255, 245, 241)",
-                  border: "1px solid rgb(255, 66, 78)",
-                  color: "rgb(255, 66, 78)",
+                  color: "black",
+                  padding: 0,
+                  margin: 0,
+                  fontWeight: "500",
                 }}
               >
-                GIẢM MẠNH{" "}
-                {!(dataProduct.free_pro && infoUser[0]?.member_pro)
-                  ? Math.round(
-                      100 - (dataProduct.sale_price / dataProduct.price) * 100
-                    )
-                  : "100"}
-                %
+                {dataProduct?.export_image} lượt
               </p>
             </div>
           )}

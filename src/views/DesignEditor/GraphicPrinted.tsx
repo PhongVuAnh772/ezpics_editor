@@ -588,7 +588,8 @@ function GraphicPrinted() {
               height: "100%",
               backgroundColor: "white",
               position: "absolute",
-              zIndex: 20000000000,
+              zIndex: 200,
+              paddingTop: "6%", paddingRight: "2%", paddingLeft: "18%"
             }}
           >
             <div

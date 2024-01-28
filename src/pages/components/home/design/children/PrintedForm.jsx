@@ -328,7 +328,7 @@ function PurchaseForm() {
                   </p>
                 </Button>
               </div>
-              {item.status === 2 && <Button
+              {item.status ===1 && <Button
                 // onClick={(e) => handlePrintFormCalling(item)}
                 onClick={() => {
                   navigate(`/specified-printed/${item.id}`)

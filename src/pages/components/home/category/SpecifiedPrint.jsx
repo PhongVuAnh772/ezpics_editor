@@ -397,8 +397,6 @@ function SpecifiedPrint({
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
-    width: "30%",
-    height: "40%",
     bgcolor: "background.paper",
     boxShadow: 24,
     display: "flex",
@@ -407,6 +405,7 @@ function SpecifiedPrint({
     paddingTop: "15px",
 
     borderRadius: "15px",
+    paddingBottom :"15px"
   };
   const [newids, setId] = React.useState(location.state?.id);
 

@@ -56,9 +56,11 @@ function Router() {
         <Route path="/manage" element={<DesignEditor />} />
         <Route path="/design" element={<DesignEditor />} />
         <Route path="/download" element={<Download />} />
-        <Route path="/printed-image" element={<DesignPrinted />} />
         <Route path="/" element={<HomePage />}>
+                              <Route path="/printed-image" element={<DesignPrinted />} />
+
           <Route path="/" element={<Dashboard />}>
+
             <Route path="/" element={<ForYouPage />} />
             <Route path="/endow" element={<Endow />} />
 

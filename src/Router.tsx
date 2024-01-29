@@ -53,17 +53,15 @@ function Router() {
       <Routes location={previousLocation || location}>
         <Route path="/login" element={<Login />} />
         <Route path="/sign-up" element={<SignUp />} />
-        <Route path="/manage" element={<DesignEditor />} />
+        {/* <Route path="/manage" element={<DesignEditor />} /> */}
         <Route path="/design" element={<DesignEditor />} />
         <Route path="/download" element={<Download />} />
         <Route path="/" element={<HomePage />}>
-                              <Route path="/printed-image" element={<DesignPrinted />} />
+          <Route path="/printed-image" element={<DesignPrinted />} />
 
           <Route path="/" element={<Dashboard />}>
-
             <Route path="/" element={<ForYouPage />} />
             <Route path="/endow" element={<Endow />} />
-
             <Route path="/gift" element={<Gift />} />
             <Route path="/congratulation" element={<Congratulation />} />
             <Route path="/banner" element={<Banner />} />
@@ -101,7 +99,7 @@ function Router() {
           />
 
           <Route path="/category/:id" element={<Category />} />
-                    <Route path="/specified-printed/:id" element={<SpecifiedPrint />} />
+          <Route path="/specified-printed/:id" element={<SpecifiedPrint />} />
 
           <Route path="/collection-buying/:id" element={<CollectionBuying />} />
 

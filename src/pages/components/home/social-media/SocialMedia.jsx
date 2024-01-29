@@ -29,6 +29,8 @@ function SocialMedia() {
   const [modalLogoutDevice,setModalLogoutDevice] = React.useState(false);
     const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
   const [dataEndow,setDataEndow] = React.useState([])
+    const infoUser = useSelector((state) => state.user.info);
+
 useEffect(() => {
     const getData = async () => {
       setLoadingCategory(true)
@@ -531,13 +533,10 @@ const handleLogoutDevice = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -731,13 +730,10 @@ const handleLogoutDevice = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -931,13 +927,10 @@ const handleLogoutDevice = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -1133,13 +1126,10 @@ const handleLogoutDevice = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{

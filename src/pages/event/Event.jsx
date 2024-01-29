@@ -102,6 +102,8 @@ function Event() {
 
     borderRadius: "15px",
   };
+    const infoUser = useSelector((state) => state.user.info);
+
   const itemsPerRow = 4; // Number of items per row
   const handleDelete = async () => {
     setLoadingBuyingFunc(true);
@@ -536,13 +538,10 @@ function Event() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                 {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -736,13 +735,10 @@ function Event() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -936,13 +932,10 @@ function Event() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -1138,13 +1131,10 @@ function Event() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{

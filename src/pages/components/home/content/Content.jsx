@@ -636,10 +636,12 @@ export default function PersistentDrawerLeft() {
     }
   };
   const handleCreateCustomPrint = async (e) => {
-    e.preventDefault();
-    setLoadingButtonModalCreate(true);
+  e.preventDefault();
+  setLoadingButtonModalCreate(true);
 
-    if (selectedFilePrint) {
+  if (selectedFilePrint) {
+    // Check if the selected file is an image
+    if (selectedFilePrint.type.startsWith('image/')) {
       const response = await axios.post(
         `${network}/createProductAPI`,
         {
@@ -671,12 +673,15 @@ export default function PersistentDrawerLeft() {
         }, 1500);
       }
     } else {
-      console.log("Không thấy ảnh");
+      console.log("The selected file is not an image");
+            toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
+
     }
-    // 23979
-    // console.log(response.data);
-    // console.log(selectedFile)
-  };
+  } else {
+    console.log("Không thấy ảnh");
+  }
+};
+
   const handleCreateCustom = async (e) => {
     e.preventDefault();
     setLoadingButtonModalCreate(true);

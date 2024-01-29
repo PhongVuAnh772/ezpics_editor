@@ -33,6 +33,8 @@ function ForYouPage() {
     dispatch(DELETE_ALL_VALUES());
     setModalLogoutDevice(false);
   };
+    const infoUser = useSelector((state) => state.user.info);
+
   const styleModalBuyingFree = {
     position: "absolute",
     top: "50%",
@@ -548,13 +550,10 @@ function ForYouPage() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -1361,13 +1360,10 @@ function ForYouPage() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{

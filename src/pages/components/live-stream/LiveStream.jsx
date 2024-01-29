@@ -29,6 +29,7 @@ function LiveStream() {
   const [modalLogoutDevice,setModalLogoutDevice] = React.useState(false);
   const [dataEndow,setDataEndow] = React.useState([])
     const [loadingCategory,setLoadingCategory] = React.useState(false)
+  const infoUser = useSelector((state) => state.user.info);
 
 useEffect(() => {
                 setLoadingCategory(true)
@@ -539,13 +540,10 @@ const handleCloseModalFree = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -739,13 +737,10 @@ const handleCloseModalFree = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                  {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -939,13 +934,10 @@ const handleCloseModalFree = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                 {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -1141,13 +1133,10 @@ const handleCloseModalFree = () => {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                  {item.free_pro
-                    ? "Miễn phí"
-                    : `${
-                        item.sale_price
-                          ? `${formatPrice(item.sale_price)} ₫`
-                          : "Miễn phí"
-                      }`}
+                 {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{

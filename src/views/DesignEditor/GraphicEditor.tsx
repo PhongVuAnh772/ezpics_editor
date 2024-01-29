@@ -204,7 +204,6 @@ function GraphicEditor() {
       content: [] as any,
     };
 
-    if (data.productDetail) {
       data.productDetail.forEach(async (detail: any, index: number) => {
         if (detail.content.type == "text") {
           let stringMerged;
@@ -311,7 +310,7 @@ function GraphicEditor() {
           });
         }
       });
-    }
+    
     
     return dataString;
   };
@@ -328,7 +327,7 @@ function GraphicEditor() {
     dispatch(REPLACE_ID_USER(id));
   }
 
-  const dataScenes = (data: any) => {
+  const dataScenes = (data: any,dataBackground: any) => {
     const dataString = {
       id: uuidv4(),
       name: "Untitled Design",
@@ -341,8 +340,12 @@ function GraphicEditor() {
       preview: "",
       type: "GRAPHIC",
     };
+    console.log(data.content[0]?.metadata?.idBackground)
+        console.log(data)
 
-    if (data) {
+    if (data?.content && data.content.length > 0) {
+            console.log("chạy vào 1")
+
       const maxPage = Math.max(
         ...data.content.map(
           (detail: any) => (detail.metadata.page as number) || 0
@@ -449,6 +452,108 @@ function GraphicEditor() {
 
       dataString.scenes = scenesArray.filter((scene) => scene !== null);
     }
+    else {
+      console.log("chạy vào đây")
+      const maxPage2 = 0
+
+      const scenesArray2: any[] = Array.from(
+        { length: maxPage2 + 1 },
+        (_, index) => {
+          const matchingDetails2 = data.content.filter(
+            (detail: any) => Number(detail.metadata.page) === index
+          );
+
+          const updatedMatchingDetails2 = [
+            {
+              id: "background",
+              name: "Initial Frame",
+              angle: 0,
+              stroke: null,
+              strokeWidth: 0,
+              opacity: 1,
+              originX: "left",
+              originY: "top",
+              scaleX: 1,
+              scaleY: 1,
+              type: "Background",
+              flipX: false,
+              flipY: false,
+              skewX: 0,
+              skewY: 0,
+              visible: true,
+              shadow: {
+                color: "#fcfcfc",
+                blur: 4,
+                offsetX: 0,
+                offsetY: 0,
+                affectStroke: false,
+                nonScaling: false,
+              },
+              fill: "#FFFFFF",
+              metadata: {
+                lock: false,
+                variable: "",
+                variableLabel: "",
+                uppercase: "",
+                sort: 0,
+              },
+            },
+            {
+              id: dataBackground.id,
+              name: "StaticImage",
+              angle: 0,
+              stroke: null,
+              strokeWidth: 0,
+              // left: 0,
+              // top: 0,
+              // width: data.width,
+              // height: data.height,
+              opacity: 1,
+              originX: "left",
+              originY: "top",
+              scaleX: 1,
+              scaleY: 1,
+              type: "StaticImage",
+              flipX: false,
+              flipY: false,
+              brightness: 0,
+              borderRadius: 0,
+              skewX: 0,
+              skewY: 0,
+              visible: true,
+              shadow: null,
+              src: dataBackground.thumn,
+              cropX: 0,
+              cropY: 0,
+              image_svg: "",
+              metadata: {
+                backgroundLayer: false,
+                brightness: 20,
+                naturalWidth: 0,
+                naturalHeight: 0,
+                initialHeight: 0,
+                initialWidth: 0,
+                lock: false,
+                variable: "",
+                variableLabel: "",
+                sort: 0,
+                page: 0,
+              },
+            },
+            // ...matchingDetails2,
+          ];
+
+          return  {
+                id: uuidv4(),
+                layers: updatedMatchingDetails2,
+                name: "Untitled Design",
+              }
+           
+        }
+      );
+
+      dataString.scenes = scenesArray2.filter((scene) => scene !== null);
+    }
     dataString.scenes.forEach((data, index) => {
   let shouldRemove = false; // Biến cờ để xác định xem có nên xóa hay không
 
@@ -540,7 +645,7 @@ function GraphicEditor() {
           setLoading(false);
         }
       } catch (error) {
-        toast.error("Không định danh được người dùng, hãy đăng nhập lại", {
+        toast.error("Không lấy được dữ liệu, hãy thử lại", {
           position: "top-left",
           autoClose: 5000,
           hideProgressBar: false,
@@ -573,8 +678,7 @@ function GraphicEditor() {
         if (dataRes) {
           const dataRender = dataFunction(dataRes);
           if (dataRender) {
-            const dataSceneImport = dataScenes(dataRender);
-            // await loadTemplate(dataRender);
+            const dataSceneImport = dataScenes(dataRender,dataRes);
             if (dataSceneImport) {
               console.log(dataSceneImport)
               await handleImportTemplate(dataSceneImport);

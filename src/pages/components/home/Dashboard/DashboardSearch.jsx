@@ -153,6 +153,7 @@ function DashboardSearch() {
   const navigate = useNavigate();
 
   const [dataCategorySearch, setDataCategorySearch] = React.useState([]);
+  const infoUser = useSelector((state) => state.user.info);
 
   const [state, setState] = React.useState({
     left: false,
@@ -355,7 +356,7 @@ function DashboardSearch() {
   };
   return (
     <>
-      <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "18%" }}>
+      <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%" }}>
         <Box>
           <div
             style={{
@@ -556,13 +557,17 @@ function DashboardSearch() {
                           fontSize: 17,
                         }}
                       >
-                        {item.free_pro
+                        {/* {item.free_pro
                           ? "Miễn phí"
                           : `${
                               item.sale_price
                                 ? `${formatPrice(item.sale_price)} ₫`
                                 : "Miễn phí"
-                            }`}
+                            }`} */}
+                            {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
                       </p>
                       <p
                         style={{

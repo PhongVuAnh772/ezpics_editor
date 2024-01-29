@@ -337,7 +337,7 @@ function Dashboard() {
   };
   return (
     <>
-      <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "18%" }}>
+      <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%" }}>
         {/* <DrawerHeader /> */}
 
         <Box

@@ -176,7 +176,7 @@ function UnBuyingCollection() {
     rows.push(rowItems);
   }
   return (
-    <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "18%" }}>
+    <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%" }}>
       <Box
         style={{
           background: "rgb(231, 246, 246)",

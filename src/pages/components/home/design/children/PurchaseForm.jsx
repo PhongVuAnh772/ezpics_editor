@@ -119,7 +119,7 @@ function PurchaseForm() {
         const response = await axios.post(`${network}/getMyProductAPI`, {
           type: "user_edit",
           token: checkTokenCookie(),
-          limit: 30,
+          limit: 100,
         });
         if (response && response.data && response.data.listData) {
           setData(response.data.listData);

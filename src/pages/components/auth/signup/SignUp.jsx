@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import bg from "./background.jpg";
 import logo from "./ezpics-logo.png";
 import "./SignUp.css";
@@ -23,11 +23,12 @@ function SignUp() {
     background: "rgba(0, 0, 0, 0.4)", // Adjust the alpha value for the darkness
   };
   const blockStyle = {
-    padding: "20px",
     backgroundColor: "white",
-    width: 300,
+    width: '80%',
     borderRadius: "8px",
-    marginTop: "3%",
+    marginTop: "0%",
+    display:'flex',
+    flexDirection: 'row'
   };
   const header = {
     width: "100%",
@@ -92,7 +93,30 @@ function SignUp() {
     color: "rgb(255, 255, 255)",
     fontFamily:
       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+      alignSelf:'center',
   };
+  const blockStyleSignUp = {
+    width: '50%',
+    height:'100%',
+   
+
+  }
+  const blockStyleSignUpSecond = {
+    width: '50%',
+    height:'100%',
+      padding: 20
+
+  }
+  const [phone,setPhone] = useState('')
+  const [email,setEmail] = useState('')
+    const [password,setPassword] = useState('')
+  const [rePassword,setRePassword] = useState('')
+  const [affsource,setAffsource] = useState('')
+
+  //   const [phone,setPhone] = useState('')
+  // const [phone,setPhone] = useState('')
+  // const [phone,setPhone] = useState('')
+  // const [phone,setPhone] = useState('')
 
   return (
     <div style={backgroundStyle}>
@@ -108,11 +132,10 @@ function SignUp() {
           </div>
           <div style={content}>
             <div style={blockStyle}>
-              <div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
-              <p style={textDescription}>
-                Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại Việt
-                Nam
-              </p>
+              <div style={blockStyleSignUp}><img src={bg} alt="" style={{width: 'auto',height: '100%',    backgroundSize: "cover",
+}}/></div>
+              <div style={blockStyleSignUpSecond}><div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
+              
               <p
                 style={{
                   fontFamily:
@@ -128,9 +151,29 @@ function SignUp() {
                 id="fname"
                 name="firstname"
                 placeholder="Số điện thoại"
+                value={phone}
+                onChange={setPhone}
+              />
+              <p
+                style={{
+                  fontFamily:
+                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 500,
+                }}
+              >
+                Email
+              </p>
+              <input
+                type="text"
+                id="fname"
+                name="firstname"
+                placeholder="Email"
+                value={email}
+                onChange={setEmail}
               />
 
-              <p
+              <div style={{display: 'flex', flexDirection: 'row',width: '100%'}}><div style={{width: '50%'}}><p
                 style={{
                   fontFamily:
                     "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
@@ -146,10 +189,50 @@ function SignUp() {
                 id="lname"
                 name="lastname"
                 placeholder="Mật khẩu"
+                style={{width: '90%'}}
+                value={password}
+                onChange={setPassword}
+              /></div>
+              <div style={{width: '50%'}}><p
+                style={{
+                  fontFamily:
+                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  paddingTop: 5,
+                }}
+              >
+                Nhập lại mật khẩu
+              </p>
+              <input
+                type="password"
+                id="lname"
+                name="lastname"
+                placeholder="Mật khẩu"
+                value={rePassword}
+                onChange={setRePassword}
+              /></div></div>
+              <p
+                style={{
+                  fontFamily:
+                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  paddingTop: 5,
+                }}
+              >
+                Mã giới thiệu
+              </p>
+              <input
+                type="password"
+                id="lname"
+                name="lastname"
+                placeholder="Mã giới thiệu"
+                value={affsource}
+                onChange={setAffsource}
               />
               <button style={submitButton}>Đăng nhập</button>
-              <p style={{ fontSize: "12px", textAlign: "center" }}>Hoặc</p>
-              <button style={googleButton}>Đăng nhập bằng Google</button>
+              
               <p
                 style={{
                   fontFamily:
@@ -160,7 +243,7 @@ function SignUp() {
                 }}
               >
                 Bạn đã có tài khoản ? - <a href="/login">Đăng nhập</a>
-              </p>
+              </p></div>
             </div>
           </div>
         </div>

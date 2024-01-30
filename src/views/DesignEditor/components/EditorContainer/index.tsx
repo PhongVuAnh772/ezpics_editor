@@ -284,15 +284,8 @@ export default function ({ children }: { children: React.ReactNode }) {
   //     }
   //   }
   // };
-  useEffect(() => {
-    window.addEventListener("beforeunload", alertUser);
-    // window.addEventListener("keydown", handleKeyDown);
-    // window.addEventListener("keyup", handleKeyUp);
+  
 
-    return () => {
-      window.removeEventListener("beforeunload", alertUser);
-    };
-  }, []);
   const alertUser = (e: any) => {
     e.preventDefault();
     // return e.returnValue = "Are you sure you want to leave the page?";

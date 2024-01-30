@@ -38,7 +38,7 @@ export const loadFonts = (fonts: FontItem[]) => {
           if (uniqueFont) {
             // console.log(uniqueFont)
             //  && uniqueFont.name
-            document.fonts.add(uniqueFont)
+            // document.fonts.add(uniqueFont)
             resolve(true)
           }
           

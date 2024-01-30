@@ -1,8 +1,146 @@
-import React,{useState} from "react";
+import React, { useState, useEffect } from "react";
 import bg from "./background.jpg";
 import logo from "./ezpics-logo.png";
 import "./SignUp.css";
+import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import img4 from "./img4.jpg";
+import { toast } from "react-toastify";
+import './Content.css'
+import {
+  CHANGE_VALUE_TOKEN,
+  CHANGE_STATUS_AUTH,
+} from "../../../store/slice/authSlice";
+import axios from "axios";
 function SignUp() {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  function getCookie(name) {
+    var dc = document.cookie;
+    var prefix = name + "=";
+    var begin = dc.indexOf("; " + prefix);
+    if (begin == -1) {
+      begin = dc.indexOf(prefix);
+      if (begin != 0) return null;
+    } else {
+      begin += 2;
+      var end = document.cookie.indexOf(";", begin);
+      if (end == -1) {
+        end = dc.length;
+      }
+    }
+
+    return decodeURI(dc.substring(begin + prefix.length, end));
+  }
+  function checkAvailableLogin() {
+    var token = getCookie("token");
+    var userLogin = getCookie("user_login");
+
+    if (userLogin == null) {
+      return false;
+    } else {
+      return true;
+    }
+  }
+  useEffect(() => {
+    const authentication = checkAvailableLogin();
+    if (authentication) {
+      navigate("/", { replace: true });
+    }
+  }, []);
+    const network = useSelector((state) => state.ipv4.network);
+const isValidPhoneNumber = (phoneNumber) => {
+  return /^\d{10}$/.test(phoneNumber);
+};
+const [loading,setLoading] = useState(false)
+var expirationHours = 3;
+function setCookie(name, value, expirationHours) {
+    var date = new Date();
+    value = JSON.stringify(value);
+    date.setTime(date.getTime() + expirationHours * 60 * 60 * 1000); // Chuyển đổi giờ thành mili giây
+    var expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + ";" + expires + ";path=/";
+  }
+  const handleSignUp = async (e) => {
+    e.preventDefault();
+    if (
+      name !== "" &&
+      isValidPhoneNumber(phone) &&
+      password !== "" &&
+      rePassword !== "" &&
+      affsource !== ""
+    ) {
+      
+      if (password === rePassword) {const response = await axios.post(`${network}/saveRegisterMemberAPI`, {
+        name: name,
+        phone: phone,
+        password: password,
+        password_again: rePassword,
+        affsource: affsource,
+        token_device: "web",
+      });
+      if (response && response.data && response.data.code === 0) {
+        dispatch(CHANGE_STATUS_AUTH(true));
+        dispatch(CHANGE_VALUE_TOKEN(response.data?.info_member?.token_web));
+        setCookie(
+          "token",
+          response.data?.info_member?.token_web,
+          expirationHours
+        );
+        setCookie("user_login", response.data?.info_member, expirationHours);
+        setLoading(false);
+        const auth = checkAvailableLogin();
+        if (auth) {
+          toast.success("Đăng ký thành công !! 🦄", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+          navigate("/", { replace: true });
+        }
+        
+      } else if (response && response.data && response.data.code === 3) {
+        toast.error("Số điện thoại đã tồn tại !! 🦄", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      }}
+      else {
+        toast.error("Mật khẩu nhập lại không đúng !! 🦄", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      }
+    } else {
+      toast.error("Có trường bị thiếu hoặc nhập sai, hãy thử lại !! 🦄", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+    }
+  };
   const backgroundStyle = {
     display: "flex",
     flexDirection: "column", // Use column direction to make flex: 1 work for height
@@ -24,16 +162,14 @@ function SignUp() {
   };
   const blockStyle = {
     backgroundColor: "white",
-    width: '80%',
+    width: "90%",
     borderRadius: "8px",
     marginTop: "0%",
-    display:'flex',
-    flexDirection: 'row'
+    display: "flex",
+    flexDirection: "row",
   };
   const header = {
     width: "100%",
-    paddingBottom: "10px",
-    paddingTop: "10px",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
@@ -93,25 +229,25 @@ function SignUp() {
     color: "rgb(255, 255, 255)",
     fontFamily:
       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-      alignSelf:'center',
+    alignSelf: "center",
   };
   const blockStyleSignUp = {
-    width: '50%',
-    height:'100%',
-   
-
-  }
+    width: "50%",
+    minHeight: "100%",
+  };
   const blockStyleSignUpSecond = {
-    width: '50%',
-    height:'100%',
-      padding: 20
+    width: "50%",
+    height: "100%",
+    paddingLeft: 10,
+    paddingRight: 10,
+  };
+  const [phone, setPhone] = useState("");
+  const [name, setName] = useState("");
 
-  }
-  const [phone,setPhone] = useState('')
-  const [email,setEmail] = useState('')
-    const [password,setPassword] = useState('')
-  const [rePassword,setRePassword] = useState('')
-  const [affsource,setAffsource] = useState('')
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [rePassword, setRePassword] = useState("");
+  const [affsource, setAffsource] = useState("");
 
   //   const [phone,setPhone] = useState('')
   // const [phone,setPhone] = useState('')
@@ -132,118 +268,165 @@ function SignUp() {
           </div>
           <div style={content}>
             <div style={blockStyle}>
-              <div style={blockStyleSignUp}><img src={bg} alt="" style={{width: 'auto',height: '100%',    backgroundSize: "cover",
-}}/></div>
-              <div style={blockStyleSignUpSecond}><div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
-              
-              <p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                }}
-              >
-                Số điện thoại
-              </p>
-              <input
-                type="text"
-                id="fname"
-                name="firstname"
-                placeholder="Số điện thoại"
-                value={phone}
-                onChange={setPhone}
-              />
-              <p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                }}
-              >
-                Email
-              </p>
-              <input
-                type="text"
-                id="fname"
-                name="firstname"
-                placeholder="Email"
-                value={email}
-                onChange={setEmail}
-              />
+              <div style={blockStyleSignUp}>
+                <img
+                  src={img4}
+                  alt=""
+                  style={{
+                    width: "auto",
+                    minHeight: "100%",
+                    objectFit: "contain",
+                  }}
+                />
+              </div>
+              <div style={blockStyleSignUpSecond}>
+                <div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
+                <p
+                  style={{
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Tên
+                </p>
+                <input
+                  type="text"
+                  id="fname"
+                  name="firstname"
+                  placeholder="Tên"
+                  autoFocus
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                />
+                <p
+                  style={{
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Số điện thoại
+                </p>
+                <input
+                  type="text"
+                  id="fname"
+                  name="firstname"
+                  placeholder="Số điện thoại"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                />
+                <p
+                  style={{
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                  }}
+                >
+                  Email
+                </p>
+                <input
+                  type="text"
+                  id="fname"
+                  name="firstname"
+                  placeholder="Email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                />
 
-              <div style={{display: 'flex', flexDirection: 'row',width: '100%'}}><div style={{width: '50%'}}><p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: 5,
-                }}
-              >
-                Mật khẩu
-              </p>
-              <input
-                type="password"
-                id="lname"
-                name="lastname"
-                placeholder="Mật khẩu"
-                style={{width: '90%'}}
-                value={password}
-                onChange={setPassword}
-              /></div>
-              <div style={{width: '50%'}}><p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: 5,
-                }}
-              >
-                Nhập lại mật khẩu
-              </p>
-              <input
-                type="password"
-                id="lname"
-                name="lastname"
-                placeholder="Mật khẩu"
-                value={rePassword}
-                onChange={setRePassword}
-              /></div></div>
-              <p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: 5,
-                }}
-              >
-                Mã giới thiệu
-              </p>
-              <input
-                type="password"
-                id="lname"
-                name="lastname"
-                placeholder="Mã giới thiệu"
-                value={affsource}
-                onChange={setAffsource}
-              />
-              <button style={submitButton}>Đăng nhập</button>
-              
-              <p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "13px",
-                  paddingTop: 5,
-                  textAlign: "center",
-                }}
-              >
-                Bạn đã có tài khoản ? - <a href="/login">Đăng nhập</a>
-              </p></div>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "row",
+                    width: "100%",
+                  }}
+                >
+                  <div style={{ width: "50%" }}>
+                    <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        paddingTop: 5,
+                      }}
+                    >
+                      Mật khẩu
+                    </p>
+                    <input
+                      type="password"
+                      id="lname"
+                      name="lastname"
+                      placeholder="Mật khẩu"
+                      style={{ width: "90%" }}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                    />
+                  </div>
+                  <div style={{ width: "50%" }}>
+                    <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        paddingTop: 5,
+                      }}
+                    >
+                      Nhập lại mật khẩu
+                    </p>
+                    <input
+                      type="password"
+                      id="lname"
+                      name="lastname"
+                      placeholder="Mật khẩu"
+                      value={rePassword}
+                      onChange={(e) => setRePassword(e.target.value)}
+                    />
+                  </div>
+                </div>
+                <div style={{ display: "flex", flexDirection: "row" }}>
+                  {" "}
+                  <p
+                    style={{
+                      fontFamily:
+                        "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                      fontSize: "15px",
+                      fontWeight: 500,
+                      paddingTop: 5,
+                    }}
+                  >
+                    Mã giới thiệu
+                  </p>
+                  <input
+                    type="password"
+                    id="lname"
+                    name="lastname"
+                    placeholder="Mã giới thiệu"
+                    value={affsource}
+                    onChange={(e) => setAffsource(e.target.value)}
+                  />
+                </div>
+                <button style={submitButton} onClick={(e) => handleSignUp(e)}>
+                  
+                  {loading ? <span class="loaderNew"></span> :'Đăng ký'}
+                </button>
+
+                <p
+                  style={{
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontSize: "13px",
+                    paddingTop: 5,
+                    textAlign: "center",
+                  }}
+                >
+                  Bạn đã có tài khoản ? - <a href="/login">Đăng nhập</a>
+                </p>
+              </div>
             </div>
           </div>
         </div>

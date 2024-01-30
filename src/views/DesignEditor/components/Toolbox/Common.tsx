@@ -3,7 +3,7 @@ import { Button, SIZE, KIND } from "baseui/button"
 import { Checkbox } from "baseui/checkbox"
 import { Block } from "baseui/block"
 import { StatefulTooltip, PLACEMENT } from "baseui/tooltip"
-import { useActiveObject, useEditor } from "@layerhub-io/react"
+import { useActiveObject, useEditor,useObjects } from "@layerhub-io/react"
 import { StatefulPopover } from "baseui/popover"
 import DeleteIcon from "~/components/Icons/Delete"
 import UnlockedIcon from "~/components/Icons/Unlocked"
@@ -25,8 +25,11 @@ import useAppContext from "~/hooks/useAppContext"
 import { REPLACE_METADATA } from "~/store/slices/variable/variableSlice"
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
 import axios from 'axios'
+import { ILayer } from "@layerhub-io/types";
+import { toast } from "react-toastify";
 
 export default function () {
+  
   const [state, setState] = React.useState({ isGroup: false, isMultiple: false })
   const activeObject = useActiveObject() as any
   const variables = useAppSelector(state => state.variable.metadataVariables)
@@ -204,6 +207,8 @@ function CommonLayers() {
   const editor = useEditor()
   const [checked, setChecked] = React.useState(true)
   const activeObject = useActiveObject()
+    const [layerObjects, setLayerObjects] = React.useState<any[]>([]);
+        const objects = useObjects() as ILayer[];
 
   React.useEffect(() => {
     if (activeObject) {
@@ -211,6 +216,25 @@ function CommonLayers() {
       setChecked(!!activeObject.clipPath)
     }
   }, [activeObject])
+  const handleSendToBack = () => {
+    if (activeObject) {
+      console.log(activeObject)
+      if (activeObject?.metadata.sort <= 1) {
+        toast.error("Đã dưới nền ảnh, không thể chuyển xuống", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+      } 
+      else {
+        editor.objects.sendToBack()
+      }
+    }}
   return (
     <StatefulPopover
       placement={PLACEMENT.bottomRight}
@@ -227,7 +251,7 @@ function CommonLayers() {
             </Button>
             <Button
               startEnhancer={<SendToBack size={24} />}
-              onClick={() => editor.objects.sendToBack()}
+              onClick={() => handleSendToBack()}
               kind={KIND.tertiary}
               size={SIZE.mini}
             >

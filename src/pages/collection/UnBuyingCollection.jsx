@@ -518,7 +518,7 @@ function UnBuyingCollection() {
                   cursor: "pointer",
                 }}
                 onClick={() => {
-                  navigate(`/category/${item.id}`);
+                  navigate(`/collection-buying/${item.id}`);
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }}
               >

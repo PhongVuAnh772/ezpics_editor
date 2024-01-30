@@ -14,7 +14,6 @@ import { loadVideoEditorAssets } from "~/utils/video";
 import DesignTitle from "./DesignTitle";
 import { IDesign } from "~/interfaces/DesignEditor";
 import EzpicsLogo from "./avatar.png";
-import { generateToServer } from "~/api/gererateToServer";
 import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import axios from "axios";
 import { toast } from "react-toastify";
@@ -23,9 +22,9 @@ import imageIcon from "./save.png";
 import exportIcon from "./Layer 2.png";
 import "../../components/Preview/newloading.css";
 import Modal from "@mui/material/Modal";
-import Box from "@mui/material/Box"
-import warning from './warning.png'
-import ezlogo from './EZPICS (converted)-03.png'
+import Box from "@mui/material/Box";
+import warning from "./warning.png";
+import ezlogo from "./EZPICS (converted)-03.png";
 import { useNavigate } from "react-router-dom";
 
 const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
@@ -60,7 +59,124 @@ export default function () {
   const idProduct = useAppSelector((state) => state.token.id);
   const token = useAppSelector((state) => state.token.token);
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
+  const generateToServer = (datas: any) => {
+    // Remove the first two elements from the first sub-array
+    console.log(datas);
+    datas.data[0].splice(0, 2);
 
+    console.log(datas.frame);
+    // Remove elements with id 'background' from each sub-array
+    datas.data.forEach((data: any) => {
+      const indexToRemove = data.findIndex(
+        (element: any) => element.id === "background"
+      );
+      if (indexToRemove !== -1) {
+        data.splice(indexToRemove, 1);
+      }
+    });
+
+    // Flatten the modified array
+    const flattenedArray = datas.data.flat();
+
+    // Rest of your code...
+    const initialData: any[] = [];
+
+    flattenedArray.map((data: any, index: number) => {
+      if (data.type === "StaticImage") {
+        initialData.push({
+          id: data?.id,
+          content: {
+            type: "image",
+            text: "Layer 2",
+            color: data?.fill,
+            size:
+              ((data?.fontSize * 100) / datas?.frame?.width).toString() + "vw", //
+            font: data?.fontFamily,
+            status: 1,
+            text_align: "left",
+            postion_left: (data?.left * 100) / datas?.frame?.width, //
+            postion_top: (data?.top * 100) / datas?.frame?.height, //
+            brightness: 100, //
+            contrast: 100, //
+            saturate: 100, //
+            opacity: data?.opacity, //
+            gachchan: data?.underline,
+            uppercase: "none",
+            innghieng: "normal",
+            indam: "normal",
+            linear_position: "to right",
+            border: 0,
+            rotate: "0deg", //
+            banner: data?.src, //
+            gianchu: "normal",
+            giandong: "normal",
+            width: `${
+              (data?.scaleX * 100 * data?.metadata?.naturalWidth) /
+              datas?.frame?.width
+            }vw`, //
+            height: data?.metadata?.initialHeight, //
+            gradient: 0,
+            gradient_color: [],
+            variable: data?.metadata?.variable,
+            variableLabel: data?.metadata?.variableLabel,
+            lock: 0,
+            lat_anh: 0, //
+            naturalWidth: data?.metadata?.naturalWidth,
+            naturalHeight: data?.metadata?.naturalHeight,
+            image_svg: "",
+            page: Number(data?.metadata?.page),
+          },
+          sort: index + 1,
+        });
+      } else if (data.type === "StaticText") {
+        // console.log(data, index);
+        initialData.push({
+          id: data?.id,
+          content: {
+            type: "text",
+            text: data?.text, //
+            color: data?.fill, //
+            size:
+              ((data?.fontSize * 100) / datas?.frame?.width).toString() + "vw", //
+            font: data.fontFamily, //
+            status: 1,
+            text_align: data.textAlign, //
+            postion_left: (data?.left * 100) / datas?.frame?.width, //
+            postion_top: (data?.top * 100) / datas?.frame?.height, //
+            brightness: 100, //
+            contrast: 100, //
+            saturate: 100, //
+            opacity: data.opacity, //
+            gachchan: data.underline, //
+            uppercase: "none", //
+            innghieng: "normal", //
+            indam: "normal", //
+            linear_position: "to right", //
+            border: 0, //
+            rotate: "0deg", //
+            banner: "",
+            gianchu: "normal",
+            giandong: "normal",
+            width: ((data.width * 100) / datas?.frame?.width).toString() + "vw",
+            height: "0vh",
+            gradient: 0,
+            gradient_color: [],
+            variable: data?.metadata?.variable,
+            variableLabel: data?.metadata?.variableLabel,
+            lock: data?.metadata?.lock,
+            lat_anh: 0,
+            naturalWidth: data?.metadata?.naturalWidth,
+            naturalHeight: data?.metadata?.naturalHeight,
+            page: Number(data?.metadata?.page),
+          },
+
+          sort: index + 1,
+        });
+      }
+    });
+
+    return initialData;
+  };
   const parseGraphicJSON = () => {
     const currentScene = editor.scene.exportToJSON();
     const updatedScenes = scenes.map((scn) => {
@@ -96,6 +212,40 @@ export default function () {
       frame: currentDesign.frame,
       data: allLayers,
     });
+    //  newDesign.forEach( async(item:any,index:any) => {
+
+    //   // Kiểm tra nếu id là chuỗi
+    //   if (typeof item.id === "string") {
+    //     console.log(item);
+    //     if (item.content.type === "image") {
+    //       const response = await axios.post(`${network}/addLayerImageUrlAPI`, {
+    //         idproduct: idProduct,
+    //         token: token,
+    //         imageUrl: item.content.banner,
+    //         page: 0
+    //       });
+    //       if (response && response.data) {
+    //                     item.id = response.data?.data?.id;
+    //         console.log(response.data)
+    //       }
+    //     } else if (item.content.type === "text") {
+    //       const response = await axios.post(`${network}/addLayerText`, {
+    //         idproduct: idProduct,
+    //         token: token,
+    //         text: "text",
+    //         color: "#ffffff",
+    //         size: '16px',
+    //         font: "MTD Matsury",
+    //         page: 0
+    //       });
+    //       if (response && response.data) {
+    //         item.id = response.data?.data?.id;
+    //         console.log(response.data)
+    //       }
+    //     }
+    //   }
+    // })
+    // console.log()
     return newDesign;
   };
   const styleModalBuyingFree = {
@@ -112,7 +262,7 @@ export default function () {
     flexDirection: "column",
     paddingTop: "15px",
     paddingLeft: "30px",
-                paddingRight: "30px",
+    paddingRight: "30px",
 
     borderRadius: "15px",
   };
@@ -156,7 +306,7 @@ export default function () {
     const image = (await editor.renderer.render(template)) as string;
 
     // downloadImage(image, "preview.png");
-    console.log(JSON.stringify(parseGraphicJSON()));
+    console.log(parseGraphicJSON());
     setLoading(true);
 
     try {
@@ -197,7 +347,7 @@ export default function () {
       console.log(error);
       setLoading(false);
     }
-  }
+  };
   const parseVideoJSON = () => {
     const currentScene = editor.scene.exportToJSON();
     const updatedScenes = scenes.map((scn) => {
@@ -392,7 +542,7 @@ export default function () {
           progress: undefined,
           theme: "dark",
         });
-        navigate('/')
+        navigate("/");
         setLoading(false);
       } else {
         toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
@@ -416,9 +566,54 @@ export default function () {
     const template = editor.scene.exportToJSON();
     const image = (await editor.renderer.render(template)) as string;
 
-    console.log(JSON.stringify(parseGraphicJSON()));
-    setLoading(true);
+    // console.log(JSON.stringify());
+    // setLoading(true);
+    const dataRendering = parseGraphicJSON();
+    await Promise.all(
+      dataRendering.map(async (item: any, index: any) => {
+        console.error(item);
+        if (typeof item.id === "string") {
+          if (item.content.type === "text") {
+            try {
+              const response = await axios.post(`${network}/addLayerText`, {
+                idproduct: idProduct,
+                token: token,
+                page: item.content.page,
+                text: item.content.text,
+                color: "#ffffff",
+                size: "16px",
+                font: "MTD Matsury",
+              });
 
+              if (response && response.data) {
+                item.id = response.data.id; // Update item.id here
+                console.log(response.data);
+              }
+            } catch (error) {
+              console.error("Error in axios.post:", error);
+            }
+          } else if (item.content.type === "image") {
+            console.log(item);
+            try {
+              const response = await axios.post(`${network}/addLayerImageUrlAPI`, {
+                
+                idproduct: idProduct,
+                token: token,
+                imageUrl: item.content.banner,
+                page: item.content.page,
+              });
+              if (response && response.data) {
+                item.id = response.data.id; // Update item.id here
+                console.log(response.data);
+              }
+            } catch (error) {
+              console.error("Error in axios.post:", error);
+            }
+          }
+        }
+      })
+    );
+    console.log(dataRendering);
     try {
       const res = await axios.post(`${network}/addListLayerAPI`, {
         idProduct: idProduct,
@@ -427,7 +622,6 @@ export default function () {
       });
       if (res.data.code === 1) {
         const imageGenerate = await handleConversion(image, "preview.png");
-        console.log(imageGenerate);
       } else {
         toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
           position: "top-left",
@@ -459,9 +653,8 @@ export default function () {
     }
   };
   const handleNotSave = () => {
-    navigate('/')
-
-  }
+    navigate("/");
+  };
   const handleInputFileRefClick = () => {
     inputFileRef.current?.click();
   };
@@ -666,31 +859,40 @@ export default function () {
             Bạn muốn lưu mẫu thiết kế này trước khi rời đi chứ ?
           </p>
 
-          <div style={{ display: 'flex', flexDirection: "row", width: '100%', paddingRight: '5%', paddingLeft: '5%' }}><Button
-            variant="contained"
-            size="medium"
+          <div
             style={{
-              height: 40,
-              alignSelf: "center",
-              textTransform: "none",
-              color: "white",
-              backgroundColor: "rgb(255, 66, 78)",
-              marginTop: "40px",
-              width: "50%",
-              fontFamily: "Helvetica, Arial, sans-serif",
-              marginRight: '5%'
-            }}
-            onClick={() => {
-              handleSaveIcon();
+              display: "flex",
+              flexDirection: "row",
+              width: "100%",
+              paddingRight: "5%",
+              paddingLeft: "5%",
             }}
           >
-            {" "}
-            {loadingBuyingFunc ? (
-              <span class="loaderNew"></span>
-            ) : (
-              "Lưu mẫu thiết kế "
-            )}
-          </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+                marginTop: "40px",
+                width: "50%",
+                fontFamily: "Helvetica, Arial, sans-serif",
+                marginRight: "5%",
+              }}
+              onClick={() => {
+                handleSaveIcon();
+              }}
+            >
+              {" "}
+              {loadingBuyingFunc ? (
+                <span class="loaderNew"></span>
+              ) : (
+                "Lưu mẫu thiết kế "
+              )}
+            </Button>
             <Button
               variant="contained"
               size="medium"
@@ -703,7 +905,6 @@ export default function () {
                 marginTop: "40px",
                 width: "50%",
                 fontFamily: "Helvetica, Arial, sans-serif",
-                
               }}
               onClick={() => {
                 handleNotSave();
@@ -715,7 +916,8 @@ export default function () {
               ) : (
                 "Không lưu"
               )}
-            </Button></div>
+            </Button>
+          </div>
         </Box>
       </Modal>
     </>

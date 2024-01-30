@@ -358,8 +358,6 @@ function GraphicEditor() {
           const matchingDetails = data.content.filter(
             (detail: any) => Number(detail.metadata.page) === index
           );
-
-          // Sử dụng cú pháp [newElement, ...array] để thêm một phần tử vào đầu mảng matchingDetails
           const updatedMatchingDetails = [
             {
               id: "background",
@@ -540,7 +538,7 @@ function GraphicEditor() {
                 page: 0,
               },
             },
-            // ...matchingDetails2,
+            ...matchingDetails2,
           ];
 
           return  {

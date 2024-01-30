@@ -17,6 +17,12 @@ import Dashboard from "./pages/components/home/Dashboard/Dashboard.jsx";
 import ForYouPage from "./pages/components/home/ForYou/ForYouPage.jsx";
 import Category from "./pages/components/home/category/Category.jsx";
 import SpecifiedPrint from "./pages/components/home/category/SpecifiedPrint.jsx";
+import ThumnailYoutube from './pages/components/project/components/ThumnailYoutube.jsx'
+import CongratSpecified from './pages/components/project/components/CongratSpecified.jsx'
+import Cooking from './pages/components/project/components/Cooking.jsx'
+import LogoSpecified from './pages/components/project/components/LogoSpecified.jsx'
+import BannerSpecified from './pages/components/project/components/BannerSpecified.jsx'
+// import ThumnailYoutube from './pages/components/project/components/ThumnailYoutube.jsx'
 
 import CollectionBuying from "./pages/components/home/category/CollectionBuying.jsx";
 
@@ -154,12 +160,12 @@ function Router() {
           <Route path="/page-satisfied" element={<PageSatisfied />} />
           <Route path="/project" element={<Project />}>
             <Route index path="recommend" element={<Recommended />} />
-            <Route path="youtube" element={<Recommended />} />
-            <Route path="cooking" element={<Recommended />} />
-            <Route path="logo" element={<Recommended />} />
-            <Route path="congrat" element={<Recommended />} />
+            <Route path="youtube" element={<ThumnailYoutube />} />
+            <Route path="cooking" element={<Cooking />} />
+            <Route path="logo" element={<LogoSpecified />} />
+            <Route path="congrat" element={<CongratSpecified />} />
 
-            <Route path="banner" element={<Recommended />} />
+            <Route path="banner" element={<BannerSpecified />} />
             <Route path="more" element={<Recommended />} />
           </Route>
           <Route path="/your-design" element={<YourDesign />}>

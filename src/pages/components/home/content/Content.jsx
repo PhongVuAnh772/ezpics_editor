@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BrowserRouter as Router,
   Route,
@@ -192,7 +192,7 @@ export default function PersistentDrawerLeft() {
 
       // Lưu trữ thông tin về tệp tin trong trạng thái của component
       setSelectedFilePrint(file);
-
+      setUrlSelectedFilePrint(URL.createObjectURL(file));
       // Bạn có thể thực hiện các xử lý khác tại đây
     }
   };
@@ -506,7 +506,6 @@ export default function PersistentDrawerLeft() {
       dispatch(DELETE_ALL_VALUES());
       setModalLogoutDevice(false);
       setLoading(false);
-
     }
   };
   const [loadingButtonModalCreate, setLoadingButtonModalCreate] =
@@ -546,6 +545,9 @@ export default function PersistentDrawerLeft() {
     var expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
   }
+  const [urlSelectedFile, setUrlSelectedFile] = useState("");
+  const [urlSelectedFilePrint, setUrlSelectedFilePrint] = useState("");
+
   const handleFileChange = (event) => {
     const fileInput = event.target;
     const files = fileInput.files;
@@ -556,7 +558,7 @@ export default function PersistentDrawerLeft() {
 
       // Lưu trữ thông tin về tệp tin trong trạng thái của component
       setSelectedFile(file);
-
+      setUrlSelectedFile(URL.createObjectURL(file));
       // Bạn có thể thực hiện các xử lý khác tại đây
     }
   };
@@ -636,51 +638,53 @@ export default function PersistentDrawerLeft() {
     }
   };
   const handleCreateCustomPrint = async (e) => {
-  e.preventDefault();
-  setLoadingButtonModalCreate(true);
+    e.preventDefault();
+    setLoadingButtonModalCreate(true);
 
-  if (selectedFilePrint) {
-    // Check if the selected file is an image
-    if (selectedFilePrint.type.startsWith('image/')) {
-      const response = await axios.post(
-        `${network}/createProductAPI`,
-        {
-          token: checkTokenCookie(),
-          type: "user_series",
-          category_id: 0,
-          sale_price: 0,
-          name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
-          background: selectedFilePrint,
-        },
-        {
-          headers: {
-            "Content-Type": "multipart/form-data",
+    if (selectedFilePrint) {
+      // Check if the selected file is an image
+      if (selectedFilePrint.type.startsWith("image/")) {
+        const response = await axios.post(
+          `${network}/createProductAPI`,
+          {
+            token: checkTokenCookie(),
+            type: "user_series",
+            category_id: 0,
+            sale_price: 0,
+            name: `Mẫu thiết kế ${Math.floor(Math.random() * 100001)}`,
+            background: selectedFilePrint,
           },
+          {
+            headers: {
+              "Content-Type": "multipart/form-data",
+            },
+          }
+        );
+        if (response && response.data && response.data.code === 0) {
+          setLoadingButtonModalCreate(false);
+          setOpenModalCreating(false);
+          setLoadingAwesome(true);
+          document.body.style.overflowY = "auto";
+
+          setTimeout(function () {
+            setLoadingAwesome(false);
+
+            navigate(`/design`, {
+              state: {
+                id: response.data.product_id,
+                token: checkTokenCookie(),
+              },
+            });
+          }, 1500);
         }
-      );
-      if (response && response.data && response.data.code === 0) {
-        setLoadingButtonModalCreate(false);
-        setOpenModalCreating(false);
-        setLoadingAwesome(true);
-        document.body.style.overflowY = "auto";
-
-        setTimeout(function () {
-          setLoadingAwesome(false);
-
-          navigate(`/design`, {
-            state: { id: response.data.product_id, token: checkTokenCookie() },
-          });
-        }, 1500);
+      } else {
+        console.log("The selected file is not an image");
+        toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
       }
     } else {
-      console.log("The selected file is not an image");
-            toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
-
+      console.log("Không thấy ảnh");
     }
-  } else {
-    console.log("Không thấy ảnh");
-  }
-};
+  };
 
   const handleCreateCustom = async (e) => {
     e.preventDefault();
@@ -1273,7 +1277,9 @@ export default function PersistentDrawerLeft() {
                   paddingLeft: 15,
                   alignItems: "center",
                   position: "relative",
+                  cursor: "pointer",
                 }}
+                onClick={() => navigate("/login")}
               >
                 {authentication ? (
                   <Avatar
@@ -2769,63 +2775,72 @@ export default function PersistentDrawerLeft() {
                       Ảnh nền
                     </label>
 
-                    <form
-                      id="file-upload-form"
-                      class="uploader"
-                      style={{ marginTop: 40 }}
-                    >
-                      <input
-                        id="file-upload"
-                        type="file"
-                        name="fileUpload"
-                        accept="image/*"
-                        onChange={handleFileChangePrint}
-                      />
-
-                      <label
-                        for="file-upload"
-                        id="file-drag"
-                        style={{ height: 200, cursor: "pointer" }}
+                    {selectedFilePrint ? (
+                      <div style={{width: '100%',height: 300,display:'flex',alignItems:'center',justifyContent:'center'}}><img
+                        src={urlSelectedFilePrint}
+                        alt=""
+                        style={{ width: 200, height: "auto" }}
+                      /></div>
+                    ) : (
+                      <form
+                        id="file-upload-form"
+                        class="uploader"
+                        style={{ marginTop: 40 }}
                       >
-                        <img
-                          id="file-image"
-                          src="#"
-                          alt="Preview"
-                          class="hidden"
+                        <input
+                          id="file-upload"
+                          type="file"
+                          name="fileUpload"
+                          accept="image/*"
+                          onChange={handleFileChangePrint}
                         />
-                        <div id="start---create-newing">
+
+                        <label
+                          for="file-upload"
+                          id="file-drag"
+                          style={{ height: 200, cursor: "pointer" }}
+                        >
                           <img
-                            src={downloadIcon}
-                            alt=""
-                            style={{
-                              width: 30,
-                              height: 30,
-                              alignSelf: "center",
-                              margin: "0 auto",
-                              marginBottom: "2%",
-                            }}
+                            id="file-image"
+                            src="#"
+                            alt="Preview"
+                            class="hidden"
                           />
-                          <div id="notimage" class="hidden">
-                            Hãy chọn ảnh
+                          <div id="start---create-newing">
+                            <img
+                              src={downloadIcon}
+                              alt=""
+                              style={{
+                                width: 30,
+                                height: 30,
+                                alignSelf: "center",
+                                margin: "0 auto",
+                                marginBottom: "2%",
+                              }}
+                            />
+                            <div id="notimage" class="hidden">
+                              Hãy chọn ảnh
+                            </div>
+                            <span id="file-upload-btn" class="btn btn-primary">
+                              {/* {selectedFilePrint === null
+                              ? ""
+                              : "Chọn lại"} */}
+                              Chọn ảnh
+                            </span>
                           </div>
-                          <span id="file-upload-btn" class="btn btn-primary">
-                            {selectedFilePrint === null
-                              ? "Chọn ảnh"
-                              : "Chọn lại"}
-                          </span>
-                        </div>
-                        <div id="response" class="hidden">
-                          <div id="messages"></div>
-                          <progress
-                            class="progress"
-                            id="file-progress"
-                            value="0"
-                          >
-                            <span>0</span>%
-                          </progress>
-                        </div>
-                      </label>
-                    </form>
+                          <div id="response" class="hidden">
+                            <div id="messages"></div>
+                            <progress
+                              class="progress"
+                              id="file-progress"
+                              value="0"
+                            >
+                              <span>0</span>%
+                            </progress>
+                          </div>
+                        </label>
+                      </form>
+                    )}
                   </div>
 
                   <div className="action---create-newing">
@@ -2839,6 +2854,12 @@ export default function PersistentDrawerLeft() {
                           justifyContent: "center",
                         }}
                         onClick={(e) => handleCreateCustomPrint(e)}
+                        // onClick={(e) => {
+                        //   e.preventDefault();
+                        //   console.log(selectedFilePrint);
+
+                        //   console.log(selectedFilePrint);
+                        // }}
                       >
                         {loadingButtonModalCreate ? (
                           <span class="loader-create-film"></span>
@@ -2901,9 +2922,16 @@ export default function PersistentDrawerLeft() {
                     </small>
                   </h2>
                 </div>
-
-                <form className="card-form---create-newing">
-                  {/* <div className="input---create-newing">
+                {selectedFile ? (
+                  
+                  <div className="card-form---create-newing" style={{display:'flex',alignItems:'center',justifyContent:'center'}}><img
+                    src={urlSelectedFile}
+                    alt=""
+                    style={{ width: 200, height: 'auto',alignSelf:'center' }}
+                  /></div>
+                ) : (
+                  <form className="card-form---create-newing">
+                    {/* <div className="input---create-newing">
                       <input
                         type="text"
                         className="input-field---create-newing"
@@ -2914,99 +2942,106 @@ export default function PersistentDrawerLeft() {
                       </label>
                     </div> */}
 
-                  <div className="input---create-newing">
-                    {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
-                     */}
-                    <label className="input-label---create-newing">
-                      Ảnh nền
-                    </label>
-
-                    <form
-                      id="file-upload-form"
-                      class="uploader"
-                      style={{ marginTop: 40 }}
-                    >
-                      <input
-                        id="file-upload"
-                        type="file"
-                        name="fileUpload"
-                        accept="image/*"
-                        onChange={handleFileChange}
-                      />
-
-                      <label
-                        for="file-upload"
-                        id="file-drag"
-                        style={{ height: 200, cursor: "pointer" }}
-                      >
-                        <img
-                          id="file-image"
-                          src="#"
-                          alt="Preview"
-                          class="hidden"
-                        />
-                        <div id="start---create-newing">
-                          <img
-                            src={downloadIcon}
-                            alt=""
-                            style={{
-                              width: 30,
-                              height: 30,
-                              alignSelf: "center",
-                              margin: "0 auto",
-                              marginBottom: "2%",
-                            }}
-                          />
-                          <div id="notimage" class="hidden">
-                            Hãy chọn ảnh
-                          </div>
-                          <span id="file-upload-btn" class="btn btn-primary">
-                            {selectedFile === null ? "Chọn ảnh" : "Chọn lại"}
-                          </span>
-                        </div>
-                        <div id="response" class="hidden">
-                          <div id="messages"></div>
-                          <progress
-                            class="progress"
-                            id="file-progress"
-                            value="0"
-                          >
-                            <span>0</span>%
-                          </progress>
-                        </div>
+                    <div className="input---create-newing">
+                      {/* <input type="file" className="input-field" required accept="image/png, image/jpeg"/>
+                       */}
+                      <label className="input-label---create-newing">
+                        Ảnh nền
                       </label>
-                    </form>
-                  </div>
 
-                  <div className="action---create-newing">
-                    {selectedFile !== null ? (
-                      <button
-                        className="action-button---create-newing"
-                        style={{
-                          cursor: "pointer",
-                          display: "flex",
-                          alignItems: "center",
-                          justifyContent: "center",
-                        }}
-                        onClick={(e) => handleCreateCustom(e)}
+                      <form
+                        id="file-upload-form"
+                        class="uploader"
+                        style={{ marginTop: 40 }}
                       >
-                        {loadingButtonModalCreate ? (
-                          <span class="loader-create-film"></span>
-                        ) : (
-                          "Bắt đầu tạo mẫu"
-                        )}
-                      </button>
-                    ) : (
-                      <button
-                        className="action-button---create-newing"
-                        style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
-                        disabled
-                      >
-                        Bắt đầu tạo mẫu
-                      </button>
-                    )}
-                  </div>
-                </form>
+                        <input
+                          id="file-upload"
+                          type="file"
+                          name="fileUpload"
+                          accept="image/*"
+                          onChange={handleFileChange}
+                        />
+
+                        <label
+                          for="file-upload"
+                          id="file-drag"
+                          style={{ height: 200, cursor: "pointer" }}
+                        >
+                          <img
+                            id="file-image"
+                            src="#"
+                            alt="Preview"
+                            class="hidden"
+                          />
+                          <div id="start---create-newing">
+                            <img
+                              src={downloadIcon}
+                              alt=""
+                              style={{
+                                width: 30,
+                                height: 30,
+                                alignSelf: "center",
+                                margin: "0 auto",
+                                marginBottom: "2%",
+                              }}
+                            />
+                            <div id="notimage" class="hidden">
+                              Hãy chọn ảnh
+                            </div>
+                            <span id="file-upload-btn" class="btn btn-primary">
+                              {selectedFile === null ? "Chọn ảnh" : "Chọn lại"}
+                            </span>
+                          </div>
+                          <div id="response" class="hidden">
+                            <div id="messages"></div>
+                            <progress
+                              class="progress"
+                              id="file-progress"
+                              value="0"
+                            >
+                              <span>0</span>%
+                            </progress>
+                          </div>
+                        </label>
+                      </form>
+                    </div>
+
+                    
+                    
+                  </form>
+                )}
+<div className="action---create-newing">
+                      {selectedFile !== null ? (
+                        <button
+                          className="action-button---create-newing"
+                          style={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                          }}
+                          onClick={(e) => handleCreateCustom(e)}
+                          // onClick={(e) => {
+                          //   e.preventDefault();
+                          //   console.log(urlSelectedFile);
+                          // }}
+                        >
+                          {loadingButtonModalCreate ? (
+                            <span class="loader-create-film"></span>
+                          ) : (
+                            "Bắt đầu tạo mẫu"
+                          )}
+                        </button>
+                      ) : (
+                        <button
+                          className="action-button---create-newing"
+                          style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
+                          disabled
+                        >
+                          Bắt đầu tạo mẫu
+                        </button>
+                      )}
+                    </div>
                 <div className="card-info---create-newing">
                   <p>
                     Nếu bạn chưa có thông tin, hãy tham khảo

@@ -80,7 +80,7 @@ function Project() {
         <TabList aria-label="Groceries">
           <Tab to="recommend">Được đề xuất</Tab>
           <Tab to="youtube">Thumbnail Youtube</Tab>
-          <Tab to="cooking">Ẩm thực</Tab>
+          <Tab to="cooking">Sự kiện</Tab>
           <Tab to="logo">Logo</Tab>
           <Tab to="congrat">Vinh danh</Tab>
           <Tab to="banner">Banner</Tab>

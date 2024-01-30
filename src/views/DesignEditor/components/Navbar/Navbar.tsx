@@ -622,6 +622,7 @@ export default function () {
       });
       if (res.data.code === 1) {
         const imageGenerate = await handleConversion(image, "preview.png");
+        console.log(imageGenerate)
       } else {
         toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
           position: "top-left",

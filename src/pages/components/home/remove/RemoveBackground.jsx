@@ -9,10 +9,11 @@ import {
   Outlet,
   useOutletContext,
   Navigate,
+  useNavigate
 } from "react-router-dom";
-import './loadingFavorite.css'
+import "./loadingFavorite.css";
 import Modal from "@mui/material/Modal";
-import axios from 'axios'
+import axios from "axios";
 import videoRemoving2 from "./background-remover1.mp4";
 import "./RemoveBackground.css";
 import video from "./en1.6b3b0bc4.mp4";
@@ -35,6 +36,7 @@ import Box from "@mui/material/Box";
 import { useSelector, useDispatch } from "react-redux";
 
 function RemoveBackground() {
+  const navigate = useNavigate()
   const [loadingBuyingFunc, setLoadingBuyingFunc] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null); // New state for uploaded image URL
 
@@ -110,11 +112,26 @@ function RemoveBackground() {
   const open = useOutletContext();
   const drawerWidth = 240;
   const handleRemoveBackground = () => {
-    inputFileRef.current?.click();
+    const authentication = checkAvailableLogin();
+
+    if (!authentication) {
+      console.log(authentication)
+      navigate('/login');
+    } else {
+      inputFileRef.current?.click();
+    }
   };
   const handleRemoveBackgroundSecond = (e) => {
+  
     e.preventDefault();
+        const authentication = checkAvailableLogin();
+
+    if (!authentication) {
+      console.log(authentication)
+      navigate('/login');
+    } else {
     inputFileRef.current?.click();
+    }
   };
   const Main = styled("main")(({ theme }) => ({
     // flexGrow: 1,
@@ -135,11 +152,6 @@ function RemoveBackground() {
   const videoRef = useRef(null);
   const videoRef2 = useRef(null);
 
-  const authentication = checkAvailableLogin();
-
-  if (!authentication) {
-    return <Navigate to="/login" state={{ path: location.pathname }} />;
-  }
   useEffect(() => {
     const timer = setTimeout(() => {
       if (videoRef.current) {
@@ -182,44 +194,43 @@ function RemoveBackground() {
       console.log('Không tìm thấy cookie có tên là "token"');
     }
   }
-  const [loadingRemove,setLoadingRemove] = useState(false)
+  const [loadingRemove, setLoadingRemove] = useState(false);
   const handleDropFiles = async (files) => {
-    setLoadingRemove(true)
+    setLoadingRemove(true);
     const file = files[0];
     const url = URL.createObjectURL(file);
     if (!/(png|jpg|jpeg)$/i.test(file.name)) {
       toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
-    setLoadingRemove(false)
+      setLoadingRemove(false);
 
       return;
     } else {
-      
       const headers = {
-              "Access-Control-Allow-Origin": "*",
-              "Access-Control-Allow-Headers": "*",
-              "Content-Type": "multipart/form-data",
-            };
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Content-Type": "multipart/form-data",
+      };
 
-            const config = {
-              headers: headers,
-            };
-                        const formData = new FormData();
+      const config = {
+        headers: headers,
+      };
+      const formData = new FormData();
 
-            formData.append("image", file);
-            formData.append("token", checkTokenCookie());
-            const response = await axios.post(
-              `${network}/removeBackgroundImageAPI`,
-              formData,
-              config
-            );
-            if (response && response.data) {
-    setLoadingRemove(false)
+      formData.append("image", file);
+      formData.append("token", checkTokenCookie());
+      const response = await axios.post(
+        `${network}/removeBackgroundImageAPI`,
+        formData,
+        config
+      );
+      if (response && response.data) {
+        setLoadingRemove(false);
 
-              setUploadedImageUrl(response.data.linkOnline); // Set the uploaded image URL
+        setUploadedImageUrl(response.data.linkOnline); // Set the uploaded image URL
 
-              setModalExtend(true);
-            }
-     }
+        setModalExtend(true);
+      }
+    }
   };
 
   return (
@@ -251,7 +262,11 @@ function RemoveBackground() {
               }}
               onClick={() => handleRemoveBackground()}
             >
-              {loadingRemove ? <span class="loaderNewPrinting"></span> : "Dùng thử ngay"}
+              {loadingRemove ? (
+                <span class="loaderNewPrinting"></span>
+              ) : (
+                "Dùng thử ngay"
+              )}
               {/* <span class="loaderNewPrinting"></span> */}
             </Button>
             <input
@@ -584,9 +599,11 @@ function RemoveBackground() {
               style={{ cursor: "pointer" }}
               onClick={(e) => handleRemoveBackgroundSecond(e)}
             >
-              
-                            {loadingRemove ? <span class="loaderNewPrinting"></span> : "Bắt đầu bây giờ"}
-
+              {loadingRemove ? (
+                <span class="loaderNewPrinting"></span>
+              ) : (
+                "Bắt đầu bây giờ"
+              )}
             </button>
           </div>
           <img

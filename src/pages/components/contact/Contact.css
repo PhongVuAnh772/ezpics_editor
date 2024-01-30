@@ -8,7 +8,17 @@
     border-top-right-radius: 15px;
     border-bottom-right-radius: 15px;
 }
-
+.loaderNew {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    display: block;
+    margin: 15px auto;
+    position: relative;
+    color: white;
+    box-sizing: border-box;
+    animation: animloader 2s linear infinite;
+}
 .contact-container-background {
   width: 50%;
   min-height: 600px;

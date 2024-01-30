@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useState} from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import {
   BrowserRouter as Router,
@@ -15,6 +15,10 @@ import gmail from "./gmail.png";
 import phoneCall from "./phone-call.png";
 import placeholder from "./placeholder.png";
 import man from "./man.png";
+import { useSelector, useDispatch } from "react-redux";
+import axios from 'axios'
+import { toast } from "react-toastify";
+
 function Contact() {
   const open = useOutletContext();
 
@@ -54,15 +58,94 @@ function Contact() {
     borderTopLeftRadius: "15px",
     borderBottomLeftRadius: "15px",
   });
+    const network = useSelector((state) => state.ipv4.network);
+function checkTokenCookie() {
+    var allCookies = document.cookie;
+
+    var cookiesArray = allCookies.split("; ");
+
+    var tokenCookie;
+    for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i];
+      var cookieParts = cookie.split("=");
+      var cookieName = cookieParts[0];
+      var cookieValue = cookieParts[1];
+
+      if (cookieName === "token") {
+        tokenCookie = cookieValue;
+        break;
+      }
+    }
+
+    // Kiểm tra nếu đã tìm thấy cookie "token"
+    if (tokenCookie) {
+      console.log('Giá trị của cookie "token" là:', tokenCookie);
+      return tokenCookie.replace(/^"|"$/g, "");
+    } else {
+      console.log('Không tìm thấy cookie có tên là "token"');
+    }
+  }
+  const [text,setText ] =useState('')
+  const [loading,setLoading] = useState(false)
+    const [loadingSecond,setLoadingSecond] = useState(false)
+
+  const handleSaveContact = async () => {
+    setLoading(true)
+    try {
+      const response = await axios.post(`${network}/extendWarehousesAPI`, {
+        token: checkTokenCookie(),
+        content: text
+      });
+      if (response && response.data.code === 0) {
+       
+        setLoading(false)
+        toast.success("Gửi thông tin hỗ trợ thành công !! 🦄", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        
+      } else if (response && response.data.code !== 0) {
+
+        setLoading(false)
+
+        toast.error("Lỗi, hãy thử lại !!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        
+      } else {
+                setLoading(false)
+
+        console.error("Invalid response format");
+      }
+    } catch (error) {
+              setLoading(false)
+
+      console.error("Error fetching data:", error.message);
+    }
+  
+  }
   return (
-    <Main
-      open={open}
-      sx={{
+    <div
+      style={{
         paddingTop: "7%",
         display: "flex",
         flexDirection: "row",
         minHeight: "100%",
         flex: 1,
+         paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%"
       }}
     >
       <div className="contact-container-background">
@@ -137,7 +220,7 @@ function Contact() {
          
           
           <textarea style={{width: "100%",
-  height: "53%"}} className="textarea--contact">Nhập nội dung liên hệ</textarea>
+  height: "53%"}} onChange={(e) =>setText(e.target.value)} className="textarea--contact">Nhập nội dung liên hệ</textarea>
           <Button
             variant="contained"
             size="large"
@@ -151,19 +234,22 @@ function Contact() {
               marginTop: '9%',
               paddingLeft: '10%',
               paddingRight: '10%',
+              display:'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
             }}
             onClick={() => {
-              window.scrollTo({
-                top: 70,
-                behavior: "smooth", // This makes the scroll animation smooth
-              });
+              // saveContactAPI
+              handleSaveContact()
+              
             }}
           >
-            Gửi liên hệ
+            
+            {loading ? <span className="loaderNew"></span> : 'Gửi liên hệ'}
           </Button>
         </div>
       </div>
-    </Main>
+    </div>
   );
 }
 

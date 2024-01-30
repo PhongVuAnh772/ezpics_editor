@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useRef,useEffect  } from "react";
 import "./information.css";
 import { styled, useTheme } from "@mui/material/styles";
 import {
@@ -12,11 +12,16 @@ import {
 } from "react-router-dom";
 import Button from "@mui/material/Button";
 import { useSelector, useDispatch } from "react-redux";
-import { CHANGE_VALUE,DELETE_ALL_VALUES } from "../../store/slice/infoUser";
+import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../store/slice/infoUser";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-
+import Modal from "@mui/material/Modal";
+import Box from "@mui/material/Box";
 function InformationPersonal() {
+  const inputFileRef = useRef(null);
+  const handleRemoveBackground = () => {
+    inputFileRef.current?.click();
+  };
   const dispatch = useDispatch();
   const open = useOutletContext();
   const infoUser = useSelector((state) => state.user.info);
@@ -31,6 +36,23 @@ function InformationPersonal() {
     var expires = "expires=" + date.toUTCString();
     document.cookie = name + "=" + value + ";" + expires + ";path=/";
   }
+  const styleModalBuyingFree = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "30%",
+    height: 400,
+    // bgcolor: "background.paper",
+    boxShadow: 24,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    paddingTop: "15px",
+    alignItems:'center',
+    justifyContent: "center",
+    borderRadius: "15px",
+  };
   const [inputNameChanging, setInputNameChanging] = React.useState("");
   const [inputPhoneChanging, setInputPhoneChanging] = React.useState("");
   const [inputEmailChanging, setInputEmailChanging] = React.useState("");
@@ -40,14 +62,97 @@ function InformationPersonal() {
   const [oldPass, setOldPass] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [rePassword, setRePassword] = React.useState("");
-  const token = useSelector((state) => state.auth.token);
+  const [loadingRemove, setLoadingRemove] = useState(false);
+
+  const handleDropFiles = async (files) => {
+    setLoadingRemove(true);
+    const file = files[0];
+    const url = URL.createObjectURL(file);
+    if (!/(png|jpg|jpeg)$/i.test(file.name)) {
+      toast.error("Chỉ chấp nhận file png, jpg hoặc jpeg");
+      setLoadingRemove(false);
+
+      return;
+    } else {
+      const headers = {
+        "Access-Control-Allow-Origin": "*",
+        "Access-Control-Allow-Headers": "*",
+        "Content-Type": "multipart/form-data",
+      };
+
+      const config = {
+        headers: headers,
+      };
+      const formData = new FormData();
+
+      formData.append("avatar", file);
+      formData.append("token", checkTokenCookie());
+      const response = await axios.post(
+        `${network}/saveInfoUserAPI`,
+        formData,
+        config
+      );
+
+      if (response && response.data.code === 0) {
+        const response2 = await axios.post(`${network}/getInfoMemberAPI`, {
+          token: token,
+        });
+        if (response2 && response2.data.code === 0) {
+              setLoadingRemove(false);
+
+
+          window.location.reload();
+          setCookie("user_login", response2.data.data, 1);
+          dispatch(CHANGE_VALUE(response2.data.data));
+
+          console.log(response2.data);
+        }
+      }
+    }
+  };
+  const handleFileInput = (e) => {
+    handleDropFiles(e.target.files);
+  };
+  const [modalImage,setModalImage] =useState(false)
+  function checkTokenCookie() {
+    var allCookies = document.cookie;
+
+    var cookiesArray = allCookies.split("; ");
+
+    var tokenCookie;
+    for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i];
+      var cookieParts = cookie.split("=");
+      var cookieName = cookieParts[0];
+      var cookieValue = cookieParts[1];
+
+      if (cookieName === "token") {
+        tokenCookie = cookieValue;
+        break;
+      }
+    }
+
+    // Kiểm tra nếu đã tìm thấy cookie "token"
+    if (tokenCookie) {
+      console.log('Giá trị của cookie "token" là:', tokenCookie);
+      return tokenCookie.replace(/^"|"$/g, "");
+    } else {
+      console.log('Không tìm thấy cookie có tên là "token"');
+    }
+  }
+  const token = checkTokenCookie();
   React.useEffect(() => {
     setInputNameChanging(infoUser[0]?.name);
     setInputPhoneChanging(infoUser[0]?.phone);
     setInputEmailChanging(infoUser[0]?.email);
   }, []);
+  const [loadingName, setLoadingName] = useState(false);
+  const [loadingEmail, setLoadingEmail] = useState(false);
+
+  const [loadingPhone, setLoadingPhone] = useState(false);
 
   const handleChangeName = async () => {
+    setLoadingName(true);
     const response = await axios.post(`${network}/saveInfoUserAPI`, {
       token: token,
       name: inputNameChanging,
@@ -57,15 +162,27 @@ function InformationPersonal() {
         token: token,
       });
       if (response && response.data.code === 0) {
+        setLoadingName(false);
+
         window.location.reload();
         setCookie("user_login", response.data.data, 1);
         dispatch(CHANGE_VALUE(response.data.data));
-        
+
         console.log(response.data.data);
       }
     }
   };
+  const [imageAvatar,setImageAvatar] =React.useState('')
+  useEffect(() => {
+    if (infoUser) {
+      setImageAvatar(infoUser[0]?.avatar)
+    }
+  }, [])
+  const handleCloseModalFreeExtend = () => {
+    setModalImage(false);
+  };
   const handlePhone = async () => {
+    setLoadingPhone(true);
     const response = await axios.post(`${network}/saveInfoUserAPI`, {
       token: token,
       phone: inputPhoneChanging,
@@ -75,15 +192,17 @@ function InformationPersonal() {
         token: token,
       });
       if (response && response.data.code === 0) {
+        setLoadingPhone(false);
         window.location.reload();
         setCookie("user_login", response.data.data, 1);
         dispatch(CHANGE_VALUE(response.data.data));
-        
+
         console.log(response.data.data);
       }
     }
   };
   const handleChangeEmail = async () => {
+    setLoadingEmail(true);
     const response = await axios.post(`${network}/saveInfoUserAPI`, {
       token: token,
       email: inputEmailChanging,
@@ -93,15 +212,16 @@ function InformationPersonal() {
         token: token,
       });
       if (response && response.data.code === 0) {
+        setLoadingEmail(false);
         window.location.reload();
         setCookie("user_login", response.data.data, 1);
         dispatch(CHANGE_VALUE(response.data.data));
-        
+
         console.log(response.data.data);
       }
     }
   };
-    const navigate = useNavigate();
+  const navigate = useNavigate();
 
   const handleChangePassword = async () => {
     const response = await axios.post(`${network}/saveChangePassAPI`, {
@@ -118,14 +238,14 @@ function InformationPersonal() {
         window.location.reload();
         setCookie("user_login", response.data.data, 1);
         dispatch(CHANGE_VALUE(response.data.data));
-        
+
         console.log(response.data.data);
       }
     }
   };
   function deleteCookie(key) {
     document.cookie = key + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
-}
+  }
   const handleDeleteAccount = async () => {
     const response = await axios.post(`${network}/lockAccountAPI`, {
       token: token,
@@ -137,7 +257,7 @@ function InformationPersonal() {
       if (response && response.data.code === 0) {
         deleteCookie("user_login");
         dispatch(DELETE_ALL_VALUES());
-        navigate('/',{replace: true});
+        navigate("/", { replace: true });
       }
     }
   };
@@ -158,7 +278,7 @@ function InformationPersonal() {
     }),
   }));
   return (
-    <div style={{ paddingTop: "6%", paddingRight: "30%", paddingLeft: "20%" }}>
+    <><div style={{ paddingTop: "6%", paddingRight: "30%", paddingLeft: "20%" }}>
       <div className="information-header__container">
         <label className="information-header">Tài khoản của bạn</label>
       </div>
@@ -188,11 +308,11 @@ function InformationPersonal() {
                 textTransform: "none",
                 height: 36,
                 marginRight: "8px",
-                                  fontWeight: "bold",
-
+                fontWeight: "bold",
               }}
+              onClick={() => setModalImage(true)}
             >
-              Xóa ảnh
+              Xem ảnh hiện tại
             </Button>
             <Button
               style={{
@@ -208,12 +328,20 @@ function InformationPersonal() {
                 backgroundColor: "rgb(225, 228, 231)",
                 height: 36,
                 width: 120,
-                                  fontWeight: "600",
-
+                fontWeight: "600",
               }}
+              onClick={() => handleRemoveBackground()}
             >
-              Thay đổi ảnh
+              
+              {loadingRemove ? <span className="loaderNew2"></span> : "Thay đổi ảnh"}
             </Button>
+            <input
+              onChange={handleFileInput}
+              type="file"
+              id="file"
+              ref={inputFileRef}
+              style={{ display: "none" }}
+            />
           </div>
         </div>
       </div>
@@ -267,7 +395,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
+                  width: 80,
+                  fontWeight: "bold",
 
                   marginRight: "10px",
                 }}
@@ -288,12 +417,12 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(255, 66, 78)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => handleChangeName()}
               >
-                Lưu
+                {loadingName ? <span className="loaderNew"></span> : "Lưu"}
               </Button>
             </div>
           </div>
@@ -322,8 +451,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => setInputName(true)}
               >
@@ -457,7 +586,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
+                  width: 80,
+                  fontWeight: "bold",
 
                   marginRight: "10px",
                 }}
@@ -479,8 +609,8 @@ function InformationPersonal() {
                     paddingRight: "10px",
                     backgroundColor: "rgb(255, 66, 78)",
                     height: 36,
-                    width: 80,                  fontWeight: "bold",
-
+                    width: 80,
+                    fontWeight: "bold",
                   }}
                   onClick={() => handleChangePassword()}
                 >
@@ -500,8 +630,8 @@ function InformationPersonal() {
                     paddingRight: "10px",
                     backgroundColor: "rgba(255, 66, 78,0.4)",
                     height: 36,
-                    width: 80,                  fontWeight: "bold",
-
+                    width: 80,
+                    fontWeight: "bold",
                   }}
                   disabled
                   onClick={() => handleChangePassword()}
@@ -536,8 +666,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => setPasswordChanging(true)}
               >
@@ -574,7 +704,7 @@ function InformationPersonal() {
                 border: "1px solid rgb(225, 228, 231)",
               }}
               className="information-content__satisfied---input"
-              value={infoUser[0]?.email}
+              value={inputEmailChanging}
               onChange={(e) => setInputEmailChanging(e.target.value)}
             />
             <div
@@ -597,7 +727,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
+                  width: 80,
+                  fontWeight: "bold",
 
                   marginRight: "10px",
                 }}
@@ -618,12 +749,12 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(255, 66, 78)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => handleChangeEmail()}
               >
-                Lưu
+                {loadingEmail ? <span className="loaderNew"></span> : "Lưu"}
               </Button>
             </div>
           </div>
@@ -652,8 +783,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => setInputEmail(true)}
               >
@@ -690,7 +821,7 @@ function InformationPersonal() {
                 border: "1px solid rgb(225, 228, 231)",
               }}
               className="information-content__satisfied---input"
-              value={infoUser[0]?.phone}
+              value={inputPhoneChanging}
               onChange={(e) => setInputPhoneChanging(e.target.value)}
             />
             <div
@@ -713,7 +844,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
+                  width: 80,
+                  fontWeight: "bold",
 
                   marginRight: "10px",
                 }}
@@ -734,12 +866,12 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(255, 66, 78)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => handlePhone()}
               >
-                Lưu
+                {loadingPhone ? <span className="loaderNew"></span> : "Lưu"}
               </Button>
             </div>
           </div>
@@ -768,8 +900,8 @@ function InformationPersonal() {
                   paddingRight: "10px",
                   backgroundColor: "rgb(225, 228, 231)",
                   height: 36,
-                  width: 80,                  fontWeight: "bold",
-
+                  width: 80,
+                  fontWeight: "bold",
                 }}
                 onClick={() => setInputPhone(true)}
               >
@@ -818,7 +950,17 @@ function InformationPersonal() {
           </div>
         </div>
       </div>
-    </div>
+    </div><Modal
+          open={modalImage}
+          onClose={handleCloseModalFreeExtend}
+          aria-labelledby="modal-modal-title"
+          aria-describedby="modal-modal-description"
+        >
+          <Box sx={styleModalBuyingFree}>
+                      {imageAvatar && <img src={imageAvatar} alt="" style={{width: '100%',height:'100%'}}/>}
+
+          </Box>
+        </Modal></>
   );
 }
 

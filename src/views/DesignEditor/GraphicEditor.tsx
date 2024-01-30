@@ -318,9 +318,8 @@ function GraphicEditor() {
   
   
   const urlParams = new URLSearchParams(queryString);
-  // const token = urlParams.get("token");
-  // const id = urlParams.get("id");
-    const { id, token } = location.state;
+
+  const { id, token } = location.state;
 
   if (token && id) {
     dispatch(REPLACE_TOKEN(token));

@@ -1,4 +1,4 @@
-import React,{useState} from "react";
+import React, { useState } from "react";
 import { useEditor, useObjects } from "@layerhub-io/react";
 import { Block } from "baseui/block";
 import AngleDoubleLeft from "~/components/Icons/AngleDoubleLeft";
@@ -11,14 +11,14 @@ import EyeCrossed from "~/components/Icons/EyeCrossed";
 import Delete from "~/components/Icons/Delete";
 import { Button, KIND, SIZE } from "baseui/button";
 import useSetIsSidebarOpen from "~/hooks/useSetIsSidebarOpen";
-import Lighting from './setting.png'
+import Lighting from "./setting.png";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_METADATA } from "~/store/slices/variable/variableSlice";
-import { useAppDispatch,useAppSelector } from "~/hooks/hook";
+import { useAppDispatch, useAppSelector } from "~/hooks/hook";
 import ArrowBackOutline from "~/components/Icons/ArrowBackOutline";
 import useDesignEditorContext from "~/hooks/useDesignEditorContext";
-import Setting from '~/components/Icons/Setting'
-import empty from './empty.jpg'
+import Setting from "~/components/Icons/Setting";
+import empty from "./empty.jpg";
 import axios from "axios";
 import { toast } from "react-toastify";
 import { loadFonts } from "~/utils/fonts";
@@ -98,20 +98,18 @@ export default function () {
   const [layerObjects, setLayerObjects] = React.useState<any[]>([]);
   const setIsSidebarOpen = useSetIsSidebarOpen();
   const { setActiveSubMenu } = useAppContext();
-    const idProduct = useAppSelector((state) => state.token.id);
+  const idProduct = useAppSelector((state) => state.token.id);
 
   const dispatch = useAppDispatch();
   const objectMetadata = (object: any) => {
-    //  console.log(object.metadata)
-    editor.objects.select(object.id)
-     console.log(object)
-     setActiveSubMenu("Landing")
-     dispatch(REPLACE_METADATA(object.metadata));
-  }
+    editor.objects.select(object.id);
+    console.log(object);
+    setActiveSubMenu("Landing");
+    dispatch(REPLACE_METADATA(object.metadata));
+  };
   React.useEffect(() => {
     if (objects) {
       setLayerObjects(objects);
-      console.log(layerObjects);
     }
   }, [objects]);
 
@@ -130,9 +128,8 @@ export default function () {
       }
     };
   }, [editor, objects]);
-  
-  
-const parseGraphicJSON = () => {
+
+  const parseGraphicJSON = () => {
     const currentScene = editor.scene.exportToJSON();
 
     console.log(currentScene);
@@ -164,9 +161,8 @@ const parseGraphicJSON = () => {
 
       let resultIndex = findIndexById(graphicTemplate.scenes, currentScene.id);
       console.log(resultIndex);
-    
-      return resultIndex;
 
+      return resultIndex;
     } else {
       console.log("NO CURRENT DESIGN");
     }
@@ -200,7 +196,9 @@ const parseGraphicJSON = () => {
     console.log(files);
 
     if (res.data.code === 1) {
-      console.log(typeof(Number(res.data.data.content.page),res.data.data.content.page))
+      console.log(
+        typeof (Number(res.data.data.content.page), res.data.data.content.page)
+      );
       const upload = {
         id: res.data.data.id,
         url: res.data.data.content.banner,
@@ -213,7 +211,7 @@ const parseGraphicJSON = () => {
           lock: false,
           variable: res.data.data.content.variable,
           variableLabel: res.data.data.content.variableLabel,
-          page:  Number(res.data.data.content.page),
+          page: Number(res.data.data.content.page),
         },
       };
 
@@ -231,7 +229,7 @@ const parseGraphicJSON = () => {
           lock: false,
           variable: res.data.data.content.variable,
           variableLabel: res.data.data.content.variableLabel,
-          page:  Number(res.data.data.content.page),
+          page: Number(res.data.data.content.page),
         },
       };
       editor.objects.add(options);
@@ -271,198 +269,242 @@ const parseGraphicJSON = () => {
       </Block>
       <Scrollable>
         <Block padding={"0 1.5rem"}>
-      {layerObjects.length > 0 ? layerObjects.map((object) => (
-            <Block
-              $style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 90px",
-                fontSize: "14px",
-                alignItems: "center",
-                cursor: "pointer",
-                ":hover": {
-                  background: "rgb(245,246,247)",
-                },
-                paddingTop: "15px",
-              }}
-              key={object.id}
-                                onClick={() => editor.objects.select(object.id)}
-                                                  // onClick={() => console.log(object.metadata.variable !== "")}
-
-
-            >
-              {object.name === "StaticText" ? (
-                <Block
-                  $style={{ cursor: "pointer",fontFamily: "Helvetica, Arial, sans-serif",fontWeight: "500" }}
-                  onClick={() => editor.objects.select(object.id)}
-                >
-                  {object.text}
-                </Block>
-              ) : (
-                <img
-                  src={object._element?.currentSrc}
-                  alt="ảnh"
-                  style={{
-                    width: "auto",
-                    height: 40,
-                    maxWidth: "100px",
-                    resize: "both",
-                    border: "1px solid black",
-                  }}
-                  onClick={() => editor.objects.select(object.id)}
-                />
-              )}
+          {layerObjects.length > 0 ? (
+            layerObjects.map((object) => (
               <Block
                 $style={{
-                  display: "flex",
+                  display: "grid",
+                  gridTemplateColumns: "1fr 90px",
+                  fontSize: "14px",
                   alignItems: "center",
-                  justifyContent: "flex-end",
+                  cursor: "pointer",
+                  ":hover": {
+                    background: "rgb(245,246,247)",
+                  },
+                  paddingTop: "15px",
+                }}
+                key={object.id}
+                onClick={() => editor.objects.select(object.id)}
+                // onClick={() => console.log(object.metadata.variable !== "")}
+              >
+                {object.name === "StaticText" ? (
+                  <Block
+                    $style={{
+                      cursor: "pointer",
+                      fontFamily: "Helvetica, Arial, sans-serif",
+                      fontWeight: "500",
+                    }}
+                    onClick={() => editor.objects.select(object.id)}
+                  >
+                    {object.text}
+                  </Block>
+                ) : (
+                  <img
+                    src={object._element?.currentSrc}
+                    alt="ảnh"
+                    style={{
+                      width: "auto",
+                      height: 40,
+                      maxWidth: "100px",
+                      resize: "both",
+                      border: "1px solid black",
+                    }}
+                    onClick={() => editor.objects.select(object.id)}
+                  />
+                )}
+                <Block
+                  $style={{
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "flex-end",
+                  }}
+                >
+                  {object?.metadata?.variable !== "" && (
+                    // <Button
+                    //   kind={KIND.tertiary}
+                    //   size={SIZE.mini}
+                    //   onClick={() => objectMetadata(object)}
+                    //   overrides={{
+                    //     Root: {
+                    //       style: {
+                    //         paddingLeft: "4px",
+                    //         paddingRight: "4px",
+                    //       },
+                    //     },
+                    //   }}
+                    // >
+                    <img
+                      src={Lighting}
+                      style={{
+                        width: 18,
+                        height: 18,
+                        paddingLeft: "4px",
+                        paddingRight: "4px",
+                        paddingTop: "2px",
+                      }}
+                      alt=""
+                      onClick={() => objectMetadata(object)}
+                    />
+                    // </Button>
+                  )}
+                  {object.locked ? (
+                    <Button
+                      kind={KIND.tertiary}
+                      size={SIZE.mini}
+                      onClick={() => editor.objects.unlock(object.id)}
+                      overrides={{
+                        Root: {
+                          style: {
+                            paddingLeft: "4px",
+                            paddingRight: "4px",
+                          },
+                        },
+                      }}
+                    >
+                      <Locked size={24} />
+                    </Button>
+                  ) : (
+                    <Button
+                      kind={KIND.tertiary}
+                      size={SIZE.mini}
+                      onClick={() => editor.objects.lock(object.id)}
+                      overrides={{
+                        Root: {
+                          style: {
+                            paddingLeft: "4px",
+                            paddingRight: "4px",
+                          },
+                        },
+                      }}
+                    >
+                      <Unlocked size={24} />
+                    </Button>
+                  )}
+
+                  {object.visible ? (
+                    <Button
+                      kind={KIND.tertiary}
+                      size={SIZE.mini}
+                      onClick={() =>
+                        editor.objects.update({ visible: false }, object.id)
+                      }
+                      overrides={{
+                        Root: {
+                          style: {
+                            paddingLeft: "4px",
+                            paddingRight: "4px",
+                          },
+                        },
+                      }}
+                    >
+                      <Eye size={24} />
+                    </Button>
+                  ) : (
+                    <Button
+                      kind={KIND.tertiary}
+                      size={SIZE.mini}
+                      onClick={() =>
+                        editor.objects.update({ visible: true }, object.id)
+                      }
+                      overrides={{
+                        Root: {
+                          style: {
+                            paddingLeft: "4px",
+                            paddingRight: "4px",
+                          },
+                        },
+                      }}
+                    >
+                      <EyeCrossed size={24} />
+                    </Button>
+                  )}
+                  {/* {} */}
+                  <Button
+                    kind={KIND.tertiary}
+                    size={SIZE.mini}
+                    onClick={() => editor.objects.remove(object.id)}
+                    overrides={{
+                      Root: {
+                        style: {
+                          paddingLeft: "4px",
+                          paddingRight: "4px",
+                        },
+                      },
+                    }}
+                  >
+                    <Delete size={24} />
+                  </Button>
+                </Block>
+              </Block>
+            ))
+          ) : (
+            <Block>
+              <Block
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  paddingTop: "5%",
                 }}
               >
-                {object?.metadata?.variable !== "" && (
-                  // <Button
-                  //   kind={KIND.tertiary}
-                  //   size={SIZE.mini}
-                  //   onClick={() => objectMetadata(object)}
-                  //   overrides={{
-                  //     Root: {
-                  //       style: {
-                  //         paddingLeft: "4px",
-                  //         paddingRight: "4px",
-                  //       },
-                  //     },
-                  //   }}
-                  // >
-<img src={Lighting} style={{width: 18,height: 18,paddingLeft: "4px",     paddingRight: "4px",paddingTop: '2px'}} alt=""onClick={()=>objectMetadata(object)} />                    
-                  // </Button>
-                )}
-                {object.locked ? (
-                  <Button
-                    kind={KIND.tertiary}
-                    size={SIZE.mini}
-                    onClick={() => editor.objects.unlock(object.id)}
-                    overrides={{
-                      Root: {
-                        style: {
-                          paddingLeft: "4px",
-                          paddingRight: "4px",
-                        },
-                      },
-                    }}
-                  >
-                    <Locked size={24} />
-                  </Button>
-                ) : (
-                  <Button
-                    kind={KIND.tertiary}
-                    size={SIZE.mini}
-                    onClick={() => editor.objects.lock(object.id)}
-                    overrides={{
-                      Root: {
-                        style: {
-                          paddingLeft: "4px",
-                          paddingRight: "4px",
-                        },
-                      },
-                    }}
-                  >
-                    <Unlocked size={24} />
-                  </Button>
-                )}
-
-                {object.visible ? (
-                  <Button
-                    kind={KIND.tertiary}
-                    size={SIZE.mini}
-                    onClick={() =>
-                      editor.objects.update({ visible: false }, object.id)
-                    }
-                    overrides={{
-                      Root: {
-                        style: {
-                          paddingLeft: "4px",
-                          paddingRight: "4px",
-                        },
-                      },
-                    }}
-                  >
-                    <Eye size={24} />
-                  </Button>
-                ) : (
-                  <Button
-                    kind={KIND.tertiary}
-                    size={SIZE.mini}
-                    onClick={() =>
-                      editor.objects.update({ visible: true }, object.id)
-                    }
-                    overrides={{
-                      Root: {
-                        style: {
-                          paddingLeft: "4px",
-                          paddingRight: "4px",
-                        },
-                      },
-                    }}
-                  >
-                    <EyeCrossed size={24} />
-                  </Button>
-                )}
-                {/* {} */}
                 <Button
-                  kind={KIND.tertiary}
-                  size={SIZE.mini}
-                  onClick={() => editor.objects.remove(object.id)}
+                  onClick={addObject}
+                  // onClick={() => console.log(allText)}
+                  size={SIZE.compact}
                   overrides={{
                     Root: {
                       style: {
-                        paddingLeft: "4px",
-                        paddingRight: "4px",
+                        width: "100%",
+                        marginRight: "5px",
                       },
                     },
                   }}
                 >
-                  <Delete size={24} />
+                  Thêm chữ
                 </Button>
+                <Button
+                  onClick={handleInputFileRefClick}
+                  size={SIZE.compact}
+                  overrides={{
+                    Root: {
+                      style: {
+                        width: "100%",
+                      },
+                    },
+                  }}
+                >
+                  Chọn từ máy tính
+                </Button>
+                <input
+                  onChange={handleFileInput}
+                  type="file"
+                  id="file"
+                  ref={inputFileRef}
+                  style={{ display: "none" }}
+                />
+              </Block>
+              <Block
+                style={{
+                  height: "100%",
+                  width: "100%",
+                  alignItems: "center",
+                  textAlign: "center",
+                  justifyContent: "center",
+                  paddingTop: "100%",
+                }}
+              >
+                <img src={empty} style={{ width: 200, height: 200 }} />
+                <p
+                  style={{
+                    fontFamily: "Arial",
+                    fontSize: "20px",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Layer trống
+                </p>
               </Block>
             </Block>
-          )) : <Block><Block style={{display: 'flex', justifyContent: 'space-between',paddingTop: '5%'}}>
-            <Button
-              onClick={addObject}
-              // onClick={() => console.log(allText)}
-              size={SIZE.compact}
-              overrides={{
-                Root: {
-                  style: {
-                    width: "100%",
-                    marginRight: '5px'
-                  },
-                },
-              }}
-            >
-              Thêm chữ
-            </Button><Button
-              onClick={handleInputFileRefClick}
-              size={SIZE.compact}
-              overrides={{
-                Root: {
-                  style: {
-                    width: "100%",
-                  },
-                },
-              }}
-            >
-              Chọn từ máy tính
-            </Button><input
-              onChange={handleFileInput}
-              type="file"
-              id="file"
-              ref={inputFileRef}
-              style={{ display: "none" }}
-            /></Block>
-            <Block style={{height: "100%", width: "100%",alignItems: 'center',textAlign: 'center',justifyContent: 'center',paddingTop: '100%'}}>
-              <img src={empty} style={{width: 200,height: 200}} />
-              <p style={{fontFamily: 'Arial',fontSize: '20px',fontWeight:'bold'}}>Layer trống</p>
-            </Block>
-            </Block>}
+          )}
         </Block>
       </Scrollable>
     </Block>

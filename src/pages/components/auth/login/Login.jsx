@@ -11,7 +11,7 @@ import {
   CHANGE_STATUS_AUTH,
 } from "../../../store/slice/authSlice";
 import "./SignUp.css";
-import { useGoogleLogin  } from '@react-oauth/google';
+import { useGoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 
 function Login() {
@@ -19,6 +19,8 @@ function Login() {
   const navigate = useNavigate();
   const network = useSelector((state) => state.ipv4.network);
   const [loading, setLoading] = useState(false);
+    const [forgetPassword, setForgetPassword] = useState(false);
+
   const [phoneNum, setPhoneNum] = useState("");
   const [password, setPassWord] = useState("");
   const token = useSelector((state) => state.auth.token);
@@ -80,7 +82,7 @@ function Login() {
         end = dc.length;
       }
     }
- 
+
     return decodeURI(dc.substring(begin + prefix.length, end));
   }
   function checkAvailableLogin() {
@@ -93,7 +95,7 @@ function Login() {
       return true;
     }
   }
-  var expirationHours = 3; // số giờ tồn tại của cookie
+  var expirationHours = 3;
   const [errMessage, setErrMessage] = useState(false);
   const signInButton = async () => {
     setLoading(true);
@@ -129,6 +131,7 @@ function Login() {
       console.error(e);
     }
   };
+  const [phoneForgetPass,setPhoneForgetPass] = useState('')
   const backgroundStyle = {
     display: "flex",
     flexDirection: "column", // Use column direction to make flex: 1 work for height
@@ -138,7 +141,7 @@ function Login() {
     flex: 1,
     minHeight: "100vh", // Set minimum height to 100% of the viewport height
     width: "100%",
-    height:'100vh',
+    height: "100vh",
     backgroundSize: "contain",
   };
   const overlayStyle = {
@@ -207,6 +210,7 @@ function Login() {
     color: "rgb(255, 255, 255)",
     fontFamily:
       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+      cursor: "pointer"
   };
   const googleButton = {
     width: "100%",
@@ -222,25 +226,30 @@ function Login() {
       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
   };
   const handleGoogleLogin = useGoogleLogin({
-  onSuccess: async (tokenResponse) => {
-    const tokenResponseDecode = jwtDecode(tokenResponse.access_token)
-    console.log(tokenResponse + "- tokenResponse")
-    console.log(tokenResponseDecode + "- tokenResponseDecode")
+    onSuccess: async (tokenResponse) => {
+      const tokenResponseDecode = jwtDecode(tokenResponse.access_token);
+      console.log(tokenResponse + "- tokenResponse");
+      console.log(tokenResponseDecode + "- tokenResponseDecode");
 
-    // const response = await axios.post(`${network}/checkLoginGoogleAPI`, {
-    //   id_google: tokenResponseDecode
-    // })
-  },
-  onError:  (errorResponse) => {
-    console.log(errorResponse)
-  },
-});
+      // const response = await axios.post(`${network}/checkLoginGoogleAPI`, {
+      //   id_google: tokenResponseDecode
+      // })
+    },
+    onError: (errorResponse) => {
+      console.log(errorResponse);
+    },
+  });
   return (
     <div style={backgroundStyle}>
       <div style={overlayStyle}>
         <div style={page}>
           <div style={header}>
-            <img src={logo} alt="" style={{ width: 50, height: 50,cursor:'pointer' }}onClick={()=> navigate('/')} />
+            <img
+              src={logo}
+              alt=""
+              style={{ width: 50, height: 50, cursor: "pointer" }}
+              onClick={() => navigate("/")}
+            />
             <div style={textHeader}>Tính năng</div>
             <div style={textHeader}>Mẫu thiết kế nổi bật</div>
             <div style={textHeader}>Hướng dẫn sử dụng</div>
@@ -248,7 +257,37 @@ function Login() {
             <div style={textHeader}>Liên hệ</div>
           </div>
           <div style={content}>
-            <div style={blockStyle}>
+            {forgetPassword ? <div style={blockStyle}><div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
+              <p style={textDescription}>
+                Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại Việt
+                Nam
+              </p><p
+                style={{
+                  fontFamily:
+                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                  fontSize: "15px",
+                  fontWeight: 500,
+                  paddingTop: 10,
+                }}
+              >
+                Số điện thoại xác thực
+              </p>
+              <input
+                type="text"
+                onChange={(e) => setPhoneForgetPass(e.target.value)}
+                placeholder="Số điện thoại"
+              /><button style={submitButton} onClick={() => signInButton()}>
+                {loading ? (
+                  <div class="lds-ring-login">
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                    <div></div>
+                  </div>
+                ) : (
+                  "Xác nhận"
+                )}
+              </button></div> : <div style={blockStyle}>
               <div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
               <p style={textDescription}>
                 Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại Việt
@@ -260,9 +299,10 @@ function Login() {
                     "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                   fontSize: "15px",
                   fontWeight: 500,
+                  paddingTop: 10,
                 }}
               >
-                Số điện thoại
+                Số điện thoại 
               </p>
               <input
                 type="text"
@@ -270,17 +310,42 @@ function Login() {
                 placeholder="Số điện thoại"
               />
 
-              <p
+              <div
                 style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: 5,
+                  width: "100%",
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "flex-end",
                 }}
               >
-                Mật khẩu
-              </p>
+                <p
+                  style={{
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontSize: "15px",
+                    fontWeight: 500,
+                    // margin: 0
+                    marginBottom: 10,
+                  }}
+                >
+                  Mật khẩu
+                </p>
+                <p
+                  style={{
+                    fontFamily:
+                      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                    fontSize: "10px",
+                    fontWeight: 500,
+                    paddingTop: 5,
+                    color: "rgb(95, 97, 230)",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => setForgetPassword(true)}
+                >
+                  Quên mật khẩu ?
+                </p>
+              </div>
               <input
                 type="password"
                 onChange={(e) => setPassWord(e.target.value)}
@@ -313,7 +378,9 @@ function Login() {
                 )}
               </button>
               <p style={{ fontSize: "12px", textAlign: "center" }}>Hoặc</p>
-              <button style={googleButton} onClick={() => handleGoogleLogin()}>Đăng nhập bằng Google</button>
+              <button style={googleButton} onClick={() => handleGoogleLogin()}>
+                Đăng nhập bằng Google
+              </button>
               <p
                 style={{
                   fontFamily:
@@ -325,7 +392,7 @@ function Login() {
               >
                 Bạn chưa có tài khoản ? - <a href="/sign-up">Đăng ký</a>
               </p>
-            </div>
+            </div>}
           </div>
         </div>
       </div>

@@ -34,9 +34,30 @@ export const loadFonts = (fonts: FontItem[]) => {
   return new Promise((resolve, reject) => {
     Promise.all(promisesList)
       .then((res) => {
-        res.forEach((uniqueFont:FontFace  ) => {
+        res.forEach((uniqueFont:any  ) => {
           if (uniqueFont) {
-            // console.log(uniqueFont)
+            console.log(uniqueFont)
+            //  && uniqueFont.name
+            document.fonts.add(uniqueFont)
+            resolve(true)
+          }
+          
+        })
+      })
+      .catch((err) => reject(err))
+  })
+}
+
+export const loadFontsSelector = (fonts: FontItem[]) => {
+  const promisesList = fonts.map(async (font) => {
+    return new FontFace(font.name, `url(${font.url})`).load().catch((err) => err)
+  })
+  return new Promise((resolve, reject) => {
+    Promise.all(promisesList)
+      .then((res) => {
+        res.forEach((uniqueFont:any  ) => {
+          if (uniqueFont) {
+            console.log(uniqueFont)
             //  && uniqueFont.name
             // document.fonts.add(uniqueFont)
             resolve(true)

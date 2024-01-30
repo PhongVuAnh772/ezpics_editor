@@ -139,7 +139,7 @@ export default function PersistentDrawerLeft() {
     var token = getCookie("token");
     var userLogin = getCookie("user_login");
 
-    if (userLogin == null || token == null) {
+    if (userLogin == null) {
       return false;
     } else {
       return true;
@@ -151,10 +151,19 @@ export default function PersistentDrawerLeft() {
     return new Intl.NumberFormat("vi-VN").format(price);
   };
   React.useEffect(() => {
+    const checkLoginAuth = () => {
+          var userLogin = getCookie("user_login");
+          if (userLogin != null && authentication == false) {
+            checkLoginAuth()
+          }
+    }
+    checkLoginAuth()
+  }, [authentication]);
+  React.useEffect(() => {
     const getDataUser = () => {
-      const dataCookie = Cookies.get("user_login");
-      if (dataCookie) {
-        const dataUser = JSON.parse(dataCookie);
+      var userLogin = getCookie("user_login")
+      if (userLogin) {
+        const dataUser = JSON.parse(userLogin);
         dispatch(CHANGE_VALUE(dataUser));
         dispatch(CHANGE_VALUE_TOKEN(dataUser?.token));
 

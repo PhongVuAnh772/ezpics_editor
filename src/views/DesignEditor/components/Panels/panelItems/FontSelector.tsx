@@ -6,7 +6,7 @@ import useAppContext from "~/hooks/useAppContext";
 import { useStyletron } from "baseui";
 import { IStaticText } from "@layerhub-io/types";
 import { useEditor } from "@layerhub-io/react";
-import { loadFonts } from "~/utils/fonts";
+import { loadFonts,loadFontsSelector } from "~/utils/fonts";
 import { SAMPLE_FONTS } from "~/constants/editor";
 import { groupBy } from "lodash";
 import Scrollable from "~/components/Scrollable";
@@ -100,8 +100,7 @@ export default function () {
         name: x.name,
         url: selectedFont,
       };
-      // console.log(font);
-      await loadFonts([font]);
+      await loadFontsSelector([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({
         fontFamily: font.name,

@@ -100,7 +100,7 @@ export default function () {
         name: x.name,
         url: selectedFont,
       };
-      await loadFontsSelector([font]);
+      await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({
         fontFamily: font.name,

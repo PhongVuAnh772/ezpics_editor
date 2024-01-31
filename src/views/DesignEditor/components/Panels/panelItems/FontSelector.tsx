@@ -89,17 +89,22 @@ export default function () {
     if (editor) {
       let selectedFont = null;
 
-      if (x.font_ttf) {
+      if (x.font) {
+        selectedFont = x.font;
+      }else if (x.font_ttf) {
         selectedFont = x.font_ttf;
-      } else if (x.font_woff) {
+      } else if (x.font_otf) {
+        selectedFont = x.font_otf;
+      }else if (x.font_woff) {
         selectedFont = x.font_woff;
       } else if (x.font_woff2) {
         selectedFont = x.font_woff2;
-      }
+      } 
       const font = {
         name: x.name,
         url: selectedFont,
       };
+      console.log(font)
       await loadFonts([font]);
       // @ts-ignore
       editor.objects.update<IStaticText>({

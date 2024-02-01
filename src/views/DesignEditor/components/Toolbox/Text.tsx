@@ -31,6 +31,11 @@ import RotateIcon from "~/components/Icons/RotateIcon";
 import axios from "axios";
 import { useAppSelector, useAppDispatch } from "~/hooks/hook";
 import { toast } from "react-toastify";
+import { HexColorPicker } from "react-colorful";
+import { Canvas } from "@layerhub-io/react";
+import { Checkbox } from "baseui/checkbox";
+import gradientIcon from "./gradient.png";
+
 import "../../../../../src/components/Loading/Initial.css";
 interface TextState {
   color: string;
@@ -41,8 +46,11 @@ interface TextState {
   styleOptions: StyleOptions;
   boldURL: BoldURL;
 }
-import { Canvas } from "@layerhub-io/react";
-
+interface Options {
+  angle: number;
+  colors: string[];
+  enabled: boolean;
+}
 
 interface StyleOptions {
   hasItalic: boolean;
@@ -81,7 +89,7 @@ export default function () {
   const [loadedFonts, setLoadedFonts] = React.useState<any[]>([]);
   const token = useAppSelector((state) => state.token.token);
   const [loading, setLoading] = React.useState<boolean>(false);
-  const listFont = useAppSelector(state => state.newFont.font)
+  const listFont = useAppSelector((state) => state.newFont.font);
   const handleLoadFont = async (x: any) => {
     if (editor) {
       let selectedFont = null;
@@ -123,29 +131,22 @@ export default function () {
       }
     }
   };
-  
+
   React.useEffect(() => {
     if (activeObject && activeObject.type === "StaticText") {
-      const textProperties = getTextPropertiesClone(activeObject, commonFonts);
-      console.log(commonFonts);
-
-      setState({ ...state, ...textProperties });
+      const textProperties = getTextPropertiesClone(activeObject, listFont);
+      // setState({ ...state, ...textProperties });
     }
   }, [activeObject]);
 
   React.useEffect(() => {
     let watcher = async () => {
       if (activeObject && activeObject.type === "StaticText") {
-        const textProperties = getTextPropertiesClone(
-          activeObject,
-          listFont
-        );
+        const textProperties = getTextPropertiesClone(activeObject, listFont);
         console.log(textProperties, activeObject, commonFonts);
       }
     };
     if (editor) {
-          // console.log(listFont)
-
       editor.on("history:changed", watcher);
     }
     return () => {
@@ -155,89 +156,85 @@ export default function () {
     };
   }, [editor, activeObject]);
 
-  const makeBold = React.useCallback(async () => {
-   console.log(editor.objects.clear())
-    // console.log(editor.objects.canvas)
-  }, [editor, state]);
-//  const makeBold = React.useCallback(async () => {
-//     if (state.bold) {
-//       let desiredFont
+  const makeBold = React.useCallback(async () => {}, [editor, state]);
+  //  const makeBold = React.useCallback(async () => {
+  //     if (state.bold) {
+  //       let desiredFont
 
-//       if (state.italic) {
-//         // look for regular italic
-//         desiredFont = state.styleOptions.options.find((option) => {
-//           const postscript_names = option.postscript_name.split("-")
-//           return postscript_names[postscript_names.length - 1].match(/^Italic$/)
-//         })
-//       } else {
-//         // look for  regular
-//         desiredFont = state.styleOptions.options.find((option) => {
-//           const postscript_names = option.postscript_name.split("-")
-//           return postscript_names[postscript_names.length - 1].match(/^Regular$/)
-//         })
-//       }
+  //       if (state.italic) {
+  //         // look for regular italic
+  //         desiredFont = state.styleOptions.options.find((option) => {
+  //           const postscript_names = option.postscript_name.split("-")
+  //           return postscript_names[postscript_names.length - 1].match(/^Italic$/)
+  //         })
+  //       } else {
+  //         // look for  regular
+  //         desiredFont = state.styleOptions.options.find((option) => {
+  //           const postscript_names = option.postscript_name.split("-")
+  //           return postscript_names[postscript_names.length - 1].match(/^Regular$/)
+  //         })
+  //       }
 
-//       const font = {
-//         name: desiredFont.postscript_name,
-//         url: desiredFont.url,
-//       }
-//       await loadFonts([font])
+  //       const font = {
+  //         name: desiredFont.postscript_name,
+  //         url: desiredFont.url,
+  //       }
+  //       await loadFonts([font])
 
-//       editor.objects.update({
-//         fontFamily: desiredFont.postscript_name,
-//         fontURL: font.url,
-//       })
-//       setState({ ...state, bold: false })
-//     } else {
-//       let desiredFont
-//       if (state.italic) {
-//         // look for bold italic
-//         desiredFont = state.styleOptions.options.find((option) => {
-//           const postscript_names = option.postscript_name.split("-")
-//           return postscript_names[postscript_names.length - 1].match(/^BoldItalic$/)
-//         })
-//       } else {
-//         // look for bold
-//         desiredFont = state.styleOptions.options.find((option) => {
-//           const postscript_names = option.postscript_name.split("-")
-//           return postscript_names[postscript_names.length - 1].match(/^Bold$/)
-//         })
-//       }
+  //       editor.objects.update({
+  //         fontFamily: desiredFont.postscript_name,
+  //         fontURL: font.url,
+  //       })
+  //       setState({ ...state, bold: false })
+  //     } else {
+  //       let desiredFont
+  //       if (state.italic) {
+  //         // look for bold italic
+  //         desiredFont = state.styleOptions.options.find((option) => {
+  //           const postscript_names = option.postscript_name.split("-")
+  //           return postscript_names[postscript_names.length - 1].match(/^BoldItalic$/)
+  //         })
+  //       } else {
+  //         // look for bold
+  //         desiredFont = state.styleOptions.options.find((option) => {
+  //           const postscript_names = option.postscript_name.split("-")
+  //           return postscript_names[postscript_names.length - 1].match(/^Bold$/)
+  //         })
+  //       }
 
-//       const font = {
-//         name: desiredFont.postscript_name,
-//         url: desiredFont.url,
-//       }
-//       await loadFonts([font])
+  //       const font = {
+  //         name: desiredFont.postscript_name,
+  //         url: desiredFont.url,
+  //       }
+  //       await loadFonts([font])
 
-//       editor.objects.update({
-//         fontFamily: desiredFont.postscript_name,
-//         fontURL: font.url,
-//       })
-//       setState({ ...state, bold: true })
-//     }
-//   }, [editor, state])
+  //       editor.objects.update({
+  //         fontFamily: desiredFont.postscript_name,
+  //         fontURL: font.url,
+  //       })
+  //       setState({ ...state, bold: true })
+  //     }
+  //   }, [editor, state])
   // const makeItalic = React.useCallback(async () => {
   //   editor.objects.update({italic: true})
   // }, [editor, state]);
   const makeItalic = React.useCallback(async () => {
     if (state.italic) {
-      let desiredFont
+      let desiredFont;
       if (state.bold) {
-        console.log(desiredFont,state)
+        console.log(desiredFont, state);
 
         desiredFont = state.styleOptions.options.find((option) => {
           // const postscript_names = option.postscript_name.split("-")
           // return postscript_names[postscript_names.length - 1].match(/^Bold$/)
-        })
+        });
       } else {
-                        console.log(desiredFont,state)
+        console.log(desiredFont, state);
 
         desiredFont = state.styleOptions.options.find((option) => {
           // const postscript_names = option.postscript_name.split("-")
           // return postscript_names[postscript_names.length - 1].match(/^Regular$/)
-        })
-
+        });
       }
 
       // const font = {
@@ -252,25 +249,24 @@ export default function () {
       // })
       // setState({ ...state, italic: false })
     } else {
-      let desiredFont
+      let desiredFont;
 
       if (state.bold) {
-                        console.log(desiredFont,state)
+        console.log(desiredFont, state);
 
         // search italic bold
         desiredFont = state.styleOptions.options.find((option) => {
           // const postscript_names = option.postscript_name.split("-")
           // return postscript_names[postscript_names.length - 1].match(/^BoldItalic$/)
-        })
+        });
       } else {
         // search regular italic
-                        console.log(desiredFont,state)
+        console.log(desiredFont, state);
 
         desiredFont = state.styleOptions.options.find((option) => {
-          
           // const postscript_names = option.postscript_name.split("-")
           // return postscript_names[postscript_names.length - 1].match(/^Italic$/)
-        })
+        });
       }
 
       // const font = {
@@ -285,14 +281,14 @@ export default function () {
       // })
       // setState({ ...state, italic: true })
     }
-  }, [editor, state])
+  }, [editor, state]);
 
   const makeUnderline = React.useCallback(() => {
     editor.objects.update({
       underline: !state.underline,
     });
     setState({ ...state, underline: !state.underline });
-  }, [editor, state,commonFonts]);
+  }, [editor, state, commonFonts]);
   return (
     <>
       <Block
@@ -454,6 +450,13 @@ export default function () {
             Animate
           </Button> */}
             <ModifyLength />
+            <Block
+              width={"1px"}
+              height={"24px"}
+              backgroundColor="rgb(213,213,213)"
+              margin={"0 4px"}
+            />
+            <Gradient />
           </Block>
         </Block>
         <Common />
@@ -1073,14 +1076,14 @@ function Rotating() {
       }
     }
   };
-    const [sliderValue, setSliderValue] = React.useState(0);
+  const [sliderValue, setSliderValue] = React.useState(0);
 
   const handleSliderChange = (event: Event, newValue: number | number[]) => {
     setSliderValue(newValue as number);
     console.log(sliderValue);
     // editor.objects.update({ scaleX: sliderValue, scaleY: sliderValue });
     setAngle(newValue);
-                  editor.objects.update({ angle: newValue });
+    editor.objects.update({ angle: newValue });
   };
   return (
     <StatefulPopover
@@ -1165,16 +1168,16 @@ function Rotating() {
                 }}
               /> */}
               <SliderBox
-                  aria-label="Volume"
-                  defaultValue={1}
-                  // getAriaValueText={valuetext}
-                  step={1}
-                  marks
-                  min={0}
+                aria-label="Volume"
+                defaultValue={1}
+                // getAriaValueText={valuetext}
+                step={1}
+                marks
+                min={0}
                 max={360}
-                  onChangeCommitted={handleSliderChange}
-                  valueLabelDisplay="auto"
-                />
+                onChangeCommitted={handleSliderChange}
+                valueLabelDisplay="auto"
+              />
             </Block>
           </Block>
         </Block>
@@ -1472,7 +1475,334 @@ function TransitionElement() {
     </StatefulPopover>
   );
 }
+function Gradient() {
+  const editor = useEditor();
+  const activeObject = useActiveObject();
+  const [options, setOptions] = React.useState<Options>({
+    angle: 0,
+    colors: ["#24C6DC", "#514A9D"],
+    enabled: false,
+  });
 
+  const handleChange = (key: any, value: any) => {
+    setOptions({ ...options, [key]: value });
+
+    if (key === "enabled") {
+      if (value) {
+        editor.objects.setGradient({ ...options, [key]: value });
+      } else {
+        editor.objects.update({
+          fill: "#000000",
+        });
+      }
+    } else {
+      if (options.enabled) {
+        editor.objects.setGradient({ ...options, [key]: value });
+      }
+    }
+  };
+  const initialOptions = {
+    angle: 0,
+    colors: ["#24C6DC", "#514A9D"],
+    enabled: false,
+  };
+
+  const getGradientOptions = (object: any) => {
+    const isNotGradient =
+      typeof object?.fill === "string" || object?.fill instanceof String;
+    if (!isNotGradient) {
+      const colorStops = object.fill.colorStops;
+      const colors = [colorStops[0].color, colorStops[1].color];
+      return {
+        angle: 0,
+        colors: colors,
+        enabled: true,
+      };
+    } else {
+      return initialOptions;
+    }
+  };
+
+  React.useEffect(() => {
+    if (activeObject) {
+      const initialOptions = getGradientOptions(activeObject);
+      setOptions({ ...options, ...initialOptions });
+    }
+  }, [activeObject]);
+
+  const handleGradientColorChange = (index: number, color: string) => {
+    const updatedColors = [...options.colors];
+    updatedColors[index] = color;
+    handleChange("colors", updatedColors);
+  };
+
+  return (
+    <StatefulPopover
+      showArrow={true}
+      placement={PLACEMENT.bottom}
+      content={() => (
+        <div style={{ padding: "1rem 10px", background: "white", width: 250 }}>
+          <div>
+            <div
+              style={{
+                fontSize: "14px",
+                background: "white",
+
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+                padding: "8px 0px",
+              }}
+            >
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <Checkbox
+                  checked={options.enabled}
+                  onChange={(e) =>
+                    handleChange("enabled", (e.target as any).checked)
+                  }
+                ></Checkbox>
+                &nbsp;&nbsp;
+                <p style={{ fontFamily: "Helvetica, Arial, sans-serif" }}>
+                  Chọn để dùng gradient
+                </p>
+              </div>
+              <div>
+                <div
+                  style={{
+                    height: "28px",
+                    width: "28px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    background: `linear-gradient(${options.angle + 90}deg, ${
+                      options.colors[0]
+                    }, ${options.colors[1]})`,
+                  }}
+                ></div>
+              </div>
+            </div>
+          </div>
+          <div style={{ height: "10px" }}></div>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <div
+              style={{
+                fontSize: "14px",
+                fontFamily: "Helvetica, Arial, sans-serif",
+              }}
+            >
+              Chỉnh màu
+            </div>
+            <div style={{ display: "flex", gap: "0.5rem" }}>
+              <StatefulPopover
+                placement={PLACEMENT.bottomLeft}
+                content={
+                  <div
+                    style={{
+                      padding: "1rem",
+                      background: "#ffffff",
+                      width: "200px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                      textAlign: "center",
+                    }}
+                  >
+                    <HexColorPicker
+                      onChange={(color) => handleGradientColorChange(0, color)}
+                    />
+                    <Input
+                      overrides={{ Input: { style: { textAlign: "center" } } }}
+                      value={options.colors[0]}
+                      placeholder="#000000"
+                      clearOnEscape
+                    />
+                  </div>
+                }
+                accessibilityType={"tooltip"}
+              >
+                <div>
+                  <div
+                    style={{
+                      height: "28px",
+                      width: "28px",
+                      backgroundSize: "100% 100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      backgroundColor: options.colors[0],
+                    }}
+                  ></div>
+                </div>
+              </StatefulPopover>
+              <StatefulPopover
+                placement={PLACEMENT.bottomLeft}
+                content={
+                  <div
+                    style={{
+                      padding: "1rem",
+                      background: "#ffffff",
+                      width: "200px",
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: "1rem",
+                      textAlign: "center",
+                    }}
+                  >
+                    <HexColorPicker
+                      onChange={(color) => handleGradientColorChange(1, color)}
+                    />
+                    <Input
+                      overrides={{ Input: { style: { textAlign: "center" } } }}
+                      value={options.colors[1]}
+                      onChange={(e) =>
+                        handleGradientColorChange(1, (e.target as any).value)
+                      }
+                      placeholder="#000000"
+                      clearOnEscape
+                    />
+                  </div>
+                }
+                accessibilityType={"tooltip"}
+              >
+                <div>
+                  <div
+                    style={{
+                      height: "28px",
+                      width: "28px",
+                      backgroundSize: "100% 100%",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      cursor: "pointer",
+                      backgroundColor: options.colors[1],
+                    }}
+                  ></div>
+                </div>
+              </StatefulPopover>
+            </div>
+          </div>
+          <div style={{ height: "10px" }}></div>
+
+          <div style={{ padding: "8px 0px" }}>
+            <div>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
+                }}
+              >
+                <p
+                  style={{
+                    fontFamily: "Helvetica, Arial, sans-serif",
+                    fontSize: "14px",
+                  }}
+                >
+                  Chỉnh tọa độ
+                </p>
+                {/* <Block width={"52px"} height={'26px'}style={{display:'flex',justifyContent:'flex-end'}}> */}
+                {/* <Input
+                    overrides={{
+                      Input: {
+                        style: {
+                          backgroundColor: "#ffffff",
+                          textAlign: "center",
+                        },
+                      },
+                      Root: {
+                        style: {
+                          borderBottomColor: "rgba(0,0,0,0.15)",
+                          borderTopColor: "rgba(0,0,0,0.15)",
+                          borderRightColor: "rgba(0,0,0,0.15)",
+                          borderLeftColor: "rgba(0,0,0,0.15)",
+                          borderTopWidth: "1px",
+                          borderBottomWidth: "1px",
+                          borderRightWidth: "1px",
+                          borderLeftWidth: "1px",
+                          width:'52px',
+                          height: '26px'
+                        },
+                      },
+                      InputContainer: {},
+                    }}
+                    size={SIZE.default}
+                    onChange={() => {}}
+                    value={options.angle}
+                  /> */}
+                <input
+                  style={{
+                    borderBottomColor: "rgba(0,0,0,0.15)",
+                    borderTopColor: "rgba(0,0,0,0.15)",
+                    borderRightColor: "rgba(0,0,0,0.15)",
+                    borderLeftColor: "rgba(0,0,0,0.15)",
+                    borderTopWidth: "1px",
+                    borderBottomWidth: "1px",
+                    borderRightWidth: "1px",
+                    borderLeftWidth: "1px",
+                    width: "52px",
+                    height: "10px",
+                    padding: 10,
+                  }}
+                  value={options.angle}
+                  onChange={(e) => handleChange("angle", e.target.value)}
+                  type="number"
+                  min={0}
+                  max={360}
+                />
+                {/* </Block> */}
+              </div>
+              <Slider
+                overrides={{
+                  InnerThumb: () => null,
+                  ThumbValue: () => null,
+                  TickBar: () => null,
+                  Thumb: {
+                    style: {
+                      height: "12px",
+                      width: "12px",
+                      paddingLeft: 0,
+                    },
+                  },
+                  Track: {
+                    style: {
+                      paddingLeft: 0,
+                      paddingRight: 0,
+                    },
+                  },
+                }}
+                max={360}
+                value={[options.angle]}
+                onChange={({ value }) => handleChange("angle", value[0])}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+    >
+      <Block>
+        <StatefulTooltip
+          placement={PLACEMENT.bottom}
+          showArrow={true}
+          accessibilityType={"tooltip"}
+          content="Gradient"
+        >
+          <Button size={SIZE.mini} kind={KIND.tertiary}>
+            <img src={gradientIcon} style={{ width: "15px", height: "15px" }} />
+          </Button>
+        </StatefulTooltip>
+      </Block>
+    </StatefulPopover>
+  );
+}
 function ModifyLength() {
   const editor = useEditor();
   const activeObject = useActiveObject();

@@ -40,7 +40,22 @@ const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
 
 export default function () {
   const navigate = useNavigate();
-
+  const parseData = (data: any) => {
+    let dataReal = [] as any[];
+    // data = [
+    //   fill: fill
+    // ]
+    // return data
+    if (data && data.colorStops && Array.isArray(data.colorStops)) {
+      return data.colorStops.map((stop: any) => {
+        dataReal.push({
+          position: 0.45,
+          color: stop.color,
+        });
+      });
+    }
+    return dataReal;
+  };
   const {
     setDisplayPreview,
     setScenes,
@@ -159,8 +174,9 @@ export default function () {
             giandong: "normal",
             width: ((data.width * 100) / datas?.frame?.width).toString() + "vw",
             height: "0vh",
-            gradient: 0,
-            gradient_color: [],
+            gradient: typeof data?.fill === "string" ? 0 : 1,
+            gradient_color:
+              typeof data?.fill === "string" ? [] : parseData(data?.fill),
             variable: data?.metadata?.variable,
             variableLabel: data?.metadata?.variableLabel,
             lock: data?.metadata?.lock,
@@ -179,6 +195,7 @@ export default function () {
   };
   const parseGraphicJSON = () => {
     const currentScene = editor.scene.exportToJSON();
+    console.log(currentScene);
     const updatedScenes = scenes.map((scn) => {
       if (scn.id === currentScene.id) {
         return {
@@ -322,6 +339,7 @@ export default function () {
         toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
           position: "top-left",
           autoClose: 2000,
+          
           hideProgressBar: false,
           closeOnClick: true,
           pauseOnHover: false,
@@ -595,15 +613,17 @@ export default function () {
           } else if (item.content.type === "image") {
             console.log(item);
             try {
-              const response = await axios.post(`${network}/addLayerImageUrlAPI`, {
-                
-                idproduct: idProduct,
-                token: token,
-                imageUrl: item.content.banner,
-                page: item.content.page,
-              });
+              const response = await axios.post(
+                `${network}/addLayerImageUrlAPI`,
+                {
+                  idproduct: idProduct,
+                  token: token,
+                  imageUrl: item.content.banner,
+                  page: item.content.page,
+                }
+              );
               if (response && response.data) {
-                item.id = response.data.id; // Update item.id here
+                item.id = response.data?.content?.id; // Update item.id here
                 console.log(response.data);
               }
             } catch (error) {
@@ -622,7 +642,7 @@ export default function () {
       });
       if (res.data.code === 1) {
         const imageGenerate = await handleConversion(image, "preview.png");
-        console.log(imageGenerate)
+        console.log(imageGenerate);
       } else {
         toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
           position: "top-left",

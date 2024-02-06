@@ -54,6 +54,8 @@ export default function () {
   const [typeUser, setTypeUser] = useState("");
   const [categoryList, setCategoryList] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
+    const [selectedOptionDisplay, setSelectedOptionDisplay] = useState("");
+
   const [selectedFilesBackground, setSelectedFilesBackground] =
     useState<FileList | null>(null);
   const [selectedOptionStorage, setSelectedOptionStorage] = useState("");
@@ -61,6 +63,7 @@ export default function () {
   const [selectedFilesSecond, setSelectedFilesSecond] =
     useState<FileList | null>(null);
   const [listWarehouse, setListWarehouse] = useState<any>([]);
+  const [display, setDisplay] = useState<any>(false);
 
   const [dataStorage, setDataStorage] = useState<any>([]);
   const token = useAppSelector((state) => state.token.token);
@@ -109,6 +112,7 @@ export default function () {
           setListWarehouse(response.data.data.listWarehouse);
           setCheckedItems(response.data.data.listWarehouse);
           setTypeUser(response.data.data.type);
+          setDisplay(response.data?.data?.display)
           // https://apis.ezpics.vn/apis/getInfoProductAPI
           setLoading(false);
         }
@@ -157,6 +161,11 @@ export default function () {
   ) => {
     setSelectedOption(event.target.value);
   };
+  const handleSelectChangeStatusDisplay = (
+    event: React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    setSelectedOptionDisplay(event.target.value);
+  };
 
   const handleSelectChangeStatusStorage = (
     event: React.ChangeEvent<HTMLSelectElement>
@@ -169,6 +178,12 @@ export default function () {
 
     { value: "0", label: "Đang chỉnh sửa" },
     { value: "1", label: "Đã hoàn thành" },
+  ];
+  const optionsDisplay = [
+    { value: "", label: "Chọn trạng thái" },
+
+    { value: "0", label: "Hiển thị" },
+    { value: "1", label: "Ẩn đi" },
   ];
   const inputFileRef = React.useRef<HTMLInputElement>(null);
   const inputFileRefThumn = React.useRef<HTMLInputElement>(null);
@@ -248,13 +263,16 @@ export default function () {
             if (selectedFilesBackground) {
               formData.append("thumbnail", selectedFiles);
             }
-            console.log(selectedOption);
+            
+
             formData.append("name", name);
             formData.append("sale_price", price.toString());
             formData.append("price", sessPrice.toString());
             formData.append("category_id", categoryId.toString());
             formData.append("warehouse_id", checkedItems.join(","));
             formData.append("status", selectedOption === "1" ? 1 : 0);
+                        formData.append("display", selectedOptionDisplay === ("0" || "") ? false : true);
+
             formData.append("description", description);
             formData.append("token", token);
             formData.append("idProduct", idProduct.toString());
@@ -484,7 +502,7 @@ export default function () {
                   paddingTop: "0.25rem",
                 }}
               >
-                <StatefulPopover
+                {/* <StatefulPopover
                   placement={PLACEMENT.bottomLeft}
                   content={
                     <div
@@ -548,7 +566,7 @@ export default function () {
                       </div>
                     </div>
                   </div>
-                </StatefulPopover>
+                </StatefulPopover> */}
 
                 {colors.map((color) => (
                   <div
@@ -587,8 +605,23 @@ export default function () {
                     onChange={(e) => setDescription(e.target.value)}
                   />
                 </div>
+                <div className="input-group">
+                      <p style={{ fontFamily: "Arial" }}>Chế độ hiển thị lên thị trường</p>
+                      <select
+                        value={selectedOptionDisplay}
+                        onChange={handleSelectChangeStatusDisplay}
+                        // onChange={(e) => console.log(e.target.value)}
+                      >
+                        {optionsDisplay.map((option) => (
+                          <option key={option.value} value={option.value}>
+                            {option.label}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
                 {typeUser !== "user_edit" && (
                   <>
+
                     <div className="input-group">
                       <p style={{ fontFamily: "Arial" }}>Giá bán thị trường</p>
 

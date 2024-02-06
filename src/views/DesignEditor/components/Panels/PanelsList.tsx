@@ -88,8 +88,7 @@ function PanelListItem({ label, icon, activePanel, name, item }: any) {
   // @ts-ignore
   const Icon = Icons[icon]
   useEffect(() => {
-    console.log(userType === "user_edit")
-  }, [])
+userType  }, [])
   
   return (
    
@@ -100,7 +99,7 @@ function PanelListItem({ label, icon, activePanel, name, item }: any) {
           setActivePanel(name)
         }}
         $style={{
-          display: name === "Uploads" && userType === "user_edit" ? "none" : "flex",
+          display: name === "Uploads" && (userType === "user_create" || userType === "user_edit") ? "none" : "flex",
           width: "80px",
           height: "80px",
           backgroundColor: name === activePanel ? theme.colors.white : theme.colors.primary100,

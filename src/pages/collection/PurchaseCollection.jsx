@@ -125,10 +125,22 @@ function PurchaseCollection() {
           progress: undefined,
           theme: "dark",
         });
-        
+    
       } else {
         console.error("Invalid response format");
         setLoadingBuyingFunc(false);
+            setModalExtend(false);
+
+        toast.error("Tài khoản không đủ tiền, hãy thử lại !!", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
       }
     } catch (error) {
       console.error("Error fetching data:", error.message);
@@ -431,6 +443,7 @@ function PurchaseCollection() {
                     marginRight: "1%",
                   }}
                 >
+                  
                   <div
                     style={{
                       position: "relative",
@@ -570,6 +583,7 @@ function PurchaseCollection() {
                     marginRight: "1%",
                   }}
                 >
+                  
                   <div
                     style={{
                       position: "relative",

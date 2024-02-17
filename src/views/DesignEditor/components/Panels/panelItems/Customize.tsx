@@ -54,7 +54,7 @@ export default function () {
   const [typeUser, setTypeUser] = useState("");
   const [categoryList, setCategoryList] = useState<any>([]);
   const [selectedOption, setSelectedOption] = useState("");
-    const [selectedOptionDisplay, setSelectedOptionDisplay] = useState("");
+  const [selectedOptionDisplay, setSelectedOptionDisplay] = useState("");
 
   const [selectedFilesBackground, setSelectedFilesBackground] =
     useState<FileList | null>(null);
@@ -113,6 +113,8 @@ export default function () {
           setCheckedItems(response.data.data.listWarehouse);
           setTypeUser(response.data.data.type);
           setDisplay(response.data?.data?.display)
+          setSelectedOptionDisplay(response.data?.data?.display ? "1" : "0")
+          console.log(response.data?.data?.display)
           // https://apis.ezpics.vn/apis/getInfoProductAPI
           setLoading(false);
         }
@@ -165,6 +167,7 @@ export default function () {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setSelectedOptionDisplay(event.target.value);
+    console.log(event.target.value);
   };
 
   const handleSelectChangeStatusStorage = (

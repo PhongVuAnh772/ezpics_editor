@@ -13,17 +13,19 @@ import {
 import "./SignUp.css";
 import { useGoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
+import { toast } from "react-toastify";
 
 function Login() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const network = useSelector((state) => state.ipv4.network);
   const [loading, setLoading] = useState(false);
-    const [forgetPassword, setForgetPassword] = useState(false);
-
+  const [forgetPassword, setForgetPassword] = useState(false);
+  const [forgetPasswordVerify, setForgetPasswordVerify] = useState(false);
   const [phoneNum, setPhoneNum] = useState("");
   const [password, setPassWord] = useState("");
   const token = useSelector((state) => state.auth.token);
+
   function getCookie(name) {
     var dc = document.cookie;
     var prefix = name + "=";
@@ -97,6 +99,7 @@ function Login() {
   }
   var expirationHours = 3;
   const [errMessage, setErrMessage] = useState(false);
+
   const signInButton = async () => {
     setLoading(true);
     try {
@@ -131,7 +134,7 @@ function Login() {
       console.error(e);
     }
   };
-  const [phoneForgetPass,setPhoneForgetPass] = useState('')
+  const [phoneForgetPass, setPhoneForgetPass] = useState("");
   const backgroundStyle = {
     display: "flex",
     flexDirection: "column", // Use column direction to make flex: 1 work for height
@@ -192,10 +195,14 @@ function Login() {
     fontWeight: 700,
     paddingTop: "5%",
     paddingBottom: "2%",
+    fontFamily:
+      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
   };
   const textDescription = {
     color: "black",
     fontSize: "13px",
+    fontFamily:
+      "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
   };
   const submitButton = {
     width: "100%",
@@ -210,7 +217,7 @@ function Login() {
     color: "rgb(255, 255, 255)",
     fontFamily:
       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-      cursor: "pointer"
+    cursor: "pointer",
   };
   const googleButton = {
     width: "100%",
@@ -239,6 +246,63 @@ function Login() {
       console.log(errorResponse);
     },
   });
+  const [phoneVerifyPass, setPhoneVerifyPass] = useState("");
+  const [codeVerifyPass, setCodeVerifyPass] = useState("");
+  const [passVerifyPass, setPassVerifyPass] = useState("");
+  const [rePasswordVerifyPass, setRePasswordVerifyPass] = useState("");
+  const [errPhoneForgot, setErrPhoneForgot] = useState(false);
+  const [errPhoneForgotSecond, setErrPhoneForgotSecond] = useState(false);
+
+  const handlePasswordForgetSecond = async () => {
+    setLoading(true);
+
+    const response = await axios.post(
+      `${network}/saveNewPassAPI`,
+      {
+        phone: phoneVerifyPass,
+        code: codeVerifyPass,
+        passNew: passVerifyPass,
+        passAgain: rePasswordVerifyPass,
+      }
+    );
+    if (response.data && response.data.code === 0) {
+      toast.success("Lấy lại mật khẩu thành công !! 🦄", {
+        position: "top-right",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      setLoading(false);
+      setForgetPassword(false)
+    } else {
+      setErrPhoneForgotSecond(true);
+      setLoading(false);
+    }
+  };
+  const handlePasswordForget = async () => {
+    setLoading(true);
+
+    const response = await axios.post(
+      `${network}/requestCodeForgotPasswordAPI`,
+      {
+        phone: phoneVerifyPass,
+      }
+    );
+    if (response.data && response.data.code === 0) {
+      console.log(response.data);
+      console.log(phoneVerifyPass);
+      setLoading(false);
+
+      setForgetPasswordVerify(true);
+    } else {
+      setLoading(false);
+      setErrPhoneForgot(true);
+    }
+  };
   return (
     <div style={backgroundStyle}>
       <div style={overlayStyle}>
@@ -257,142 +321,265 @@ function Login() {
             <div style={textHeader}>Liên hệ</div>
           </div>
           <div style={content}>
-            {forgetPassword ? <div style={blockStyle}><div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
-              <p style={textDescription}>
-                Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại Việt
-                Nam
-              </p><p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: 10,
-                }}
-              >
-                Số điện thoại xác thực
-              </p>
-              <input
-                type="text"
-                onChange={(e) => setPhoneForgetPass(e.target.value)}
-                placeholder="Số điện thoại"
-              /><button style={submitButton} onClick={() => signInButton()}>
-                {loading ? (
-                  <div class="lds-ring-login">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
+            {forgetPassword ? (
+              <>
+                {forgetPasswordVerify ? (
+                  <div style={blockStyle}>
+                    <div style={textContentHeader}>
+                      Ezpics - Dùng là thích! 👋
+                    </div>
+                    <p style={textDescription}>
+                      Bạn vui lòng khiểm tra trong Email mà bạn đã đăng ký với
+                      tài khoản, Nếu không thấy mã bạn có thể kiếm tra trong thư
+                      mục spam
+                    </p>
+                    <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        paddingTop: 10,
+                      }}
+                    >
+                      Mã xác nhận trong email
+                    </p>
+                    <input
+                      type="text"
+                      onChange={(e) => setCodeVerifyPass(e.target.value)}
+                      placeholder="Mã xác nhận"
+                    />
+                    <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        paddingTop: 10,
+                      }}
+                    >
+                      Mật khẩu mới
+                    </p>
+                    <input
+                      type="text"
+                      onChange={(e) => setPassVerifyPass(e.target.value)}
+                      placeholder="Mật khẩu mới"
+                    />
+                    <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        paddingTop: 10,
+                      }}
+                    >
+                      Nhập lại mật khẩu mới
+                    </p>
+                    <input
+                      type="text"
+                      onChange={(e) => setRePasswordVerifyPass(e.target.value)}
+                      placeholder="Nhập lại mật khẩu mới"
+                    />
+                    {errPhoneForgotSecond && <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "12px",
+                        fontWeight: 500,
+                        color:'red',
+                        paddingTop: '10px',
+                      }}
+                    >
+                      Lỗi khi thay đổi mật khẩu, vui lòng thử lại
+                    </p>}
+                    <button
+                      style={submitButton}
+                      onClick={() => handlePasswordForgetSecond()}
+                    >
+                      {loading ? (
+                        <div class="lds-ring-login">
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                      ) : (
+                        "Yêu cầu"
+                      )}
+                    </button>
                   </div>
                 ) : (
-                  "Xác nhận"
+                  <div style={blockStyle}>
+                    <div style={textContentHeader}>
+                      Ezpics - Dùng là thích! 👋
+                    </div>
+                    <p style={textDescription}>
+                      Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại
+                      Việt Nam
+                    </p>
+                    <p
+                      style={{
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontSize: "15px",
+                        fontWeight: 500,
+                        paddingTop: 10,
+                      }}
+                    >
+                      Số điện thoại xác thực
+                    </p>
+                    <input
+                      type="text"
+                      onChange={(e) => {
+                        setPhoneVerifyPass(e.target.value);
+                        console.log(e.target.value);
+                      }}
+                      placeholder="Số điện thoại"
+                    />
+                    {errPhoneForgot && (
+                      <p
+                        style={{
+                          fontFamily:
+                            "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                          fontSize: "13px",
+                          fontWeight: 500,
+                          paddingTop: 10,
+                          color: "red",
+                        }}
+                      >
+                        Số điện thoại không đúng, vui lòng nhập lại
+                      </p>
+                    )}
+                    <button
+                      style={submitButton}
+                      onClick={() => handlePasswordForget()}
+                    >
+                      {loading ? (
+                        <div class="lds-ring-login">
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                          <div></div>
+                        </div>
+                      ) : (
+                        "Xác nhận"
+                      )}
+                    </button>
+                  </div>
                 )}
-              </button></div> : <div style={blockStyle}>
-              <div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
-              <p style={textDescription}>
-                Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại Việt
-                Nam
-              </p>
-              <p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "15px",
-                  fontWeight: 500,
-                  paddingTop: 10,
-                }}
-              >
-                Số điện thoại 
-              </p>
-              <input
-                type="text"
-                onChange={(e) => setPhoneNum(e.target.value)}
-                placeholder="Số điện thoại"
-              />
-
-              <div
-                style={{
-                  width: "100%",
-                  display: "flex",
-                  flexDirection: "row",
-                  justifyContent: "space-between",
-                  alignItems: "flex-end",
-                }}
-              >
+              </>
+            ) : (
+              <div style={blockStyle}>
+                <div style={textContentHeader}>Ezpics - Dùng là thích! 👋</div>
+                <p style={textDescription}>
+                  Mời bạn đăng nhập công cụ thiết kế siêu tốc đầu tiên tại Việt
+                  Nam
+                </p>
                 <p
                   style={{
                     fontFamily:
                       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
                     fontSize: "15px",
                     fontWeight: 500,
-                    // margin: 0
-                    marginBottom: 10,
+                    paddingTop: 10,
                   }}
                 >
-                  Mật khẩu
+                  Số điện thoại
                 </p>
+                <input
+                  type="text"
+                  onChange={(e) => setPhoneNum(e.target.value)}
+                  placeholder="Số điện thoại"
+                />
+
+                <div
+                  style={{
+                    width: "100%",
+                    display: "flex",
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                  }}
+                >
+                  <p
+                    style={{
+                      fontFamily:
+                        "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                      fontSize: "15px",
+                      fontWeight: 500,
+                      // margin: 0
+                      marginBottom: 10,
+                    }}
+                  >
+                    Mật khẩu
+                  </p>
+                  <p
+                    style={{
+                      fontFamily:
+                        "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                      fontSize: "10px",
+                      fontWeight: 500,
+                      paddingTop: 5,
+                      color: "rgb(95, 97, 230)",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => setForgetPassword(true)}
+                  >
+                    Quên mật khẩu ?
+                  </p>
+                </div>
+                <input
+                  type="password"
+                  onChange={(e) => setPassWord(e.target.value)}
+                  placeholder="Mật khẩu"
+                />
+                {errMessage && (
+                  <p
+                    style={{
+                      fontSize: "13px",
+                      fontWeight: 500,
+                      paddingTop: 5,
+                      textAlign: "center",
+                      margin: 0,
+                      color: "red",
+                    }}
+                  >
+                    Số điện thoại hoặc mật khẩu sai
+                  </p>
+                )}
+                <button style={submitButton} onClick={() => signInButton()}>
+                  {loading ? (
+                    <div class="lds-ring-login">
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                      <div></div>
+                    </div>
+                  ) : (
+                    "Đăng nhập"
+                  )}
+                </button>
+                <p style={{ fontSize: "12px", textAlign: "center" }}>Hoặc</p>
+                <button
+                  style={googleButton}
+                  onClick={() => handleGoogleLogin()}
+                >
+                  Đăng nhập bằng Google
+                </button>
                 <p
                   style={{
                     fontFamily:
                       "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                    fontSize: "10px",
-                    fontWeight: 500,
-                    paddingTop: 5,
-                    color: "rgb(95, 97, 230)",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => setForgetPassword(true)}
-                >
-                  Quên mật khẩu ?
-                </p>
-              </div>
-              <input
-                type="password"
-                onChange={(e) => setPassWord(e.target.value)}
-                placeholder="Mật khẩu"
-              />
-              {errMessage && (
-                <p
-                  style={{
                     fontSize: "13px",
-                    fontWeight: 500,
                     paddingTop: 5,
                     textAlign: "center",
-                    margin: 0,
-                    color: "red",
                   }}
                 >
-                  Số điện thoại hoặc mật khẩu sai
+                  Bạn chưa có tài khoản ? - <a href="/sign-up">Đăng ký</a>
                 </p>
-              )}
-              <button style={submitButton} onClick={() => signInButton()}>
-                {loading ? (
-                  <div class="lds-ring-login">
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                    <div></div>
-                  </div>
-                ) : (
-                  "Đăng nhập"
-                )}
-              </button>
-              <p style={{ fontSize: "12px", textAlign: "center" }}>Hoặc</p>
-              <button style={googleButton} onClick={() => handleGoogleLogin()}>
-                Đăng nhập bằng Google
-              </button>
-              <p
-                style={{
-                  fontFamily:
-                    "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                  fontSize: "13px",
-                  paddingTop: 5,
-                  textAlign: "center",
-                }}
-              >
-                Bạn chưa có tài khoản ? - <a href="/sign-up">Đăng ký</a>
-              </p>
-            </div>}
+              </div>
+            )}
           </div>
         </div>
       </div>

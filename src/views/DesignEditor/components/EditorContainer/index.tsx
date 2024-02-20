@@ -14,6 +14,7 @@ import {
   generateToServerInternet,
 } from "~/api/gererateToServer";
 import { useActiveObject } from "@layerhub-io/react";
+import { useDebouncedCallback } from 'use-debounce';
 
 // window.addEventListener("online", () => getValueOnline());
 // window.addEventListener("offline", () => handleOffline());
@@ -273,7 +274,7 @@ export default function ({ children }: { children: React.ReactNode }) {
       } else if (e.key === "ArrowRight") {
         console.log("ArrowRight");
       }
-    } 
+    }
   };
   // const handleKeyUp = (e: any) => {
   //   if (activeObject) {
@@ -284,7 +285,10 @@ export default function ({ children }: { children: React.ReactNode }) {
   //     }
   //   }
   // };
-  
+  const [distance, setDistance] = React.useState({
+    left: 0,
+    top: 0,
+  });
 
   const alertUser = (e: any) => {
     e.preventDefault();
@@ -294,15 +298,46 @@ export default function ({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     window.addEventListener("online", getValueOnline);
     window.addEventListener("offline", handleOffline);
+
     // window.addEventListener("beforeunload", handleOffline);
 
     return () => {
       window.removeEventListener("online", getValueOnline);
     };
   }, [editor]);
-  // window.addEventListener("beforeunload", (event) => {
-  //   event.preventDefault();
-  // });
+  function throttle(callback: any, delay: any) {
+    let lastTime = 0;
+    return function (...args) {
+      const currentTime = new Date().getTime();
+      if (currentTime - lastTime >= delay) {
+        callback(...args);
+        lastTime = currentTime;
+      }
+    };
+  }
+  window.addEventListener(
+        "keydown",
+        useDebouncedCallback((event: any) => {
+          if (activeObject) {
+            if (event.key === "ArrowDown") {
+              editor.objects.update({ top: distance.top + 5 });
+              setDistance({ ...distance, top: distance.top + 5 });
+              
+            } else if (event.key === "ArrowUp") {
+              editor.objects.update({ top: distance.top - 5 });
+              setDistance({ ...distance, top: distance.top - 5 });
+            } else if (event.key === "ArrowLeft") {
+              editor.objects.update({ left: distance.left - 5 });
+
+              setDistance({ ...distance, left: distance.left - 5 });
+            } else if (event.key === "ArrowRight") {
+              editor.objects.update({ left: distance.left + 5 });
+              setDistance({ ...distance, left: distance.left + 5 });
+            }
+          }
+        }, 700,{ maxWait: 2000 })
+      );
+
   return (
     <Block
       $style={{

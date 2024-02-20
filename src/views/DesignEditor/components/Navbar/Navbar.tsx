@@ -41,21 +41,20 @@ const Container = styled<"div", {}, Theme>("div", ({ $theme }) => ({
 export default function () {
   const navigate = useNavigate();
   const parseData = (data: any) => {
+    console.log(data)
     let dataReal = [] as any[];
-    // data = [
-    //   fill: fill
-    // ]
-    // return data
-    if (data && data.colorStops && Array.isArray(data.colorStops)) {
-      return data.colorStops.map((stop: any) => {
+
+      data.colorStops.map((stop: any, index: number) => {
+        const position = index === 0 ? 0 : 0.5;
         dataReal.push({
-          position: 0.45,
+          position: position,
           color: stop.color,
         });
       });
-    }
+    
     return dataReal;
-  };
+};
+
   const {
     setDisplayPreview,
     setScenes,
@@ -188,6 +187,8 @@ export default function () {
 
           sort: index + 1,
         });
+        console.log(parseData(data?.fill))
+        console.log(data)
       }
     });
 
@@ -584,94 +585,94 @@ export default function () {
     const template = editor.scene.exportToJSON();
     const image = (await editor.renderer.render(template)) as string;
 
-    // console.log(JSON.stringify());
+    console.log((parseGraphicJSON()));
     // setLoading(true);
     const dataRendering = parseGraphicJSON();
-    await Promise.all(
-      dataRendering.map(async (item: any, index: any) => {
-        console.error(item);
-        if (typeof item.id === "string") {
-          if (item.content.type === "text") {
-            try {
-              const response = await axios.post(`${network}/addLayerText`, {
-                idproduct: idProduct,
-                token: token,
-                page: item.content.page,
-                text: item.content.text,
-                color: "#ffffff",
-                size: "16px",
-                font: "MTD Matsury",
-              });
+    // await Promise.all(
+    //   dataRendering.map(async (item: any, index: any) => {
+    //     console.error(item);
+    //     if (typeof item.id === "string") {
+    //       if (item.content.type === "text") {
+    //         try {
+    //           const response = await axios.post(`${network}/addLayerText`, {
+    //             idproduct: idProduct,
+    //             token: token,
+    //             page: item.content.page,
+    //             text: item.content.text,
+    //             color: "#ffffff",
+    //             size: "16px",
+    //             font: "MTD Matsury",
+    //           });
 
-              if (response && response.data) {
-                item.id = response.data.id; // Update item.id here
-                console.log(response.data);
-              }
-            } catch (error) {
-              console.error("Error in axios.post:", error);
-            }
-          } else if (item.content.type === "image") {
-            console.log(item);
-            try {
-              const response = await axios.post(
-                `${network}/addLayerImageUrlAPI`,
-                {
-                  idproduct: idProduct,
-                  token: token,
-                  imageUrl: item.content.banner,
-                  page: item.content.page,
-                }
-              );
-              if (response && response.data) {
-                item.id = response.data?.content?.id; // Update item.id here
-                console.log(response.data);
-              }
-            } catch (error) {
-              console.error("Error in axios.post:", error);
-            }
-          }
-        }
-      })
-    );
-    console.log(dataRendering);
-    try {
-      const res = await axios.post(`${network}/addListLayerAPI`, {
-        idProduct: idProduct,
-        token: token,
-        listLayer: JSON.stringify(parseGraphicJSON()),
-      });
-      if (res.data.code === 1) {
-        const imageGenerate = await handleConversion(image, "preview.png");
-        console.log(imageGenerate);
-      } else {
-        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-          position: "top-left",
-          autoClose: 2000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: false,
-          draggable: true,
-          progress: undefined,
-          theme: "dark",
-        });
-        setLoading(false);
-      }
-      // console.log(res);
-      // console.log(generateToServer(template));
-    } catch (error) {
-      toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-        position: "top-left",
-        autoClose: 2000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: false,
-        draggable: true,
-        progress: undefined,
-        theme: "dark",
-      });
-      console.log(error);
-      setLoading(false);
-    }
+    //           if (response && response.data) {
+    //             item.id = response.data.id; // Update item.id here
+    //             console.log(response.data);
+    //           }
+    //         } catch (error) {
+    //           console.error("Error in axios.post:", error);
+    //         }
+    //       } else if (item.content.type === "image") {
+    //         console.log(item);
+    //         try {
+    //           const response = await axios.post(
+    //             `${network}/addLayerImageUrlAPI`,
+    //             {
+    //               idproduct: idProduct,
+    //               token: token,
+    //               imageUrl: item.content.banner,
+    //               page: item.content.page,
+    //             }
+    //           );
+    //           if (response && response.data) {
+    //             item.id = response.data?.content?.id; // Update item.id here
+    //             console.log(response.data);
+    //           }
+    //         } catch (error) {
+    //           console.error("Error in axios.post:", error);
+    //         }
+    //       }
+    //     }
+    //   })
+    // );
+    // console.log(dataRendering);
+    // try {
+    //   const res = await axios.post(`${network}/addListLayerAPI`, {
+    //     idProduct: idProduct,
+    //     token: token,
+    //     listLayer: JSON.stringify(parseGraphicJSON()),
+    //   });
+    //   if (res.data.code === 1) {
+    //     const imageGenerate = await handleConversion(image, "preview.png");
+    //     console.log(imageGenerate);
+    //   } else {
+    //     toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+    //       position: "top-left",
+    //       autoClose: 2000,
+    //       hideProgressBar: false,
+    //       closeOnClick: true,
+    //       pauseOnHover: false,
+    //       draggable: true,
+    //       progress: undefined,
+    //       theme: "dark",
+    //     });
+    //     setLoading(false);
+    //   }
+    //   // console.log(res);
+    //   // console.log(generateToServer(template));
+    // } catch (error) {
+    //   toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+    //     position: "top-left",
+    //     autoClose: 2000,
+    //     hideProgressBar: false,
+    //     closeOnClick: true,
+    //     pauseOnHover: false,
+    //     draggable: true,
+    //     progress: undefined,
+    //     theme: "dark",
+    //   });
+    //   console.log(error);
+    //   setLoading(false);
+    // }
   };
   const handleNotSave = () => {
     navigate("/");

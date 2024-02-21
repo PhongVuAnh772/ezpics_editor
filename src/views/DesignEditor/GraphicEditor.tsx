@@ -25,8 +25,8 @@ import "../../../src/views/DesignEditor/components/Preview/newestLoading.css";
 import useAppContext from "~/hooks/useAppContext";
 import { REPLACE_TYPE_USER } from "~/store/slices/type/typeSlice";
 import { REPLACE_PRO_USER } from "~/store/slices/token/reducers";
-import {useLocation} from 'react-router-dom';
-import ezpiclogo from './EZPICS (converted)-03.png'
+import { useLocation } from "react-router-dom";
+import ezpiclogo from "./EZPICS (converted)-03.png";
 import Button from "@mui/material/Button";
 import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
@@ -42,7 +42,7 @@ function GraphicEditor() {
   const [loading, setLoading] = React.useState<boolean>(false);
   const { setActiveSubMenu } = useAppContext();
   const typeUser = useAppSelector((state) => state.typeUser.typeUser);
-  const [modalUserSeries,setModalUserSeries] = React.useState<boolean>(false)
+  const [modalUserSeries, setModalUserSeries] = React.useState<boolean>(false);
   function checkTokenCookie() {
     var allCookies = document.cookie;
 
@@ -93,11 +93,11 @@ function GraphicEditor() {
     setScenes,
     setCurrentDesign,
   } = useDesignEditorContext();
-  
+
   const [templates, setTemplates] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const fontInitial = useAppSelector((state) => state.newFont.font);
-    const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+  const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
 
   const handleLoadFont = async (x: any) => {
     if (editor) {
@@ -198,125 +198,140 @@ function GraphicEditor() {
     },
     [editor]
   );
+  const parseData = (data: any) => {
+    return {
+      type: "linear",
+      coords: {
+        x1: 32.85079999999999,
+        y1: -136,
+        x2: -31.57080000000002,
+        y2: 136.1492,
+      },
+      colorStops: [
+        { offset: 0, color: data.gradient_color[0].color },
+      { offset: 1, color: data.gradient_color[1].color },
+      ],
+      offsetX: 0,
+      offsetY: 0,
+    };
+  };
   const dataFunction = (data: any) => {
     const dataString = {
       frame: { initialWidth: data.width, initialHeight: data.height },
       content: [] as any,
     };
 
-      data.productDetail.forEach(async (detail: any, index: number) => {
-        if (detail.content.type == "text") {
-          let stringMerged;
-          stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
-          dataString.content.push({
-            id: detail.id,
-            name: "StaticText",
-            angle: 0,
-            stroke: null,
-            strokeWidth: 0,
-            left: (detail.content.postion_left / 100) * data.width,
-            top: (detail.content.postion_top / 100) * data.height,
-            opacity: detail.content.opacity,
-            originX: "left",
-            originY: "top",
-            type: "StaticText",
-            flipX: false,
-            flipY: false,
-            skewX: 0,
-            skewY: 0,
-            visible: true,
-            shadow: null,
-            charSpacing: 0,
-            fill:
-              detail.content.gradient === 1
-                ? detail.content.gradient_color[0]?.color
-                : detail.content.color,
-            width:
-              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
-              100,
-            // height: null,
-            // fontFamily: detail.content.font,
-            fontFamily: detail.content.font,
-            fontSize:
-              (parseInt(detail.content.size.replace(/vw/g, "")) * data.width) /
-              100,
-            // (parseInt(detail.content.width, 10) / data.width) * 10000
-            lineHeight: parseInt(detail.content.gianchu),
-            text: stringMerged,
-            textAlign: detail.content.text_align,
-            metadata: {
-              backgroundLayer: false,
+    data.productDetail.forEach(async (detail: any, index: number) => {
+      if (detail.content.type == "text") {
+        let stringMerged;
+        stringMerged = detail.content.text.replace(/<br\s*\/>/g, "\n");
+        dataString.content.push({
+          id: detail.id,
+          name: "StaticText",
+          angle: 0,
+          stroke: null,
+          strokeWidth: 0,
+          left: (detail.content.postion_left / 100) * data.width,
+          top: (detail.content.postion_top / 100) * data.height,
+          opacity: detail.content.opacity,
+          originX: "left",
+          originY: "top",
+          type: "StaticText",
+          flipX: false,
+          flipY: false,
+          skewX: 0,
+          skewY: 0,
+          visible: true,
+          shadow: null,
+          charSpacing: 0,
+          fill:
+            detail.content.gradient === 1
+              ? parseData(detail.content)
+              : detail.content.color,
+          width:
+            (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+            100,
+          // height: null,
+          // fontFamily: detail.content.font,
+          fontFamily: detail.content.font,
+          fontSize:
+            (parseInt(detail.content.size.replace(/vw/g, "")) * data.width) /
+            100,
+          // (parseInt(detail.content.width, 10) / data.width) * 10000
+          lineHeight: parseInt(detail.content.gianchu),
+          text: stringMerged,
+          textAlign: detail.content.text_align,
+          metadata: {
+            backgroundLayer: false,
 
-              lock: detail.content.lock === 0 ? false : true,
-              variable: detail.content.variable,
-              variableLabel: detail.content.variableLabel,
-              uppercase: detail.content.typeShowTextVariable,
-              sort: detail.sort,
-              page: detail.content.page,
-              srcBackground: data.thumn,
-              idBackground: data?.id,
-            },
-          });
-        } else if (detail.content.type == "image") {
-          dataString.content.push({
-            id: detail.id,
-            name: "StaticImage",
-            angle: 0,
-            stroke: null,
-            strokeWidth: 0,
-            left: (detail.content.postion_left / 100) * data.width,
-            top: (detail.content.postion_top / 100) * data.height,
-            opacity: detail.content.opacity,
-            originX: "left",
-            originY: "top",
-            scaleX:
-              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
-              100 /
-              detail.content.naturalWidth,
-            // img.naturalWidth,
-            scaleY:
-              (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
-              100 /
-              detail.content.naturalWidth,
-            // img.naturalWidth,
-            // data.width,
-            type: "StaticImage",
-            flipX: detail.content.lat_anh,
-            flipY: false,
-            skewX: 0,
-            skewY: 0,
-            visible: true,
-            shadow: null,
-            src: detail.content.banner,
-            cropX: 0,
-            cropY: 0,
-            image_svg: "",
-            metadata: {
-              backgroundLayer: false,
+            lock: detail.content.lock === 0 ? false : true,
+            variable: detail.content.variable,
+            variableLabel: detail.content.variableLabel,
+            uppercase: detail.content.typeShowTextVariable,
+            sort: detail.sort,
+            page: detail.content.page,
+            srcBackground: data.thumn,
+            idBackground: data?.id,
+          },
+        });
+      } else if (detail.content.type == "image") {
+        dataString.content.push({
+          id: detail.id,
+          name: "StaticImage",
+          angle: 0,
+          stroke: null,
+          strokeWidth: 0,
+          left: (detail.content.postion_left / 100) * data.width,
+          top: (detail.content.postion_top / 100) * data.height,
+          opacity: detail.content.opacity,
+          originX: "left",
+          originY: "top",
+          scaleX:
+            (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+            100 /
+            detail.content.naturalWidth,
+          // img.naturalWidth,
+          scaleY:
+            (parseInt(detail.content.width.replace(/vw/g, "")) * data.width) /
+            100 /
+            detail.content.naturalWidth,
+          // img.naturalWidth,
+          // data.width,
+          type: "StaticImage",
+          flipX: detail.content.lat_anh,
+          flipY: false,
+          skewX: 0,
+          skewY: 0,
+          visible: true,
+          shadow: null,
+          src: detail.content.banner,
+          cropX: 0,
+          cropY: 0,
+          image_svg: "",
+          metadata: {
+            backgroundLayer: false,
 
-              naturalWidth: detail.content.naturalWidth,
-              naturalHeight: detail.content.naturalHeight,
-              initialHeight: detail.content.height,
-              initialWidth: detail.content.width,
-              lock: detail.content.lock ? false : true,
-              variable: detail.content.variable,
-              variableLabel: detail.content.variableLabel,
-              brightness: 0,
-              sort: detail.sort,
-              page: detail.content.page,
-              srcBackground: data?.thumn,
-              idBackground: data?.id,
-            },
-          });
-        }
-      });
-    
-    
+            naturalWidth: detail.content.naturalWidth,
+            naturalHeight: detail.content.naturalHeight,
+            initialHeight: detail.content.height,
+            initialWidth: detail.content.width,
+            lock: detail.content.lock ? false : true,
+            variable: detail.content.variable,
+            variableLabel: detail.content.variableLabel,
+            brightness: 0,
+            sort: detail.sort,
+            page: detail.content.page,
+            srcBackground: data?.thumn,
+            idBackground: data?.id,
+          },
+        });
+      }
+    });
+
     return dataString;
   };
   const queryString = window.location.search;
-  
-  
+
   const urlParams = new URLSearchParams(queryString);
 
   const { id, token } = location.state;
@@ -326,7 +341,7 @@ function GraphicEditor() {
     dispatch(REPLACE_ID_USER(id));
   }
 
-  const dataScenes = (data: any,dataBackground: any) => {
+  const dataScenes = (data: any, dataBackground: any) => {
     const dataString = {
       id: uuidv4(),
       name: "Untitled Design",
@@ -339,11 +354,11 @@ function GraphicEditor() {
       preview: "",
       type: "GRAPHIC",
     };
-    console.log(data.content[0]?.metadata?.idBackground)
-        console.log(data)
+    console.log(data.content[0]?.metadata?.idBackground);
+    console.log(data);
 
     if (data?.content && data.content.length > 0) {
-            console.log("chạy vào 1")
+      console.log("chạy vào 1");
 
       const maxPage = Math.max(
         ...data.content.map(
@@ -448,10 +463,9 @@ function GraphicEditor() {
       );
 
       dataString.scenes = scenesArray.filter((scene) => scene !== null);
-    }
-    else {
-      console.log("chạy vào đây")
-      const maxPage2 = 0
+    } else {
+      console.log("chạy vào đây");
+      const maxPage2 = 0;
 
       const scenesArray2: any[] = Array.from(
         { length: maxPage2 + 1 },
@@ -540,34 +554,32 @@ function GraphicEditor() {
             ...matchingDetails2,
           ];
 
-          return  {
-                id: uuidv4(),
-                layers: updatedMatchingDetails2,
-                name: "Untitled Design",
-              }
-           
+          return {
+            id: uuidv4(),
+            layers: updatedMatchingDetails2,
+            name: "Untitled Design",
+          };
         }
       );
 
       dataString.scenes = scenesArray2.filter((scene) => scene !== null);
     }
     dataString.scenes.forEach((data, index) => {
-  let shouldRemove = false; // Biến cờ để xác định xem có nên xóa hay không
+      let shouldRemove = false; // Biến cờ để xác định xem có nên xóa hay không
 
-  if (index > 0) {
-    if (data.layers[1].metadata.backgroundLayer) {
-      shouldRemove = true;
-    }
-  } else {
-    console.log(data + " vế phụ");
-  }
+      if (index > 0) {
+        if (data.layers[1].metadata.backgroundLayer) {
+          shouldRemove = true;
+        }
+      } else {
+        console.log(data + " vế phụ");
+      }
 
-  // Xóa phần tử nếu biến cờ là true
-  if (shouldRemove) {
-    data.layers.splice(1, 1);
-  }
-});
-
+      // Xóa phần tử nếu biến cờ là true
+      if (shouldRemove) {
+        data.layers.splice(1, 1);
+      }
+    });
 
     return dataString;
   };
@@ -675,9 +687,9 @@ function GraphicEditor() {
         if (dataRes) {
           const dataRender = dataFunction(dataRes);
           if (dataRender) {
-            const dataSceneImport = dataScenes(dataRender,dataRes);
+            const dataSceneImport = dataScenes(dataRender, dataRes);
             if (dataSceneImport) {
-              console.log(dataSceneImport)
+              console.log(dataSceneImport);
               await handleImportTemplate(dataSceneImport);
             }
             setTimeout(() => {
@@ -711,7 +723,7 @@ function GraphicEditor() {
             <Footer />
           </div>
         </div>
-       
+
         {(token === null || id === null || errorMessage) && (
           <div
             style={{
@@ -736,7 +748,7 @@ function GraphicEditor() {
                 fontFamily: "Arial, Helvetica, sans-serif",
               }}
             >
-              Bạn không có quyền truy cập, hãy thử lại 
+              Bạn không có quyền truy cập, hãy thử lại
             </h2>
           </div>
         )}

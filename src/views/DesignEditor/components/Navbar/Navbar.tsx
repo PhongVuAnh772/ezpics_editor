@@ -149,7 +149,7 @@ export default function () {
           content: {
             type: "text",
             text: data?.text, //
-            color: data?.fill, //
+            color: typeof data?.fill === "string" ? data?.fill : '#fff', //
             size:
               ((data?.fontSize * 100) / datas?.frame?.width).toString() + "vw", //
             font: data.fontFamily, //

@@ -187,7 +187,6 @@ export default function () {
 
           sort: index + 1,
         });
-        console.log(parseData(data?.fill))
         console.log(data)
       }
     });

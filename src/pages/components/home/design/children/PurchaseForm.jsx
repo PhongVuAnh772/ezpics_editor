@@ -15,11 +15,49 @@ import Modal from "@mui/material/Modal";
 import Box from "@mui/material/Box";
 import warning from "./warning.png";
 import { toast } from "react-toastify";
+import copy from './copy.png'
 
 function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
 
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
+  const [loadingBuyingDuplicateFunc, setLoadingBuyingDuplicateFunc] = React.useState(false);
+
+  const handleDuplicate = async () => {
+    setLoadingBuyingDuplicateFunc(true);
+    try {
+      const response = await axios.post(`${network}/clonedProductAPI`, {
+        token: checkTokenCookie(),
+        id: deletingItemId,
+      });
+      if (response && response.data.code === 1) {
+        setLoadingBuyingDuplicateFunc(false);
+        setModalBuyingDuplicate(false);
+        toast.success("Nhân bản mẫu thiết kế thành công !! 🦄", {
+          position: "top-right",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setTimeout(function () {
+          window.location.reload();
+          
+        }, 1500);
+      } else {
+        console.error("Invalid response format");
+        setLoadingBuyingDuplicateFunc(false);
+      }
+    } catch (error) {
+      console.error("Error fetching data:", error.message);
+      setLoadingBuyingDuplicateFunc(false);
+    }
+  };
+    const [modalBuyingDuplicate, setModalBuyingDuplicate] = React.useState(false);
+
   const handleDelete = async () => {
     setLoadingBuyingFunc(true);
     try {
@@ -52,6 +90,10 @@ function PurchaseForm() {
       console.error("Error fetching data:", error.message);
       setLoadingBuyingFunc(false);
     }
+  };
+  const handleCloseModalDuplicate = () => {
+    setModalBuyingDuplicate(false);
+    setDeletingItemId(null);
   };
   const navigate = useNavigate();
   const styleModalBuyingFree = {
@@ -179,7 +221,6 @@ function PurchaseForm() {
                 transition: "opacity 0.3s",
                 zIndex: 1000,
                 display: "flex",
-                flexDirection: "row",
               }}
               onMouseEnter={(e) => {
                 e.currentTarget.style.opacity = 1;
@@ -188,7 +229,7 @@ function PurchaseForm() {
                 e.currentTarget.style.opacity = 0;
               }}
             >
-              <Button
+              <div style={{display:'flex',flexDirection:'row'}}><Button
                 onClick={(e) => {
                   navigate(`/design`, {
                     state: { id: item.id, token: checkTokenCookie() },
@@ -230,8 +271,33 @@ function PurchaseForm() {
                 <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
                   Xóa
                 </p>
+              </Button></div>
+              <Button
+                onClick={(e) => {
+                  setModalBuyingDuplicate(true);
+                  setDeletingItemId(item.id);
+                }}
+                style={{
+                  color: "black",
+                  margin: "5px",
+                  cursor: "pointer",
+                  borderRadius: 10,
+                  backgroundColor: "white",
+                  width: 110,
+                  marginTop: 10
+                }}
+              >
+                <img
+                  src={copy}
+                  alt=""
+                  style={{ width: 20, height: 20 }}
+                />
+                <p style={{ margin: 0, paddingLeft: 5, textTransform: "none" }}>
+                  Nhân bản
+                </p>
               </Button>
             </div>
+            
             <div
               style={{
                 position: "relative",
@@ -386,6 +452,81 @@ function PurchaseForm() {
             >
               {" "}
               {loadingBuyingFunc ? <span class="loaderNew"></span> : "Xóa"}
+            </Button>
+          </div>
+        </Box>
+      </Modal>
+      <Modal
+        open={modalBuyingDuplicate}
+        onClose={handleCloseModalDuplicate}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModalBuyingFree}>
+          <p
+            style={{
+              margin: 0,
+              fontSize: 22,
+              fontWeight: "bold",
+              paddingBottom: "10px",
+            }}
+          >
+            Cảnh báo
+          </p>
+          <img
+            src={warning}
+            alt=""
+            style={{ width: "20%", height: "30%", marginBottom: "10px" }}
+          />
+          <p
+            style={{
+              margin: 0,
+              fontSize: 17,
+              fontWeight: "500",
+              paddingTop: "10px",
+            }}
+          >
+            Bạn có chắc chắn nhân bản mẫu thiết kế này chứ ?
+          </p>
+          <div style={{ display: "flex" }}>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "black",
+                backgroundColor: "white",
+                marginTop: "40px",
+                width: "60%",
+                marginRight: 10,
+              }}
+              onClick={() => {
+                setModalBuyingDuplicate(false);
+                setDeletingItemId(null);
+              }}
+            >
+              Hủy
+            </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+                marginTop: "40px",
+                width: "100%",
+              }}
+              onClick={() => {
+                handleDuplicate();
+              }}
+            >
+              {" "}
+              {loadingBuyingDuplicateFunc ? <span class="loaderNew"></span> : "Nhân bản"}
             </Button>
           </div>
         </Box>

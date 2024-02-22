@@ -95,7 +95,7 @@ function InformationPersonal() {
 
       if (response && response.data.code === 0) {
         const response2 = await axios.post(`${network}/getInfoMemberAPI`, {
-          token: token,
+          token: checkTokenCookie(),
         });
         if (response2 && response2.data.code === 0) {
               setLoadingRemove(false);
@@ -154,12 +154,12 @@ function InformationPersonal() {
   const handleChangeName = async () => {
     setLoadingName(true);
     const response = await axios.post(`${network}/saveInfoUserAPI`, {
-      token: token,
+      token: checkTokenCookie(),
       name: inputNameChanging,
     });
     if (response && response.data.code === 0) {
       const response = await axios.post(`${network}/getInfoMemberAPI`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       if (response && response.data.code === 0) {
         setLoadingName(false);
@@ -184,12 +184,12 @@ function InformationPersonal() {
   const handlePhone = async () => {
     setLoadingPhone(true);
     const response = await axios.post(`${network}/saveInfoUserAPI`, {
-      token: token,
+      token: checkTokenCookie(),
       phone: inputPhoneChanging,
     });
     if (response && response.data) {
       const response = await axios.post(`${network}/getInfoMemberAPI`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       if (response && response.data.code === 0) {
         setLoadingPhone(false);
@@ -204,12 +204,12 @@ function InformationPersonal() {
   const handleChangeEmail = async () => {
     setLoadingEmail(true);
     const response = await axios.post(`${network}/saveInfoUserAPI`, {
-      token: token,
+      token: checkTokenCookie(),
       email: inputEmailChanging,
     });
     if (response && response.data) {
       const response = await axios.post(`${network}/getInfoMemberAPI`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       if (response && response.data.code === 0) {
         setLoadingEmail(false);
@@ -225,14 +225,14 @@ function InformationPersonal() {
 
   const handleChangePassword = async () => {
     const response = await axios.post(`${network}/saveChangePassAPI`, {
-      token: token,
+      token: checkTokenCookie(),
       passOld: oldPass,
       passNew: password,
       passAgain: rePassword,
     });
     if (response && response.data) {
       const response = await axios.post(`${network}/getInfoMemberAPI`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       if (response && response.data.code === 0) {
         window.location.reload();
@@ -248,11 +248,11 @@ function InformationPersonal() {
   }
   const handleDeleteAccount = async () => {
     const response = await axios.post(`${network}/lockAccountAPI`, {
-      token: token,
+      token: checkTokenCookie(),
     });
     if (response && response.data) {
       const response = await axios.post(`${network}/getInfoMemberAPI`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       if (response && response.data.code === 0) {
         deleteCookie("user_login");

@@ -59,7 +59,7 @@ export default function ({ children }: { children: React.ReactNode }) {
       try {
         const res = await axios.post(`${network}/addListLayerAPI`, {
           idProduct: idProduct,
-          token: token,
+          token: checkTokenCookie(),
           listLayer: JSON.stringify(parseGraphicJSON(dataParsed)),
         });
 

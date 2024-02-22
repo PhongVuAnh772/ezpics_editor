@@ -18,6 +18,7 @@ import man from "./man.png";
 import { useSelector, useDispatch } from "react-redux";
 import axios from 'axios'
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet";
 
 function Contact() {
   const open = useOutletContext();
@@ -148,6 +149,44 @@ function checkTokenCookie() {
          paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%"
       }}
     >
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Liên hệ Ezpics</title>
+          <meta name="description" content="Ezpics RB" />
+          <meta
+            itemprop="name"
+            content="Liên hệ Ezpics "
+          />
+          <meta
+            itemprop="description"
+            content="Liên hệ Ezpics "
+          />
+          <meta
+            property="og:title"
+            content="Liên hệ Ezpics "
+          />
+          <meta
+            property="og:description"
+            content="Liên hệ Ezpics "
+          />
+          <meta
+            property="og:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+          <meta
+            name="twitter:title"
+            content="Liên hệ Ezpics "
+            data-react-helmet="true"
+          />
+          <meta
+            name="twitter:description"
+            content="Liên hệ Ezpics "
+          />
+          <meta
+            name="twitter:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+        </Helmet>
       <div className="contact-container-background">
         <ContactContainerBackground>
           <div className="contact-content">

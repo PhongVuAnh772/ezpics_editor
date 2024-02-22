@@ -14,6 +14,18 @@ import Paper from "@mui/material/Paper";
 import confirmBuying from "./shopping-bag.png";
 import { toast, ToastContainer } from "react-toastify";
 import Slider from "@mui/material/Slider";
+import { Helmet } from "react-helmet";
+import {
+  FacebookIcon,
+  FacebookMessengerIcon,
+  FacebookMessengerShareButton,
+  FacebookShareButton,
+  FacebookShareCount,
+  TwitterShareButton,
+  PinterestIcon,
+  PinterestShareButton,
+  PinterestShareCount,
+} from "react-share";
 
 import {
   BrowserRouter as Router,
@@ -761,7 +773,7 @@ function CollectionBuying({
           if (response1 && response1.data && response1.data.code === 0) {
             // saveFavoriteProductAPI
             const response = await axios.post(`${network}/getInfoMemberAPI`, {
-              token: token,
+              token: checkTokenCookie(),
             });
             if (response && response.data.code === 0) {
               // setLoadingBuyingLostFunc(false);
@@ -900,6 +912,45 @@ function CollectionBuying({
     //   }}
     // >
     <div style={{ paddingTop: "6%", paddingLeft: "16%" }}>
+      
+            <Helmet>
+          <meta charSet="utf-8" />
+          <title>{dataProduct.name}</title>
+          <meta name="description" content="Ezpics RB" />
+          <meta
+            itemprop="name"
+            content={`Bộ sưu tập ${dataProduct.name}`}
+          />
+          <meta
+            itemprop="description"
+            content={`Bộ sưu tập ${dataProduct.name}`}
+          />
+          <meta
+            property="og:title"
+            content={`Bộ sưu tập ${dataProduct.name}`}
+          />
+          <meta
+            property="og:description"
+            content={`Bộ sưu tập ${dataProduct.name}`}
+          />
+          <meta
+            property="og:image"
+            content={dataProduct.thumbnail}
+          />
+          <meta
+            name="twitter:title"
+            content={`Bộ sưu tập ${dataProduct.name}`}
+            data-react-helmet="true"
+          />
+          <meta
+            name="twitter:description"
+            content={`Bộ sưu tập ${dataProduct.name}`}
+          />
+          <meta
+            name="twitter:image"
+            content={dataProduct.thumbnail}
+          />
+        </Helmet>
       <div className="category-wrapper">
         <div className="category-wrapper__block">
           {/* <img
@@ -934,30 +985,43 @@ function CollectionBuying({
                 <p className="category-wrapper__block---title----price-----information------desc--------creator------name">
                   Chia sẻ:
                 </p>
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={fbicon}
-                />
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={twitter}
-                />
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={messicon}
-                />
-                <img
-                  className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
-                  style={{ marginLeft: 10 }}
-                  alt=""
-                  src={pinterest}
-                />
+                <FacebookShareButton url={`https://ezpics.vn/collection-buying/${id}`}>
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={fbicon}
+                  />
+                </FacebookShareButton>
+
+                <TwitterShareButton url={`https://ezpics.vn/collection-buying/${id}`}>
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={twitter}
+                  />
+                </TwitterShareButton>
+
+                <FacebookMessengerShareButton
+                  // class="fb-xfbml-parse-ignore"
+                  url={`https://ezpics.vn/collection-buying/${id}`}
+                >
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={messicon}
+                  />
+                </FacebookMessengerShareButton>
+                <PinterestShareButton url={`https://ezpics.vn/collection-buying/${id}`} media={dataProduct.image}>
+                  <img
+                    className="category-wrapper__block---title----price-----information------desc--------creator------avatar"
+                    style={{ marginLeft: 10, cursor: "pointer" }}
+                    alt=""
+                    src={pinterest}
+                  />
+                </PinterestShareButton>
               </div>
               {/* <div></div> */}
               <div
@@ -2003,7 +2067,7 @@ function CollectionBuying({
               paddingBottom: "10px",
             }}
           >
-            Xác nhận
+           Chi tiết thiết kế trong bộ sưu tập
           </p>
           <div
             style={{

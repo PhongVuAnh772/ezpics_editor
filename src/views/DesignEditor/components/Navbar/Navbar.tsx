@@ -318,6 +318,32 @@ export default function () {
       console.log("NO CURRENT DESIGN");
     }
   };
+   function checkTokenCookie() {
+    var allCookies = document.cookie;
+
+    var cookiesArray = allCookies.split("; ");
+
+    var tokenCookie;
+    for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i];
+      var cookieParts = cookie.split("=");
+      var cookieName = cookieParts[0];
+      var cookieValue = cookieParts[1];
+
+      if (cookieName === "token") {
+        tokenCookie = cookieValue;
+        break;
+      }
+    }
+
+    // Kiểm tra nếu đã tìm thấy cookie "token"
+    if (tokenCookie) {
+      console.log('Giá trị của cookie "token" là:', tokenCookie);
+      return tokenCookie.replace(/^"|"$/g, "");
+    } else {
+      console.log('Không tìm thấy cookie có tên là "token"');
+    }
+  }
   const handleSaveIcon = async () => {
     const template = editor.scene.exportToJSON();
     const image = (await editor.renderer.render(template)) as string;
@@ -329,7 +355,7 @@ export default function () {
     try {
       const res = await axios.post(`${network}/addListLayerAPI`, {
         idProduct: idProduct,
-        token: token,
+        token: checkTokenCookie(),
         listLayer: JSON.stringify(parseGraphicJSON()),
       });
       if (res.data.code === 1) {
@@ -584,94 +610,94 @@ export default function () {
     const template = editor.scene.exportToJSON();
     const image = (await editor.renderer.render(template)) as string;
 
-    console.log(template);
+    console.log((parseGraphicJSON()));
     // setLoading(true);
     const dataRendering = parseGraphicJSON();
-    // await Promise.all(
-    //   dataRendering.map(async (item: any, index: any) => {
-    //     console.error(item);
-    //     if (typeof item.id === "string") {
-    //       if (item.content.type === "text") {
-    //         try {
-    //           const response = await axios.post(`${network}/addLayerText`, {
-    //             idproduct: idProduct,
-    //             token: token,
-    //             page: item.content.page,
-    //             text: item.content.text,
-    //             color: "#ffffff",
-    //             size: "16px",
-    //             font: "MTD Matsury",
-    //           });
+    await Promise.all(
+      dataRendering.map(async (item: any, index: any) => {
+        console.error(item);
+        if (typeof item.id === "string") {
+          if (item.content.type === "text") {
+            try {
+              const response = await axios.post(`${network}/addLayerText`, {
+                idproduct: idProduct,
+                token: checkTokenCookie(),
+                page: item.content.page,
+                text: item.content.text,
+                color: "#ffffff",
+                size: "16px",
+                font: "MTD Matsury",
+              });
 
-    //           if (response && response.data) {
-    //             item.id = response.data.id; // Update item.id here
-    //             console.log(response.data);
-    //           }
-    //         } catch (error) {
-    //           console.error("Error in axios.post:", error);
-    //         }
-    //       } else if (item.content.type === "image") {
-    //         console.log(item);
-    //         try {
-    //           const response = await axios.post(
-    //             `${network}/addLayerImageUrlAPI`,
-    //             {
-    //               idproduct: idProduct,
-    //               token: token,
-    //               imageUrl: item.content.banner,
-    //               page: item.content.page,
-    //             }
-    //           );
-    //           if (response && response.data) {
-    //             item.id = response.data?.content?.id; // Update item.id here
-    //             console.log(response.data);
-    //           }
-    //         } catch (error) {
-    //           console.error("Error in axios.post:", error);
-    //         }
-    //       }
-    //     }
-    //   })
-    // );
-    // console.log(dataRendering);
-    // try {
-    //   const res = await axios.post(`${network}/addListLayerAPI`, {
-    //     idProduct: idProduct,
-    //     token: token,
-    //     listLayer: JSON.stringify(parseGraphicJSON()),
-    //   });
-    //   if (res.data.code === 1) {
-    //     const imageGenerate = await handleConversion(image, "preview.png");
-    //     console.log(imageGenerate);
-    //   } else {
-    //     toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-    //       position: "top-left",
-    //       autoClose: 2000,
-    //       hideProgressBar: false,
-    //       closeOnClick: true,
-    //       pauseOnHover: false,
-    //       draggable: true,
-    //       progress: undefined,
-    //       theme: "dark",
-    //     });
-    //     setLoading(false);
-    //   }
-    //   // console.log(res);
-    //   // console.log(generateToServer(template));
-    // } catch (error) {
-    //   toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
-    //     position: "top-left",
-    //     autoClose: 2000,
-    //     hideProgressBar: false,
-    //     closeOnClick: true,
-    //     pauseOnHover: false,
-    //     draggable: true,
-    //     progress: undefined,
-    //     theme: "dark",
-    //   });
-    //   console.log(error);
-    //   setLoading(false);
-    // }
+              if (response && response.data) {
+                item.id = response.data.id; // Update item.id here
+                console.log(response.data);
+              }
+            } catch (error) {
+              console.error("Error in axios.post:", error);
+            }
+          } else if (item.content.type === "image") {
+            console.log(item);
+            try {
+              const response = await axios.post(
+                `${network}/addLayerImageUrlAPI`,
+                {
+                  idproduct: idProduct,
+                  token: checkTokenCookie(),
+                  imageUrl: item.content.banner,
+                  page: item.content.page,
+                }
+              );
+              if (response && response.data) {
+                item.id = response.data?.content?.id; // Update item.id here
+                console.log(response.data);
+              }
+            } catch (error) {
+              console.error("Error in axios.post:", error);
+            }
+          }
+        }
+      })
+    );
+    console.log(dataRendering);
+    try {
+      const res = await axios.post(`${network}/addListLayerAPI`, {
+        idProduct: idProduct,
+        token: checkTokenCookie(),
+        listLayer: JSON.stringify(parseGraphicJSON()),
+      });
+      if (res.data.code === 1) {
+        const imageGenerate = await handleConversion(image, "preview.png");
+        console.log(imageGenerate);
+      } else {
+        toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+          position: "top-left",
+          autoClose: 2000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: false,
+          draggable: true,
+          progress: undefined,
+          theme: "dark",
+        });
+        setLoading(false);
+      }
+      // console.log(res);
+      // console.log(generateToServer(template));
+    } catch (error) {
+      toast.error("Lưu mẫu thiết kế thất bại !! 🦄", {
+        position: "top-left",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: false,
+        draggable: true,
+        progress: undefined,
+        theme: "dark",
+      });
+      console.log(error);
+      setLoading(false);
+    }
   };
   const handleNotSave = () => {
     navigate("/");

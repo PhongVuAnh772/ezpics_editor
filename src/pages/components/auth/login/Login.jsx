@@ -14,6 +14,7 @@ import "./SignUp.css";
 import { useGoogleLogin } from "@react-oauth/google";
 import { jwtDecode } from "jwt-decode";
 import { toast } from "react-toastify";
+import { Helmet } from "react-helmet";
 
 function Login() {
   const dispatch = useDispatch();
@@ -256,15 +257,12 @@ function Login() {
   const handlePasswordForgetSecond = async () => {
     setLoading(true);
 
-    const response = await axios.post(
-      `${network}/saveNewPassAPI`,
-      {
-        phone: phoneVerifyPass,
-        code: codeVerifyPass,
-        passNew: passVerifyPass,
-        passAgain: rePasswordVerifyPass,
-      }
-    );
+    const response = await axios.post(`${network}/saveNewPassAPI`, {
+      phone: phoneVerifyPass,
+      code: codeVerifyPass,
+      passNew: passVerifyPass,
+      passAgain: rePasswordVerifyPass,
+    });
     if (response.data && response.data.code === 0) {
       toast.success("Lấy lại mật khẩu thành công !! 🦄", {
         position: "top-right",
@@ -277,7 +275,7 @@ function Login() {
         theme: "dark",
       });
       setLoading(false);
-      setForgetPassword(false)
+      setForgetPassword(false);
     } else {
       setErrPhoneForgotSecond(true);
       setLoading(false);
@@ -305,6 +303,29 @@ function Login() {
   };
   return (
     <div style={backgroundStyle}>
+      <Helmet>
+        <meta charSet="utf-8" />
+        <title>Đăng nhập</title>
+        <meta name="description" content="Đăng nhập" />
+        <meta itemprop="name" content="Đăng nhập" />
+        <meta itemprop="description" content="Đăng nhập" />
+        <meta property="og:title" content="Đăng nhập" />
+        <meta property="og:description" content="Đăng nhập" />
+        <meta
+          property="og:image"
+          content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+        />
+        <meta
+          name="twitter:title"
+          content="Đăng nhập"
+          data-react-helmet="true"
+        />
+        <meta name="twitter:description" content="Đăng nhập" />
+        <meta
+          name="twitter:image"
+          content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+        />
+      </Helmet>
       <div style={overlayStyle}>
         <div style={page}>
           <div style={header}>
@@ -381,18 +402,20 @@ function Login() {
                       onChange={(e) => setRePasswordVerifyPass(e.target.value)}
                       placeholder="Nhập lại mật khẩu mới"
                     />
-                    {errPhoneForgotSecond && <p
-                      style={{
-                        fontFamily:
-                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
-                        fontSize: "12px",
-                        fontWeight: 500,
-                        color:'red',
-                        paddingTop: '10px',
-                      }}
-                    >
-                      Lỗi khi thay đổi mật khẩu, vui lòng thử lại
-                    </p>}
+                    {errPhoneForgotSecond && (
+                      <p
+                        style={{
+                          fontFamily:
+                            "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                          fontSize: "12px",
+                          fontWeight: 500,
+                          color: "red",
+                          paddingTop: "10px",
+                        }}
+                      >
+                        Lỗi khi thay đổi mật khẩu, vui lòng thử lại
+                      </p>
+                    )}
                     <button
                       style={submitButton}
                       onClick={() => handlePasswordForgetSecond()}

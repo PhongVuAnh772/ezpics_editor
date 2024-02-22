@@ -16,6 +16,7 @@ import Box from "@mui/material/Box";
 import warning from "./warning.png";
 import { toast } from "react-toastify";
 import copy from './copy.png'
+import { Helmet } from "react-helmet";
 
 function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
@@ -188,6 +189,44 @@ function PurchaseForm() {
 
   return (
     <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Mẫu mua - Thiết kế của bạn</title>
+          <meta name="description" content="Hãy thổi hồn vào các mẫu thiết kế của bạn" />
+          <meta
+            itemprop="name"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            itemprop="description"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            property="og:title"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            property="og:description"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            property="og:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+          <meta
+            name="twitter:title"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+            data-react-helmet="true"
+          />
+          <meta
+            name="twitter:description"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            name="twitter:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+        </Helmet>
       {data.length > 0 ? (
         data.map((item, index) => (
           <div

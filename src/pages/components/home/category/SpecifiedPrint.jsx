@@ -639,7 +639,7 @@ function SpecifiedPrint({
           if (response1 && response1.data && response1.data.code === 0) {
             // saveFavoriteProductAPI
             const response = await axios.post(`${network}/getInfoMemberAPI`, {
-              token: token,
+              token: checkTokenCookie(),
             });
             if (response && response.data.code === 0) {
               // setLoadingBuyingLostFunc(false);

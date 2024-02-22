@@ -107,13 +107,10 @@ function Category({
   };
 
   function checkTokenCookie() {
-    // Lấy tất cả các cookies
     var allCookies = document.cookie;
 
-    // Tách các cookies thành mảng các cặp key-value
     var cookiesArray = allCookies.split("; ");
 
-    // Tìm cookie có tên là "token"
     var tokenCookie;
     for (var i = 0; i < cookiesArray.length; i++) {
       var cookie = cookiesArray[i];
@@ -504,7 +501,7 @@ function Category({
           });
           if (response1 && response1.data && response1.data.code === 0) {
             const response = await axios.post(`${network}/getInfoMemberAPI`, {
-              token: checkTokenCookie(),
+        token: checkTokenCookie(),
             });
             if (response && response.data.code === 0) {
               setLoadingBuyingLostFunc(false);
@@ -555,7 +552,7 @@ function Category({
           if (response1 && response1.data && response1.data.code === 0) {
             // saveFavoriteProductAPI
             const response = await axios.post(`${network}/getInfoMemberAPI`, {
-              token: token,
+              token: checkTokenCookie(),
             });
             if (response && response.data.code === 0) {
               // setLoadingBuyingLostFunc(false);

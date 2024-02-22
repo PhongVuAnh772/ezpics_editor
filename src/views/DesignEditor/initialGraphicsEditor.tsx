@@ -87,13 +87,38 @@ function GraphicEditor() {
       }
     }
   };
+  function checkTokenCookie() {
+    var allCookies = document.cookie;
 
+    var cookiesArray = allCookies.split("; ");
+
+    var tokenCookie;
+    for (var i = 0; i < cookiesArray.length; i++) {
+      var cookie = cookiesArray[i];
+      var cookieParts = cookie.split("=");
+      var cookieName = cookieParts[0];
+      var cookieValue = cookieParts[1];
+
+      if (cookieName === "token") {
+        tokenCookie = cookieValue;
+        break;
+      }
+    }
+
+    // Kiểm tra nếu đã tìm thấy cookie "token"
+    if (tokenCookie) {
+      console.log('Giá trị của cookie "token" là:', tokenCookie);
+      return tokenCookie.replace(/^"|"$/g, "");
+    } else {
+      console.log('Không tìm thấy cookie có tên là "token"');
+    }
+  }
   const getDataFontTextInitial = async (fontInitial: any) => {
     //
     setLoading(true);
     try {
       const response = await axios.post(`${networkAPI}/listFont`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       const data = response.data.data;
       setCommonFonts(data);
@@ -471,7 +496,7 @@ function GraphicEditor() {
     const fetchProUser = async () => {
       try {
         const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
-          token: token,
+          token: checkTokenCookie(),
         });
         if (response.data.data) {
               console.log(scenes)
@@ -505,7 +530,7 @@ function GraphicEditor() {
       try {
         const data = {
           idproduct: id,
-          token: token,
+          token: checkTokenCookie(),
         };
 
         const response = await axios.post(`${networkAPI}/listLayerAPI`, data);

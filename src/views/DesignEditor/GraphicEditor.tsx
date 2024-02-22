@@ -142,7 +142,7 @@ function GraphicEditor() {
     setLoading(true);
     try {
       const response = await axios.post(`${networkAPI}/listFont`, {
-        token: token,
+        token: checkTokenCookie(),
       });
       const data = response.data.data;
       setCommonFonts(data);
@@ -611,7 +611,7 @@ function GraphicEditor() {
     const fetchProUser = async () => {
       try {
         const response = await axios.post(`${networkAPI}/getInfoMemberAPI`, {
-          token: token,
+          token: checkTokenCookie(),
         });
         if (response.data.data) {
           dispatch(

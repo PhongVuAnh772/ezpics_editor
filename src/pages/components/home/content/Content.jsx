@@ -78,10 +78,19 @@ import coin from "./coin.png";
 import downloadIcon from "./assets/direct-download (1).png";
 import discount from "./assets/discount-coupon.png";
 // import "../../../../../src/pages/components/home/category/loadingFavorite.css";
-
+import SEO from "../../../../api/SEO";
 const drawerWidth = 250;
 
 export default function PersistentDrawerLeft() {
+  useEffect(() => {
+    SEO(
+      "Ezpics - Công cụ thiết kế hình ảnh siêu tốc",
+      "EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến",
+      "Ezpics - Công cụ thiết kế hình ảnh siêu tốc",
+      "https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+    );
+  }, []);
+
   const [loadingModal, setLoadingModal] = React.useState(false);
   const [loading, setLoading] = React.useState(false);
   const dispatch = useDispatch();
@@ -106,7 +115,27 @@ export default function PersistentDrawerLeft() {
     React.useState(null);
   const [selectedOptionTransaction, setSelectedOptionTransaction] =
     React.useState(null);
+  const [modalAdvertisement, setModalAdvertisement] = React.useState(false);
+  const handleCloseModalAdvertisement = () => {
+    setModalAdvertisement(false);
+  };
 
+  const styleModalBuyingFree = {
+    position: "absolute",
+    top: "50%",
+    left: "50%",
+    transform: "translate(-50%, -50%)",
+    width: "30%",
+    height: 400,
+    bgcolor: "background.paper",
+    boxShadow: 24,
+    display: "flex",
+    alignItems: "center",
+    flexDirection: "column",
+    paddingTop: "15px",
+
+    borderRadius: "15px",
+  };
   // const
   const handleRadioChangeTransaction = (event) => {
     setSelectedOptionTransaction(event.target.value);
@@ -152,16 +181,16 @@ export default function PersistentDrawerLeft() {
   };
   React.useEffect(() => {
     const checkLoginAuth = () => {
-          var userLogin = getCookie("user_login");
-          if (userLogin != null && authentication == false) {
-            checkLoginAuth()
-          }
-    }
-    checkLoginAuth()
+      var userLogin = getCookie("user_login");
+      if (userLogin != null && authentication == false) {
+        checkLoginAuth();
+      }
+    };
+    checkLoginAuth();
   }, [authentication]);
   React.useEffect(() => {
     const getDataUser = () => {
-      var userLogin = getCookie("user_login")
+      var userLogin = getCookie("user_login");
       if (userLogin) {
         const dataUser = JSON.parse(userLogin);
         dispatch(CHANGE_VALUE(dataUser));
@@ -590,7 +619,7 @@ export default function PersistentDrawerLeft() {
       if (response.data.code === 1) {
         console.log(response.data);
         const response = await axios.post(`${network}/getInfoMemberAPI`, {
-          token: token,
+          token: checkTokenCookie(),
         });
         if (response && response.data.code === 0) {
           setLoadingBuyingLostFunc(false);
@@ -2785,11 +2814,21 @@ export default function PersistentDrawerLeft() {
                     </label>
 
                     {selectedFilePrint ? (
-                      <div style={{width: '100%',height: 300,display:'flex',alignItems:'center',justifyContent:'center'}}><img
-                        src={urlSelectedFilePrint}
-                        alt=""
-                        style={{ width: 200, height: "auto" }}
-                      /></div>
+                      <div
+                        style={{
+                          width: "100%",
+                          height: 300,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                        }}
+                      >
+                        <img
+                          src={urlSelectedFilePrint}
+                          alt=""
+                          style={{ width: 200, height: "auto" }}
+                        />
+                      </div>
                     ) : (
                       <form
                         id="file-upload-form"
@@ -2932,12 +2971,24 @@ export default function PersistentDrawerLeft() {
                   </h2>
                 </div>
                 {selectedFile ? (
-                  
-                  <div className="card-form---create-newing" style={{display:'flex',alignItems:'center',justifyContent:'center'}}><img
-                    src={urlSelectedFile}
-                    alt=""
-                    style={{ width: 200, height: 'auto',alignSelf:'center' }}
-                  /></div>
+                  <div
+                    className="card-form---create-newing"
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <img
+                      src={urlSelectedFile}
+                      alt=""
+                      style={{
+                        width: 200,
+                        height: "auto",
+                        alignSelf: "center",
+                      }}
+                    />
+                  </div>
                 ) : (
                   <form className="card-form---create-newing">
                     {/* <div className="input---create-newing">
@@ -3014,43 +3065,40 @@ export default function PersistentDrawerLeft() {
                         </label>
                       </form>
                     </div>
-
-                    
-                    
                   </form>
                 )}
-<div className="action---create-newing">
-                      {selectedFile !== null ? (
-                        <button
-                          className="action-button---create-newing"
-                          style={{
-                            cursor: "pointer",
-                            display: "flex",
-                            alignItems: "center",
-                            justifyContent: "center",
-                          }}
-                          onClick={(e) => handleCreateCustom(e)}
-                          // onClick={(e) => {
-                          //   e.preventDefault();
-                          //   console.log(urlSelectedFile);
-                          // }}
-                        >
-                          {loadingButtonModalCreate ? (
-                            <span class="loader-create-film"></span>
-                          ) : (
-                            "Bắt đầu tạo mẫu"
-                          )}
-                        </button>
+                <div className="action---create-newing">
+                  {selectedFile !== null ? (
+                    <button
+                      className="action-button---create-newing"
+                      style={{
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                      onClick={(e) => handleCreateCustom(e)}
+                      // onClick={(e) => {
+                      //   e.preventDefault();
+                      //   console.log(urlSelectedFile);
+                      // }}
+                    >
+                      {loadingButtonModalCreate ? (
+                        <span class="loader-create-film"></span>
                       ) : (
-                        <button
-                          className="action-button---create-newing"
-                          style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
-                          disabled
-                        >
-                          Bắt đầu tạo mẫu
-                        </button>
+                        "Bắt đầu tạo mẫu"
                       )}
-                    </div>
+                    </button>
+                  ) : (
+                    <button
+                      className="action-button---create-newing"
+                      style={{ backgroundColor: "rgba(255, 66, 78,0.3)" }}
+                      disabled
+                    >
+                      Bắt đầu tạo mẫu
+                    </button>
+                  )}
+                </div>
                 <div className="card-info---create-newing">
                   <p>
                     Nếu bạn chưa có thông tin, hãy tham khảo
@@ -3100,6 +3148,14 @@ export default function PersistentDrawerLeft() {
           </div>
         )}
       </Box>
+      <Modal
+        open={modalAdvertisement}
+        onClose={handleCloseModalAdvertisement}
+        aria-labelledby="modal-modal-title"
+        aria-describedby="modal-modal-description"
+      >
+        <Box sx={styleModalBuyingFree}></Box>
+      </Modal>
     </>
   );
 }

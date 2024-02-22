@@ -9,7 +9,7 @@ import {
   Outlet,
   useOutletContext,
   Navigate,
-  useNavigate
+  useNavigate,
 } from "react-router-dom";
 import "./loadingFavorite.css";
 import Modal from "@mui/material/Modal";
@@ -34,9 +34,10 @@ import iosstore from "./ios.png";
 import ggplay from "./ggplay.png";
 import Box from "@mui/material/Box";
 import { useSelector, useDispatch } from "react-redux";
+import { Helmet } from "react-helmet";
 
 function RemoveBackground() {
-  const navigate = useNavigate()
+  const navigate = useNavigate();
   const [loadingBuyingFunc, setLoadingBuyingFunc] = useState(false);
   const [uploadedImageUrl, setUploadedImageUrl] = useState(null); // New state for uploaded image URL
 
@@ -115,22 +116,21 @@ function RemoveBackground() {
     const authentication = checkAvailableLogin();
 
     if (!authentication) {
-      console.log(authentication)
-      navigate('/login');
+      console.log(authentication);
+      navigate("/login");
     } else {
       inputFileRef.current?.click();
     }
   };
   const handleRemoveBackgroundSecond = (e) => {
-  
     e.preventDefault();
-        const authentication = checkAvailableLogin();
+    const authentication = checkAvailableLogin();
 
     if (!authentication) {
-      console.log(authentication)
-      navigate('/login');
+      console.log(authentication);
+      navigate("/login");
     } else {
-    inputFileRef.current?.click();
+      inputFileRef.current?.click();
     }
   };
   const Main = styled("main")(({ theme }) => ({
@@ -236,6 +236,44 @@ function RemoveBackground() {
   return (
     <>
       <Main style={{ paddingTop: "3%", flex: 1 }}>
+        <Helmet>
+          <meta charSet="utf-8" />
+          <title>Xóa nền Ezpics</title>
+          <meta name="description" content="Ezpics RB" />
+          <meta
+            itemprop="name"
+            content="Ezpics RB - Xóa nền trực tuyến là công cụ hỗ trợ AI cho phép người dùng dễ dàng xóa phông của hình ảnh trực tuyến. "
+          />
+          <meta
+            itemprop="description"
+            content="Ezpics RB - Xóa nền trực tuyến là công cụ hỗ trợ AI cho phép người dùng dễ dàng xóa phông của hình ảnh trực tuyến. "
+          />
+          <meta
+            property="og:title"
+            content="Ezpics RB - Xóa nền trực tuyến là công cụ hỗ trợ AI cho phép người dùng dễ dàng xóa phông của hình ảnh trực tuyến. "
+          />
+          <meta
+            property="og:description"
+            content="Ezpics RB - Xóa nền trực tuyến là công cụ hỗ trợ AI cho phép người dùng dễ dàng xóa phông của hình ảnh trực tuyến. "
+          />
+          <meta
+            property="og:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+          <meta
+            name="twitter:title"
+            content="Ezpics RB - Xóa nền trực tuyến là công cụ hỗ trợ AI cho phép người dùng dễ dàng xóa phông của hình ảnh trực tuyến. "
+            data-react-helmet="true"
+          />
+          <meta
+            name="twitter:description"
+            content="Ezpics RB - Xóa nền trực tuyến là công cụ hỗ trợ AI cho phép người dùng dễ dàng xóa phông của hình ảnh trực tuyến. "
+          />
+          <meta
+            name="twitter:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+        </Helmet>
         <div className="header">
           <div className="header-text">
             <h1 className="header-text__content">Xóa hình ảnh</h1>

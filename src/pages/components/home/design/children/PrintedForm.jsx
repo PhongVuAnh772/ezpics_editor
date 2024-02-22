@@ -19,6 +19,7 @@ import printer from "./printer.png";
 import MuiInput from "@mui/material/Input";
 import { styled } from "@mui/material/styles";
 import copy from './copy.png'
+import { Helmet } from "react-helmet";
 
 function PurchaseForm() {
   const [deletingItemId, setDeletingItemId] = React.useState(null);
@@ -273,6 +274,44 @@ const handleCloseModalDuplicate = () => {
 
   return (
     <div style={{ paddingTop: "10px", display: "flex", flexWrap: "wrap" }}>
+      <Helmet>
+          <meta charSet="utf-8" />
+          <title>Mẫu in hàng loạt - Thiết kế của bạn</title>
+          <meta name="description" content="Hãy thổi hồn vào các mẫu thiết kế của bạn" />
+          <meta
+            itemprop="name"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            itemprop="description"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            property="og:title"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            property="og:description"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            property="og:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+          <meta
+            name="twitter:title"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+            data-react-helmet="true"
+          />
+          <meta
+            name="twitter:description"
+            content="Hãy thổi hồn vào các mẫu thiết kế của bạn"
+          />
+          <meta
+            name="twitter:image"
+            content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+          />
+        </Helmet>
       {data.length > 0 ? (
         data.map((item, index) => (
           <div

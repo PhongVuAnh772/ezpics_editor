@@ -921,6 +921,8 @@ function CollectionBuying({
             itemprop="name"
             content={`Bộ sưu tập ${dataProduct.name}`}
           />
+          <meta property="og:url" content={`https://ezpics.vn/collection-buying/${id}`}/>
+
           <meta
             itemprop="description"
             content={`Bộ sưu tập ${dataProduct.name}`}

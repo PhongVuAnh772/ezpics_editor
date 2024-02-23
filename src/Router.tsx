@@ -1,3 +1,4 @@
+import React, { useEffect,useState } from 'react';
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import DesignEditor from "~/views/DesignEditor";
 import Download from "../src/pages/components/home/download/DownloadIOS.jsx";
@@ -54,6 +55,7 @@ import DesignPrinted from "./views/DesignEditor/DesignPrinted.js";
 function Router() {
   const location = useLocation();
   const previousLocation = location.state?.previousLocation;
+
   return (
     <div className="app">
       <Routes location={previousLocation || location}>

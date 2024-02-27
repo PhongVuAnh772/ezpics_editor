@@ -98,7 +98,7 @@ function PurchaseCollection() {
         setLoadingBuyingFunc(false);
             setModalExtend(false);
 
-        toast.success("Gia hạn mẫu thiết kế thành công !! 🦄", {
+        toast.success("Gia hạn kho thiết kế thành công !! 🦄", {
           position: "top-right",
           autoClose: 2000,
           hideProgressBar: false,

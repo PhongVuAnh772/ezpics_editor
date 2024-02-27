@@ -10,6 +10,9 @@ import Login from "./pages/components/auth/login/Login.jsx";
 import SignUp from "./pages/components/auth/signup/SignUp.jsx";
 import RequireAuth from "./pages/components/auth/RequireAuth.jsx";
 import RequireLogin from "./pages/components/auth/RequireLogin.jsx";
+import YourDesignPage from "../src/pages/components/page-satisfied/children/YourDesignPage.jsx";
+import YourCollection from "../src/pages/components/page-satisfied/children/YourCollection.jsx";
+import Portfolio from "../src/pages/components/page-satisfied/children/Portfolio.jsx";
 
 import InformationPersonal from "./pages/components/information/InformationPersonal.jsx";
 import Project from "./pages/components/project/Project.jsx";
@@ -159,7 +162,11 @@ function Router() {
             }
           />
 
-          <Route path="/page-satisfied" element={<PageSatisfied />} />
+          <Route path="/page-satisfied" element={<PageSatisfied />}>
+            <Route index path="your-design" element={<YourDesignPage />} />
+            <Route path="portfolio" element={<Portfolio />} />
+            <Route path="your-collection" element={<YourCollection />} />
+          </Route>
           <Route path="/project" element={<Project />}>
             <Route index path="recommend" element={<Recommended />} />
             <Route path="youtube" element={<ThumnailYoutube />} />

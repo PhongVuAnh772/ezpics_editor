@@ -236,8 +236,6 @@ function CollectionBuying({
         break;
       }
     }
-
-    // Kiểm tra nếu đã tìm thấy cookie "token"
     if (tokenCookie) {
       console.log('Giá trị của cookie "token" là:', tokenCookie);
       return tokenCookie.replace(/^"|"$/g, "");
@@ -245,6 +243,7 @@ function CollectionBuying({
       console.log('Không tìm thấy cookie có tên là "token"');
     }
   }
+  
   function tinhGiaBanDau(giaSauGiamGia, phanTramGiamGia) {
     // Kiểm tra nếu phần trăm giảm giá không hợp lệ
     if (phanTramGiamGia <= 0 || phanTramGiamGia >= 100) {
@@ -474,6 +473,9 @@ function CollectionBuying({
         setUserId(response.data?.data?.user_id);
         console.log(response.data);
         setLoading(false);
+// document.querySelector('title').innerText = 'Your page title'; // Cập nhật thẻ title
+// document.querySelector('meta[name="description"]').innerText = 'Your page description'; // Cập nhật thẻ meta description
+// document.querySelector('meta[name="keywords"]').innerText = 'React Helmet, SEO, SPA'; // Cập nhật thẻ meta keywords
       }
     } catch (error) {
       console.log(error);
@@ -911,10 +913,9 @@ function CollectionBuying({
     //     paddingLeft: "5%",
     //   }}
     // >
-    <div style={{ paddingTop: "6%", paddingLeft: "16%" }}>
-      
-            <Helmet>
-          <meta charSet="utf-8" />
+    <>
+    <Helmet></Helmet>
+    {/* <Helmet>
           <title>{dataProduct.name}</title>
           <meta name="description" content="Ezpics RB" />
           <meta
@@ -952,7 +953,10 @@ function CollectionBuying({
             name="twitter:image"
             content={dataProduct.thumbnail}
           />
-        </Helmet>
+        </Helmet> */}
+    <div style={{ paddingTop: "6%", paddingLeft: "16%" }}>
+      
+            
       <div className="category-wrapper">
         <div className="category-wrapper__block">
           {/* <img
@@ -2205,7 +2209,7 @@ function CollectionBuying({
           </div>
         </Box>
       </Modal>
-    </div>
+    </div></>
   );
 }
 

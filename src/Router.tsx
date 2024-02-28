@@ -55,6 +55,8 @@ import SaleCollection from "./pages/collection/SaleCollection.jsx";
 import UnBuyingCollection from "./pages/collection/UnBuyingCollection.jsx";
 import DashboardSearch from "./pages/components/home/Dashboard/DashboardSearch.jsx";
 import DesignPrinted from "./views/DesignEditor/DesignPrinted.js";
+import Affiliate from './views/affiliate/Affiliate.jsx'
+
 function Router() {
   const location = useLocation();
   const previousLocation = location.state?.previousLocation;
@@ -67,8 +69,11 @@ function Router() {
         {/* <Route path="/manage" element={<DesignEditor />} /> */}
         <Route path="/design" element={<DesignEditor />} />
         <Route path="/download" element={<Download />} />
+
+        
         <Route path="/" element={<HomePage />}>
           <Route path="/printed-image" element={<DesignPrinted />} />
+                <Route path="/affiliate" element={<Affiliate />} />
 
           <Route path="/" element={<Dashboard />}>
             <Route path="/" element={<ForYouPage />} />

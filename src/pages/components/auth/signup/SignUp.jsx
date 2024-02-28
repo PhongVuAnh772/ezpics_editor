@@ -260,10 +260,10 @@ function setCookie(name, value, expirationHours) {
         <div style={page}>
           <div style={header}>
             <img src={logo} alt="" style={{ width: 50, height: 50 }} />
-            <div style={textHeader}>Tính năng</div>
-            <div style={textHeader}>Mẫu thiết kế nổi bật</div>
-            <div style={textHeader}>Hướng dẫn sử dụng</div>
-            <div style={textHeader}>BLOG</div>
+            <div style={textHeader}>Thiết kế mới</div>
+            <div style={textHeader}>Bảng giá</div>
+            <div style={textHeader}>Hướng dẫn</div>
+            <div style={textHeader}>Nhà phát triển</div>
             <div style={textHeader}>Liên hệ</div>
           </div>
           <div style={content}>

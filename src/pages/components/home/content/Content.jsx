@@ -806,11 +806,10 @@ export default function PersistentDrawerLeft() {
                 Trang chủ
               </div>
 
-              <div style={textHeader}>Tính năng</div>
-              <div style={textHeader}>Mẫu thiết kế nổi bật</div>
-              <div style={textHeader}>Hướng dẫn sử dụng</div>
-              <div style={textHeader}>BLOG</div>
-              <div style={textHeader}>Liên hệ</div>
+              <div style={textHeader}>Thiết kế mới</div>
+            <div style={textHeader}>Bảng giá</div>
+            <div style={textHeader}>Hướng dẫn</div>
+            <div style={textHeader}>Nhà phát triển</div>
               <Box sx={{ flexGrow: 1 }} />
               <Box
                 sx={{
@@ -1217,7 +1216,10 @@ export default function PersistentDrawerLeft() {
                       Tải ứng dụng Ezpics
                     </Typography>
                   </MenuItem>
-                  <MenuItem onClick={handleCloseUserMenu}>
+                  <MenuItem onClick={() => {
+                    navigate("/affiliate")
+                    handleCloseUserMenu()
+                  }}>
                     <Typography
                       textAlign="left"
                       style={{

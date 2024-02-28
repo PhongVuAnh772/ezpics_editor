@@ -337,10 +337,10 @@ export default function PersistentDrawerLeft() {
                 style={{ width: "3%", height: "5%",cursor: "pointer" }}
                 onClick={() => navigate('/')}
               />
-              <div style={textHeader}>Tính năng</div>
-              <div style={textHeader}>Mẫu thiết kế nổi bật</div>
-              <div style={textHeader}>Hướng dẫn sử dụng</div>
-              <div style={textHeader}>BLOG</div>
+              <div style={textHeader}>Thiết kế mới</div>
+            <div style={textHeader}>Bảng giá</div>
+            <div style={textHeader}>Hướng dẫn</div>
+            <div style={textHeader}>Nhà phát triển</div>
               <div style={textHeader}>Liên hệ</div>
               <Box sx={{ flexGrow: 1 }} />
               <Box sx={{ display: { xs: "none", md: "flex" } }}>

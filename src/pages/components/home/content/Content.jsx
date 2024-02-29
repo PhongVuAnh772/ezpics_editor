@@ -77,6 +77,7 @@ import banknote from "./banknotes.png";
 import coin from "./coin.png";
 import downloadIcon from "./assets/direct-download (1).png";
 import discount from "./assets/discount-coupon.png";
+import emptyNotification from './notification.png'
 // import "../../../../../src/pages/components/home/category/loadingFavorite.css";
 import SEO from "../../../../api/SEO";
 const drawerWidth = 250;
@@ -305,6 +306,8 @@ export default function PersistentDrawerLeft() {
   };
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
+    const [anchorElNotification, setAnchorElNotification] = React.useState(null);
+
   const [loadingBuyingLostFunc, setLoadingBuyingLostFunc] =
     React.useState(false);
   const handleOpenNavMenu = (event) => {
@@ -322,6 +325,9 @@ export default function PersistentDrawerLeft() {
   const handleOpenUserMenu = (event) => {
     setAnchorElUser(event.currentTarget);
   };
+  const handleOpenUserNotification = (event) => {
+    setAnchorElNotification(event.currentTarget);
+  };
 
   const handleCloseNavMenu = () => {
     setAnchorElNav(null);
@@ -329,6 +335,9 @@ export default function PersistentDrawerLeft() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+  const handleCloseUserNotification = () => {
+    setAnchorElNotification(null);
   };
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
@@ -860,6 +869,11 @@ export default function PersistentDrawerLeft() {
                     aria-label="show 4 new mails"
                     color="inherit"
                     title="Thông báo"
+                    onClick={(e) => {
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+
+                        handleOpenUserNotification(e);
+                      }}
                   >
                     <Badge color="error">
                       <NotificationsActiveOutlinedIcon />
@@ -1267,6 +1281,47 @@ export default function PersistentDrawerLeft() {
                       </div>
                     )}
                   </MenuItem>
+                </Menu>
+                <Menu
+                  sx={{
+                    mt: "43px",
+                    top: 0,
+                    left: "61%",
+                    position: "absolute",
+                    minWidth: "100%",
+                    flexDirection: "column",
+                    display: "flex",
+                    minHeight: 200,
+                    minWidth: 200
+                  }}
+                  id="menu-appbar"
+                  anchorEl={anchorElNotification}
+                  anchorOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  keepMounted
+                  transformOrigin={{
+                    vertical: "top",
+                    horizontal: "right",
+                  }}
+                  open={Boolean(anchorElNotification)}
+                  onClose={handleCloseUserNotification}
+                  style={{ cursor: "pointer" }}
+                >
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                        paddingLeft: 80,paddingRight: 80,
+                        paddingTop: 30,paddingBottom: 30
+                      }}
+                    >
+                      <img src={emptyNotification} alt="" style={{width: 50,height: 50}}/>
+                      <p>Bạn không có thông báo</p>
+                    </div>
+                  
                 </Menu>
               </Box>
             </Toolbar>

@@ -23,7 +23,7 @@ import eye from "./eye.png";
 import share from "./share.png";
 
 function SaleCollection() {
-  const [idWarehouseChoosing,setIdWarehouseChoosing ] = React.useState('');
+  const [idWarehouseChoosing, setIdWarehouseChoosing] = React.useState("");
   const [imgSrcImage, setImgSrcImage] = React.useState(null);
   const [deletingItemId, setDeletingItemId] = React.useState(null);
   const [allCategories, setAllCategories] = React.useState([]);
@@ -47,22 +47,17 @@ function SaleCollection() {
   const [dateCollection, setDateCollection] = React.useState("");
   const handleFixingCustomCollection = async (e) => {
     e.preventDefault();
-    console.log(idWarehouseChoosing)
+    console.log(idWarehouseChoosing);
     setLoadingButtonModalCreate(true);
 
     if (selectedFile) {
-      const response = await axios.post(
-        `${network}/updateWarehouseAPI`,
-        {
-          token: checkTokenCookie(),
-          name: nameCollection,
-          idWarehouse: idWarehouseChoosing,
-          price: parseInt(valueCollection),
-          data_use: parseInt(dateCollection),
-
-        },
-        
-      );
+      const response = await axios.post(`${network}/updateWarehouseAPI`, {
+        token: checkTokenCookie(),
+        name: nameCollection,
+        idWarehouse: idWarehouseChoosing,
+        price: parseInt(valueCollection),
+        data_use: parseInt(dateCollection),
+      });
       if (response && response.data && response.data.code === 1) {
         const response = await axios.post(`${network}/getInfoMemberAPI`, {
           token: checkTokenCookie(),
@@ -119,7 +114,6 @@ function SaleCollection() {
         theme: "dark",
       });
     }
-    
   };
   const handleCreateCustom = async (e) => {
     e.preventDefault();
@@ -304,7 +298,7 @@ function SaleCollection() {
       setNameCollection(response.data?.data?.name);
       setValueCollection(response.data?.data?.price);
       setDateCollection(response.data?.data?.date_use);
-      setImgSrcImage(response.data?.data?.thumbnail)
+      setImgSrcImage(response.data?.data?.thumbnail);
 
       setModalBuying(true);
     } else {
@@ -665,7 +659,7 @@ function SaleCollection() {
                   >
                     <Button
                       onClick={() => {
-                        setIdWarehouseChoosing(item.id)
+                        setIdWarehouseChoosing(item.id);
                         handleFixing(item.id);
                       }}
                       style={{
@@ -1186,6 +1180,7 @@ function SaleCollection() {
                               cursor: "pointer",
                               display: "flex",
                               justifyContent: "center",
+                              position: "relative",
                             }}
                           >
                             <img
@@ -1196,6 +1191,86 @@ function SaleCollection() {
                                 cursor: "pointer",
                               }}
                             />
+                            <div
+                              style={{
+                                position: "absolute",
+                                width: "100%",
+                                height: 200,
+                                backgroundColor: "rgba(0,0,0,0.7)",
+                                borderRadius: 20,
+                                transition: "opacity 0.3s",
+                              }}
+                              onMouseEnter={(e) => {
+                                e.currentTarget.style.opacity = 1;
+                              }}
+                              onMouseLeave={(e) => {
+                                e.currentTarget.style.opacity = 0;
+                              }}
+                            ><form
+                          id="file-upload-form"
+                          class="uploader"
+                          style={{ marginTop: 40 }}
+                        >
+                          <input
+                            id="file-upload"
+                            type="file"
+                            name="fileUpload"
+                            accept="image/*"
+                            onChange={handleFileChange}
+                          />
+
+                          <label
+                            for="file-upload"
+                            id="file-drag"
+                            style={{ cursor: "pointer" }}
+                          >
+                            <img
+                              id="file-image"
+                              src="#"
+                              alt="Preview"
+                              class="hidden"
+                            />
+                            <div id="start---create-newing">
+                              <img
+                                src={downloadIcon}
+                                alt=""
+                                style={{
+                                  width: 30,
+                                  height: 30,
+                                  alignSelf: "center",
+                                  margin: "0 auto",
+                                  marginBottom: "2%",
+                                }}
+                              />
+
+                              {selectedFile !== null ? (
+                                ""
+                              ) : (
+                                <div id="notimage" class="hidden">
+                                  Hãy chọn ảnh
+                                </div>
+                              )}
+                              <span
+                                id="file-upload-btn"
+                                class="btn btn-primary"
+                              >
+                                {selectedFile !== null
+                                  ? "Chọn lại"
+                                  : "Chọn ảnh"}
+                              </span>
+                            </div>
+                            <div id="response" class="hidden">
+                              <div id="messages"></div>
+                              <progress
+                                class="progress"
+                                id="file-progress"
+                                value="0"
+                              >
+                                <span>0</span>%
+                              </progress>
+                            </div>
+                          </label>
+                        </form></div>
                           </div>
                         </>
                       ) : (
@@ -1324,7 +1399,7 @@ function SaleCollection() {
                         {loadingButtonModalCreate ? (
                           <span class="loader-create-film"></span>
                         ) : (
-                          "Bắt đầu tạo "
+                          "Bắt đầu sửa "
                         )}
                       </button>
                     ) : (

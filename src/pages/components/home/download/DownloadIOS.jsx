@@ -319,84 +319,10 @@ export default function PersistentDrawerLeft() {
           width: "100%",
           minHeight: "100%",
           position: "relative",
-          
+          paddingTop: "1%", paddingLeft: "30%", paddingRight: "12%"
         }}
       >
-        <CssBaseline />
-        <Box theme={darkTheme} style={{ width: "100%" }}>
-          <AppBar
-            position="static"
-            theme={darkTheme}
-            style={{ width: "100%", position: "fixed" }}
-          >
-            <Toolbar style={{ width: "100%", }}>
-              <img
-                alt=""
-                src={ezpicsLogo}
-                loading="lazy"
-                style={{ width: "3%", height: "5%",cursor: "pointer" }}
-                onClick={() => navigate('/')}
-              />
-              <div style={textHeader}>Thiết kế mới</div>
-            <div style={textHeader}>Bảng giá</div>
-            <div style={textHeader}>Hướng dẫn</div>
-            <div style={textHeader}>Nhà phát triển</div>
-              <div style={textHeader}>Liên hệ</div>
-              <Box sx={{ flexGrow: 1 }} />
-              <Box sx={{ display: { xs: "none", md: "flex" } }}>
-                <Tooltip title="Trang chủ">
-                  <IconButton
-                    size="large"
-                    aria-label="show 4 new mails"
-                    color="inherit"
-                    title="Trang chủ"
-                    onClick={() => navigate("/")}
-                  >
-                    <Badge color="error">
-                      <CottageOutlinedIcon />
-                    </Badge>
-                  </IconButton>
-                </Tooltip>
-              </Box>
-
-              <Box sx={{ flexGrow: 0, marginLeft: "20px" }}>
-                <Tooltip title="Cá nhân">
-                  <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                    <Avatar
-                      alt="Remy Sharp"
-                      src="https://scontent-hkg4-1.xx.fbcdn.net/v/t39.30808-1/358103027_1331575257782311_1544167027230255153_n.jpg?stp=cp0_dst-jpg_p60x60&_nc_cat=102&ccb=1-7&_nc_sid=5740b7&_nc_eui2=AeEVMLb6SiFEBHfWqACe9T-Rv0J1PzNDDQ6_QnU_M0MNDmGg3bdB_oBgR3MUMeIJYh3f11NcontKc-1pqPZOZO52&_nc_ohc=KE2nAaUPQ5wAX-5exdk&_nc_ht=scontent-hkg4-1.xx&oh=00_AfDGsmGCWD6wrMHtjVQqaE0Pi2ApBNBxYxb1HVE-oBO1yg&oe=656DCE94"
-                    />
-                  </IconButton>
-                </Tooltip>
-                <Menu
-                  sx={{ mt: "45px" }}
-                  id="menu-appbar"
-                  anchorEl={anchorElUser}
-                  anchorOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  keepMounted
-                  transformOrigin={{
-                    vertical: "top",
-                    horizontal: "right",
-                  }}
-                  open={Boolean(anchorElUser)}
-                  onClose={handleCloseUserMenu}
-                  style={{ cursor: "pointer" }}
-                >
-                  {settings.map((setting) => (
-                    <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                      <Typography textAlign="center">{setting}</Typography>
-                    </MenuItem>
-                  ))}
-                </Menu>
-              </Box>
-            </Toolbar>
-          </AppBar>
-          {renderMobileMenu}
-          {renderMenu}
-        </Box>
+        
         <div
           style={{
             minWidth: "100%",
@@ -523,7 +449,7 @@ export default function PersistentDrawerLeft() {
       </Box>
       <div
         style={{
-          width: "85%",
+          width: "90%",
           height: 30,
           borderTop: "1px solid rgb(225, 228, 231)",
           marginLeft: "6.5%",
@@ -533,6 +459,8 @@ export default function PersistentDrawerLeft() {
           justifyContent: "space-between",
           alignItems: "center",
           paddingBottom: "3%",
+          paddingLeft: "12%",
+          position: "absolute",
         }}
       >
         <button
@@ -572,7 +500,7 @@ export default function PersistentDrawerLeft() {
         >
           © 2023 Mọi quyền được bảo lưu, Ezpics®
         </p>
-        <img src={fbLogo} alt="" style={{width: 20,height: 20}}/>
+        <a href="https://www.facebook.com/ezpicsvn" ><img src={fbLogo} alt="" style={{width: 20,height: 20}}/></a>
       </div>
     </Box>
   );

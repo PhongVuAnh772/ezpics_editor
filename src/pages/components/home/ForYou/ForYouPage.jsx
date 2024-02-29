@@ -372,7 +372,7 @@ function ForYouPage() {
         <p style={{ fontSize: 18, fontWeight: "bold" }}>
           Mẫu thiết kế mới nhất
         </p>
-        <p style={{ fontSize: 15, fontWeight: "bold",color:'rgb(255, 66, 78)',cursor:'pointer' }} onClick={() => console.log('ok')}>Xem thêm</p>
+        <p style={{ fontSize: 15, fontWeight: "bold",color:'rgb(255, 66, 78)',cursor:'pointer' }} onClick={() => navigate('/new-product')}>Xem thêm</p>
       </div>
       {loadingNewest ? (
         // Display loading skeletons while data is being fetched

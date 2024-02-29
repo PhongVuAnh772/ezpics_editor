@@ -1,4 +1,4 @@
-import React, { useEffect,useState } from 'react';
+import React, { useEffect, useState } from "react";
 import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
 import DesignEditor from "~/views/DesignEditor";
 import Download from "../src/pages/components/home/download/DownloadIOS.jsx";
@@ -21,11 +21,11 @@ import Dashboard from "./pages/components/home/Dashboard/Dashboard.jsx";
 import ForYouPage from "./pages/components/home/ForYou/ForYouPage.jsx";
 import Category from "./pages/components/home/category/Category.jsx";
 import SpecifiedPrint from "./pages/components/home/category/SpecifiedPrint.jsx";
-import ThumnailYoutube from './pages/components/project/components/ThumnailYoutube.jsx'
-import CongratSpecified from './pages/components/project/components/CongratSpecified.jsx'
-import Cooking from './pages/components/project/components/Cooking.jsx'
-import LogoSpecified from './pages/components/project/components/LogoSpecified.jsx'
-import BannerSpecified from './pages/components/project/components/BannerSpecified.jsx'
+import ThumnailYoutube from "./pages/components/project/components/ThumnailYoutube.jsx";
+import CongratSpecified from "./pages/components/project/components/CongratSpecified.jsx";
+import Cooking from "./pages/components/project/components/Cooking.jsx";
+import LogoSpecified from "./pages/components/project/components/LogoSpecified.jsx";
+import BannerSpecified from "./pages/components/project/components/BannerSpecified.jsx";
 // import ThumnailYoutube from './pages/components/project/components/ThumnailYoutube.jsx'
 
 import CollectionBuying from "./pages/components/home/category/CollectionBuying.jsx";
@@ -54,8 +54,10 @@ import PurchaseCollection from "./pages/collection/PurchaseCollection.jsx";
 import SaleCollection from "./pages/collection/SaleCollection.jsx";
 import UnBuyingCollection from "./pages/collection/UnBuyingCollection.jsx";
 import DashboardSearch from "./pages/components/home/Dashboard/DashboardSearch.jsx";
+import NewProduct from "./pages/components/home/Dashboard/NewProduct.jsx";
+
 import DesignPrinted from "./views/DesignEditor/DesignPrinted.js";
-import Affiliate from './views/affiliate/Affiliate.jsx'
+import Affiliate from "./views/affiliate/Affiliate.jsx";
 
 function Router() {
   const location = useLocation();
@@ -68,12 +70,19 @@ function Router() {
         <Route path="/sign-up" element={<SignUp />} />
         {/* <Route path="/manage" element={<DesignEditor />} /> */}
         <Route path="/design" element={<DesignEditor />} />
-        <Route path="/download" element={<Download />} />
 
-        
         <Route path="/" element={<HomePage />}>
           <Route path="/printed-image" element={<DesignPrinted />} />
-                <Route path="/affiliate" element={<Affiliate />} />
+          <Route
+            path="/affiliate"
+            element={
+              <RequireAuth>
+                <Affiliate />
+              </RequireAuth>
+            }
+          />
+          <Route path="/download" element={<Download />} />
+          <Route path="/new-product" element={<NewProduct />} />
 
           <Route path="/" element={<Dashboard />}>
             <Route path="/" element={<ForYouPage />} />

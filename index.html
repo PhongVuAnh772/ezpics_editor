@@ -39,16 +39,76 @@
     <meta name="twitter:title" content="Ezpics - Công cụ thiết kế hình ảnh siêu tốc" data-react-helmet="true">
     <meta name="twitter:description" content="EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến" data-react-helmet="true">
     <meta name="twitter:image" content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg" data-react-helmet="true">
+<style>
+  /* CSS cho modal */
+  .modal {
+    display: none; /* Ẩn modal mặc định */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: white; /* Một màu nền đen mờ */
+    z-index: 100000;
+    overflow: auto;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+  }
 
+  /* CSS cho nội dung của modal */
+  .modal-content {
+    display: block;
+    margin: auto;
+    margin-top: 20px;
+    max-width: 80%; /* Chiều rộng tối đa của modal */
+  }
+
+  /* Định dạng hình ảnh trong modal */
+  .modal img {
+    width: 300px;
+    height: 300px;
+    display: block;
+    align-self: center;
+    margin-top: 20px;
+  }
+  .modal-content__text {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+  }
+  .modal-content__text---desc {
+    text-align: center;
+    font-size: 20px;
+        font-weight: bold;
+
+  }
+</style>
     
         <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/brython@3.10.1/www/src/brython.js"></script>
 
     <script type="text/javascript">
       if (location.port == 443) {
-        //window.location = 'http://ezpics.vn/';
       }
     </script>
+    <script>
+      function displayWindowSize() {
+          // Get width and height of the window excluding scrollbars
+          var modal = document.getElementById("myModal");
+              var path = window.location.pathname;
 
+        if (window.innerWidth < window.screen.width * (4.3 / 5) && path !== "/printed-image") {
+          modal.style.display = "flex"; 
+        } else {
+          modal.style.display = "none";
+        }
+        }
+
+        window.addEventListener("resize", displayWindowSize);
+
+        displayWindowSize();
+    </script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
@@ -82,6 +142,11 @@
   <body style="margin: 0;overflow-x: hidden;">
     <div id="root">
       <center><img src="https://i.pinimg.com/originals/ca/89/fb/ca89fbce5e5c68f46d5330946c58ddc6.gif"></center>
+    </div>
+    <div id="myModal" class="modal">
+        <img src="./qrApp.jpg" alt="Modal Image">
+        <p class="modal-content__text">Ezpics Web chỉ hỗ trợ kích thước màn hình cho máy tính</p>
+        <p class="modal-content__text---desc">Hiện tại Ezpics có bản cho điện thoại, mời bạn quét mã QR</p>
     </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

@@ -55,7 +55,7 @@ import SaleCollection from "./pages/collection/SaleCollection.jsx";
 import UnBuyingCollection from "./pages/collection/UnBuyingCollection.jsx";
 import DashboardSearch from "./pages/components/home/Dashboard/DashboardSearch.jsx";
 import NewProduct from "./pages/components/home/Dashboard/NewProduct.jsx";
-
+import ComparePricing from "./pages/components/pricing-compare/ComparePricing.jsx";
 import DesignPrinted from "./views/DesignEditor/DesignPrinted.js";
 import Affiliate from "./views/affiliate/Affiliate.jsx";
 
@@ -72,6 +72,8 @@ function Router() {
         <Route path="/design" element={<DesignEditor />} />
 
         <Route path="/" element={<HomePage />}>
+          <Route path="/pricing-compare" element={<ComparePricing />} />
+
           <Route path="/printed-image" element={<DesignPrinted />} />
           <Route
             path="/affiliate"
@@ -81,6 +83,7 @@ function Router() {
               </RequireAuth>
             }
           />
+
           <Route path="/download" element={<Download />} />
           <Route path="/new-product" element={<NewProduct />} />
 

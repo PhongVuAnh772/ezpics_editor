@@ -815,8 +815,8 @@ export default function PersistentDrawerLeft() {
                 Trang chủ
               </div>
 
-              <div style={textHeader}>Thiết kế mới</div>
-            <div style={textHeader}>Bảng giá</div>
+              <div style={textHeader} onClick={() => navigate('/new-product')}>Thiết kế mới</div>
+            <div style={textHeader} onClick={() => navigate('/pricing-compare')}>Bảng giá</div>
             <div style={textHeader}>Hướng dẫn</div>
             <div style={textHeader}>Nhà phát triển</div>
               <Box sx={{ flexGrow: 1 }} />
@@ -2465,7 +2465,7 @@ export default function PersistentDrawerLeft() {
                           opacity: contentProExtend ? 0 : 1, // Show or hide based on state
                         }}
                       >
-                        Mở khóa các tính năng sau với Canva Pro.
+                        Mở khóa các tính năng sau với Ezpics Pro.
                       </p>
 
                       <div style={{ display: "flex", flexDirection: "row" }}>

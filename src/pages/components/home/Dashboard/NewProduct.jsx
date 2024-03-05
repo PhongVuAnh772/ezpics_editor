@@ -79,7 +79,7 @@ import Radio from "@mui/material/Radio";
 
 function NewProduct() {
   const [valueColor, setValueColor] = React.useState("");
-
+  const [limitNumber,setLimitNumber] = React.useState("");
   const handleChangeColor = (event) => {
     // Update the valueColor state without triggering drawer closure
     // event.preventDefault();
@@ -218,36 +218,36 @@ function NewProduct() {
       setLoadingMore(true);
     }
   };
-  useEffect(() => {
-    setSearchText(search);
-  }, []);
-  useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
-  useEffect(() => {
-    const fetchMoreData = async () => {
-      try {
-        const response = await axios.post(`${network}/searchProductAPI`, {
-          limit: dataConvert.length + 20,
-          page: 1,
-          name: search,
-        });
-        if (response.data.listData && response.data) {
-          setDataConvert((prevData) => [...prevData, ...response.data.listData]);
-          setLoadingMore(false);
-          setHasMore(response.data.listData.length > 0);
-        }
-      } catch (error) {
-        console.error("Error fetching more data:", error.message);
-        setLoadingMore(false);
-      }
-    };
+//   useEffect(() => {
+//     setSearchText(search);
+//   }, []);
+//   useEffect(() => {
+//     window.addEventListener("scroll", handleScroll);
+//     return () => window.removeEventListener("scroll", handleScroll);
+//   }, [handleScroll]);
+//   useEffect(() => {
+//     const fetchMoreData = async () => {
+//       try {
+//         const response = await axios.post(`${network}/searchProductAPI`, {
+//           limit: dataConvert.length + 20,
+//           page: 1,
+//           name: search,
+//         });
+//         if (response.data.listData && response.data) {
+//           setDataConvert((prevData) => [...prevData, ...response.data.listData]);
+//           setLoadingMore(false);
+//           setHasMore(response.data.listData.length > 0);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching more data:", error.message);
+//         setLoadingMore(false);
+//       }
+//     };
 
-    if (loadingMore) {
-      fetchMoreData();
-    }
-  }, [loadingMore]);
+//     if (loadingMore) {
+//       fetchMoreData();
+//     }
+//   }, [loadingMore]);
   const BpCheckedIcon = styled(BpIcon)({
     backgroundColor: "#137cbd",
     backgroundImage:
@@ -267,6 +267,22 @@ function NewProduct() {
   useEffect(() => {
     const getDataCategory = async () => {
       try {
+        const response = await axios.get(`${network}/getProductAllCategoryAPI`);
+        if (response && response.data && response.data.listData) {
+          setDataConvert(response.data.listData[0]?.listData);
+        } else {
+          console.error("Invalid response format");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    getDataCategory();
+  }, []);
+ useEffect(() => {
+    const getDataCategory = async () => {
+      try {
         const response = await axios.get(`${network}/getProductCategoryAPI`);
         if (response && response.data && response.data.listData) {
           setDataCategorySearch(response.data.listData);
@@ -280,59 +296,40 @@ function NewProduct() {
 
     getDataCategory();
   }, []);
-  useEffect(() => {
-    const getDataColor = async () => {
-      try {
-        const response = await axios.get(`${network}/getMainColorAPI`);
-        if (response && response.data) {
-          dataListColor(response.data);
-        } else {
-          console.error("Invalid response format");
-        }
-      } catch (error) {
-        console.error("Error fetching data:", error.message);
-      }
-    };
-
-    getDataColor();
-  }, []);
-  useEffect(() => {
-    const fetchProUser = async () => {
-      try {
-        const response = await axios.post(`${network}/searchProductAPI`, {
-          limit: 20,
-          page: 1,
-          name: search,
-        });
-        if (response.data.listData && response.data) {
-          setDataConvert(response.data.listData);
-        }
-      } catch (error) {
+//   useEffect(() => {
+//     const fetchProUser = async () => {
+//       try {
+//         const response = await axios.post(`${network}/getProductAllCategoryAPI`, {
+//           limit: 20,
+//           page: 1,
+//         });
+//         if (response.data.listData && response.data) {
+//           setDataConvert(response.data.listData);
+//         }
+//       } catch (error) {
         
-      }
-    };
+//       }
+//     };
 
-    fetchProUser();
-  }, []);
+//     fetchProUser();
+//   }, []);
 // getProductAllCategoryAPI
   const fetchDataWarehouse = async () => {
     try {
-      const response = await axios.post(`${network}/searchProductAPI`, {
-        limit: 20,
+      const response = await axios.post(`${network}/getProductAllCategoryAPI`, {
+        limit: parseInt(limitNumber),
         page: 1,
-        name: searchText,
-        price: selectedRadioPrice !== "" ? selectedRadioPrice : "",
+        
         orderBy: selectedRadioFilter !== "" ? selectedRadioFilter : "",
-        orderType: selectedRadio !== "" ? selectedRadio : "",
-        category_id: age !== "" ? age : "",
-        color: valueColor !== "" ? valueColor : "",
+        
       });
       if (response.data.listData && response.data) {
-        console.log(response.data.listData);
+        console.log(response.data.listData[0]?.listData);
+        
         // setDataWarehouse(response.data.data);
         setState({ left: false });
 
-        setDataConvert(response.data.listData);
+        setDataConvert(response.data.listData[0]?.listData);
       }
     } catch (error) {
       
@@ -340,7 +337,7 @@ function NewProduct() {
   };
   const fetchProUser = async () => {
     try {
-      const response = await axios.post(`${networkAPI}/searchProductAPI`, {
+      const response = await axios.post(`${network}/searchProductAPI`, {
         limit: 5,
         page: 1,
         name: searchText,
@@ -358,58 +355,7 @@ function NewProduct() {
     <>
       <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%" }}>
         <Box>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              alignItems: "center",
-            }}
-          >
-            <Paper
-              component="form"
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                width: 750,
-                position: "relative",
-              }}
-              onBlur={() => {
-                if (!clickedOnDataWarehouse) {
-                  setEnableButtonClear(false);
-                }
-              }}
-            >
-              <IconButton sx={{ p: "10px" }} aria-label="menu" style={{}}>
-                <SearchIcon />
-              </IconButton>
-              <InputBase
-                sx={{ ml: 0, flex: 1 }}
-                placeholder="Tìm kiếm nội dung mới nhất trên Ezpics"
-                onChange={onChange}
-                value={searchText}
-
-                // inputProps={{ 'aria-label': 'search google maps' }}
-              />
-            </Paper>
-            <Button
-              variant="contained"
-              size="medium"
-              style={{
-                marginLeft: "20px",
-                height: 45,
-                alignSelf: "center",
-                textTransform: "none",
-                color: "white",
-                backgroundColor: "rgb(255, 66, 78)",
-                position: "relative",
-              }}
-              onClick={() => {
-                fetchDataWarehouse();
-              }}
-            >
-              Tìm kiếm
-            </Button>
-          </div>
+          <h1 style={{fontSize: 25}}>Thiết kế mới trong tuần</h1>
 
           <div
             style={{ paddingTop: 20, display: "flex", flexDirection: "row" }}
@@ -651,54 +597,14 @@ function NewProduct() {
           </div>
 
           <Divider />
-          <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
-            Màu sắc :
-          </p>
-          {/* <MuiColorInput value={valueColor} onChange={handleChangeColor}  sx={{ zIndex: 133300}}/> */}
-          <div style={{ width: "100%", display: "flex", flexDirection: "row" }}>
-            {/* <input
-              type="color"
-              value={valueColor}
-              onChange={handleChangeColor}
-              style={{ width: "30%", height: 50, marginLeft: 10 }}
-            /> */}
-            <FormControl
-              style={{ minWidth: 70, marginLeft: 10, maxWidth: 100 }}
-            >
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={valueColor}
-                label="Màu"
-                onChange={handleChangeColor}
-                style={{
-                  zIndex: 1600,
-                  background: valueColor ? valueColor : "linear-gradient(180deg, #f00000, #f00000 16.67%, #ff8000 16.67%, #ff8000 33.33%, #ffff00 33.33%, #ffff00 50%, #007940 50%, #007940 66.67%, #4040ff 66.67%, #4040ff 83.33%, #a000c0 83.33%, #a000c0)",
-                  marginLeft: 0,
-
-                }}
-              >
-                {listColor.length > 0 &&
-                  listColor.map((data, index) => (
-                    <MenuItem
-                      value={data.code}
-                      style={{ backgroundColor: data.code, color: "white" }}
-                    >
-                      {data.name}
-                    </MenuItem>
-                  ))}
-              </Select>
-            </FormControl>
+         
             {/* <FormControl style={{ minWidth: 120, marginLeft: 20 }}>
               <InputLabel id="demo-simple-select-label">Danh mục</InputLabel>
 
               
             </FormControl> */}
 
-            <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
-              Màu : <span style={{ color: valueColor !== "" ? valueColor : "black" }}>{valueColor !== "" ? valueColor : "Chọn màu"}</span>
-            </p>
-          </div>
+            
           <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
             Sắp xếp theo :
           </p>
@@ -730,45 +636,12 @@ function NewProduct() {
             />
           </RadioGroup>
           <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
-            Khoảng giá :
+            Số mẫu :
           </p>
-          <RadioGroup
-            aria-labelledby="demo-radio-buttons-group-label"
-            defaultValue=""
-            name="radio-buttons-group"
-            value={selectedRadioPrice}
-            onChange={(event) => {
-              setSelectedRadioPrice(event.target.value);
-              toggleDrawer(true)(event);
-            }}
-            style={{ paddingLeft: 10 }}
-          >
-            <FormControlLabel
-              value=""
-              control={<BpRadio />}
-              label="Không"
-            />
-            <FormControlLabel
-              value="0-0"
-              control={<BpRadio />}
-              label="Miễn phí"
-            />
-            <FormControlLabel
-              value="1000-5000"
-              control={<BpRadio />}
-              label="Dưới 10.000đ"
-            />
-            <FormControlLabel
-              value="10000-100000"
-              control={<BpRadio />}
-              label="Từ 10.000đ đến 100.000đ"
-            />
-            <FormControlLabel
-              value="100000-10000000000"
-              control={<BpRadio />}
-              label="Trên 100.000đ"
-            />
-          </RadioGroup>
+          <div style={{width: '100%',paddingLeft: 10,paddingRight: 10}}><input type="number" onChange={(e) => {
+            setLimitNumber(e.target.value)
+            console.log(typeof e.target.value)
+          }}/></div>
           <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
             Lọc theo :
           </p>

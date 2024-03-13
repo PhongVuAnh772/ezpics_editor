@@ -211,13 +211,7 @@ function NewProduct() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [hasMore, setHasMore] = useState(true);
 
-  const handleScroll = () => {
-    const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
-
-    if (scrollTop + clientHeight >= scrollHeight - 10 && !loadingMore && hasMore) {
-      setLoadingMore(true);
-    }
-  };
+ 
 //   useEffect(() => {
 //     setSearchText(search);
 //   }, []);
@@ -351,6 +345,42 @@ function NewProduct() {
       
     }
   };
+  const [limit, setLimit] = useState(20); // Step 1: State to keep track of limit
+useEffect(() => {
+  const fetchMoreData = async () => {
+    try {
+      const response = await axios.post(`${network}/searchProductAPI`, {
+        limit: limit + 20, // Step 3: Increase limit by 20 when scrolling to bottom
+        page: 1, // Reset page to 1 when fetching more data
+        name: searchText,
+        // Other parameters as per your API call
+      });
+      if (response.data.listData && response.data) {
+        setDataConvert((prevData) => [...prevData, ...response.data.listData]); // Step 4: Append new data to existing data
+        setLoadingMore(false);
+        setHasMore(response.data.listData.length > 0);
+      }
+    } catch (error) {
+      console.error("Error fetching more data:", error.message);
+      setLoadingMore(false);
+    }
+  };
+
+  if (loadingMore) {
+    fetchMoreData();
+  }
+}, [loadingMore]);
+const handleScroll = () => {
+  const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+
+  if (scrollTop + clientHeight >= scrollHeight - 10 && !loadingMore && hasMore) {
+    setLoadingMore(true);
+  }
+};
+  useEffect(() => {
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
   return (
     <>
       <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%" }}>

@@ -185,8 +185,8 @@ export default function () {
   const optionsDisplay = [
     { value: "", label: "Chọn trạng thái" },
 
-    { value: "0", label: "Hiển thị" },
-    { value: "1", label: "Ẩn đi" },
+    { value: "1", label: "Hiển thị" },
+    { value: "0", label: "Ẩn đi" },
   ];
   const inputFileRef = React.useRef<HTMLInputElement>(null);
   const inputFileRefThumn = React.useRef<HTMLInputElement>(null);
@@ -266,16 +266,13 @@ export default function () {
             if (selectedFilesBackground) {
               formData.append("thumbnail", selectedFiles);
             }
-            
-
             formData.append("name", name);
             formData.append("sale_price", price.toString());
             formData.append("price", sessPrice.toString());
             formData.append("category_id", categoryId.toString());
             formData.append("warehouse_id", checkedItems.join(","));
             formData.append("status", selectedOption === "1" ? 1 : 0);
-                        formData.append("display", selectedOptionDisplay === ("0" || "") ? 1 : 0);
-
+            formData.append("display", selectedOptionDisplay !== "1" ? 0 : 1);
             formData.append("description", description);
             formData.append("token", token);
             formData.append("idProduct", idProduct.toString());

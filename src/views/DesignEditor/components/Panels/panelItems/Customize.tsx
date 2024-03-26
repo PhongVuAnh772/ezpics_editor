@@ -274,7 +274,7 @@ export default function () {
             formData.append("category_id", categoryId.toString());
             formData.append("warehouse_id", checkedItems.join(","));
             formData.append("status", selectedOption === "1" ? 1 : 0);
-                        formData.append("display", selectedOptionDisplay === ("0" || "") ? false : true);
+                        formData.append("display", selectedOptionDisplay === ("0" || "") ? true : false);
 
             formData.append("description", description);
             formData.append("token", token);

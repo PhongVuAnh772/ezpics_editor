@@ -189,7 +189,7 @@ body.modal-open #root {
       if (location.port == 443) {
       }
     </script>
-    <!-- <script>
+    <script>
       function displayWindowSize() {
         // Get width and height of the window excluding scrollbars
         
@@ -199,7 +199,7 @@ body.modal-open #root {
 
         if (
           window.innerWidth < window.screen.width * (4.3 / 5) &&
-          path !== "/printed-image"
+          (path !== "/printed-image" || path !== "/specified-print-mobile") 
         ) {
           modal.style.display = "flex";
         } else {
@@ -211,14 +211,13 @@ body.modal-open #root {
       window.addEventListener("resize", displayWindowSize);
 
       displayWindowSize();
-    </script> -->
-    <!-- <script>
+    </script> <script>
             function openModalMobile() {
                 var modalMobile = document.getElementById("modalMobile");
               var body = document.querySelector("body");
               var path = window.location.pathname;
                 if (modalMobile &&
-                path !== "/printed-image") {
+                (path !== "/printed-image" || path !== "/specified-print-mobile")) {
                   // Lấy chiều rộng màn hình
                   const screenWidth = window.screen.width;
 
@@ -237,7 +236,7 @@ body.modal-open #root {
 
               window.addEventListener("load", openModalMobile);
               openModalMobile();
-    </script> -->
+    </script> 
 
     <script>
       window.dataLayer = window.dataLayer || [];

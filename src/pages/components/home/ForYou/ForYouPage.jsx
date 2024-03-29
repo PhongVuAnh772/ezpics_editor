@@ -24,6 +24,18 @@ import { toast } from "react-toastify";
 import { DELETE_ALL_VALUES } from "../../../store/slice/infoUser.js";
 
 function ForYouPage() {
+  const [responseModal, setResponseModal] = useState(false);
+  const screenWidth = window.screen.width;
+  useEffect(() => {
+    function displayWindowSize() {
+      const isMobile = screenWidth <= 768;
+      if (isMobile) {
+        setResponseModal(true);
+        console.log("mở đt");
+      }
+    }
+    displayWindowSize();
+  }, []);
   const dispatch = useDispatch();
   const [loadingBuyingFunc, setLoadingBuyingFunc] = React.useState(false);
   const [modalLogoutDevice, setModalLogoutDevice] = React.useState(false);
@@ -33,7 +45,7 @@ function ForYouPage() {
     dispatch(DELETE_ALL_VALUES());
     setModalLogoutDevice(false);
   };
-    const infoUser = useSelector((state) => state.user.info);
+  const infoUser = useSelector((state) => state.user.info);
 
   const styleModalBuyingFree = {
     position: "absolute",
@@ -215,20 +227,17 @@ function ForYouPage() {
 
     getData();
   }, []);
-  const [loadingPrinted,setLoadingPrinted] = useState(false)
-  const [dataPrintedList,setDataPrintedList] = useState([])
+  const [loadingPrinted, setLoadingPrinted] = useState(false);
+  const [dataPrintedList, setDataPrintedList] = useState([]);
   useEffect(() => {
     setLoadingPrinted(true);
 
     const getData = async () => {
       try {
-        const response = await axios.post(
-          `${network}/listProductSeriesAPI`,
-          {
-            limit: 30,
-            page: 1
-          }
-        );
+        const response = await axios.post(`${network}/listProductSeriesAPI`, {
+          limit: 30,
+          page: 1,
+        });
         if (response && response.data) {
           setDataPrintedList(response.data.data);
           setLoadingPrinted(false);
@@ -372,7 +381,17 @@ function ForYouPage() {
         <p style={{ fontSize: 18, fontWeight: "bold" }}>
           Mẫu thiết kế mới nhất
         </p>
-        <p style={{ fontSize: 15, fontWeight: "bold",color:'rgb(255, 66, 78)',cursor:'pointer' }} onClick={() => navigate('/new-product')}>Xem thêm</p>
+        <p
+          style={{
+            fontSize: 15,
+            fontWeight: "bold",
+            color: "rgb(255, 66, 78)",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/new-product")}
+        >
+          Xem thêm
+        </p>
       </div>
       {loadingNewest ? (
         // Display loading skeletons while data is being fetched
@@ -519,8 +538,8 @@ function ForYouPage() {
                   marginBottom: 15,
                   marginTop: 10,
                   height: 70,
-                  textOverflow:'ellipsis',
-                    overflow: "hidden"
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
                 }}
               >
                 <h5
@@ -551,9 +570,9 @@ function ForYouPage() {
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
                   {item.sale_price === 0 ||
-                (item.free_pro && infoUser[0]?.member_pro)
-                  ? "Miễn phí"
-                  : `${formatPrice(item.sale_price)} ₫`}
+                  (item.free_pro && infoUser[0]?.member_pro)
+                    ? "Miễn phí"
+                    : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -583,9 +602,19 @@ function ForYouPage() {
         <p style={{ fontSize: 18, fontWeight: "bold" }}>
           Mẫu thiết kế in hàng loạt
         </p>
-        <p style={{ fontSize: 15, fontWeight: "bold",color:'rgb(255, 66, 78)',cursor:'pointer' }} onClick={() => console.log('ok')}>Xem thêm</p>
+        <p
+          style={{
+            fontSize: 15,
+            fontWeight: "bold",
+            color: "rgb(255, 66, 78)",
+            cursor: "pointer",
+          }}
+          onClick={() => console.log("ok")}
+        >
+          Xem thêm
+        </p>
       </div>
-       
+
       {loadingPrinted ? (
         // Display loading skeletons while data is being fetched
         <Carousel
@@ -678,9 +707,13 @@ function ForYouPage() {
                 cursor: "pointer",
               }}
               onClick={() => {
-                navigate(`/specified-printed/${item.id}`);
-                // console.log(item)
-                window.scrollTo({ top: 0, behavior: "smooth" });
+                if (responseModal) {
+                  navigate(`/specified-print-mobile/${item.id}`);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                } else {
+                  navigate(`/specified-printed/${item.id}`);
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
               }}
             >
               <div
@@ -731,8 +764,8 @@ function ForYouPage() {
                   marginBottom: 15,
                   marginTop: 10,
                   height: 70,
-                  textOverflow:'ellipsis',
-                    overflow: "hidden"
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
                 }}
               >
                 <h5
@@ -750,7 +783,7 @@ function ForYouPage() {
                 </h5>
               </div>
               <p style={{ margin: 0, color: "black", fontSize: 15 }}>
-                Đã tạo ảnh:  {item.export_image} lượt
+                Đã tạo ảnh: {item.export_image} lượt
               </p>
               <div
                 style={{
@@ -764,7 +797,6 @@ function ForYouPage() {
                 >
                   Miễn phí
                 </p>
-                
               </div>
             </div>
           ))}
@@ -776,13 +808,23 @@ function ForYouPage() {
           display: "flex",
           flexDirection: "row",
           justifyContent: "space-between",
-          paddingTop: 10 
+          paddingTop: 10,
         }}
       >
-        <p style={{ fontSize: 18, fontWeight: "bold",}}>
+        <p style={{ fontSize: 18, fontWeight: "bold" }}>
           Bộ sưu tập thịnh hành
         </p>
-        <p style={{ fontSize: 15, fontWeight: "bold",color:'rgb(255, 66, 78)',cursor:'pointer' }} onClick={() => navigate('/collection-all')}>Xem thêm</p>
+        <p
+          style={{
+            fontSize: 15,
+            fontWeight: "bold",
+            color: "rgb(255, 66, 78)",
+            cursor: "pointer",
+          }}
+          onClick={() => navigate("/collection-all")}
+        >
+          Xem thêm
+        </p>
       </div>
       {loadingNewest ? (
         // Display loading skeletons while data is being fetched
@@ -930,8 +972,8 @@ function ForYouPage() {
                   marginBottom: 15,
                   marginTop: 10,
                   height: 80,
-                  textOverflow:'ellipsis',
-                    overflow: "hidden"
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
                 }}
               >
                 <h5
@@ -943,9 +985,8 @@ function ForYouPage() {
                     fontSize: "17px",
                     margin: 0,
                     width: "90%",
-                                        // textOverflow:'ellipsis',
-                                        // overflow: "hidden"
-
+                    // textOverflow:'ellipsis',
+                    // overflow: "hidden"
                   }}
                 >
                   {item.name}
@@ -964,11 +1005,10 @@ function ForYouPage() {
                 <p
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
-                                    
-                                    {formatPrice(item.price) === '0' ? 'Miễn phí' : `${formatPrice(item.price)}₫`}
-
+                  {formatPrice(item.price) === "0"
+                    ? "Miễn phí"
+                    : `${formatPrice(item.price)}₫`}
                 </p>
-               
               </div>
             </div>
           ))}
@@ -1120,8 +1160,8 @@ function ForYouPage() {
                   marginBottom: 15,
                   marginTop: 10,
                   height: 80,
-                  textOverflow:'ellipsis',
-                    overflow: "hidden"
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
                 }}
               >
                 <h5
@@ -1133,9 +1173,8 @@ function ForYouPage() {
                     fontSize: "17px",
                     margin: 0,
                     width: "80%",
-                                        textOverflow:'ellipsis',
-                                        overflow: "hidden"
-
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
                   }}
                 >
                   {item.name}
@@ -1326,9 +1365,8 @@ function ForYouPage() {
                   marginBottom: 15,
                   marginTop: 10,
                   height: 80,
-                  textOverflow:'ellipsis',
-                    overflow: "hidden"
-                  
+                  textOverflow: "ellipsis",
+                  overflow: "hidden",
                 }}
               >
                 <h5
@@ -1341,7 +1379,6 @@ function ForYouPage() {
                     fontSize: "17px",
                     margin: 0,
                     width: "90%",
-                    
                   }}
                 >
                   {item.name}
@@ -1361,9 +1398,9 @@ function ForYouPage() {
                   style={{ margin: 0, color: "rgb(238, 77, 45)", fontSize: 17 }}
                 >
                   {item.sale_price === 0 ||
-                (item.free_pro && infoUser[0]?.member_pro)
-                  ? "Miễn phí"
-                  : `${formatPrice(item.sale_price)} ₫`}
+                  (item.free_pro && infoUser[0]?.member_pro)
+                    ? "Miễn phí"
+                    : `${formatPrice(item.sale_price)} ₫`}
                 </p>
                 <p
                   style={{
@@ -1528,8 +1565,8 @@ function ForYouPage() {
                     fontSize: "17px",
                     margin: 0,
                     marginTop: 10,
-                    textOverflow:'ellipsis',
-                    overflow: "hidden"
+                    textOverflow: "ellipsis",
+                    overflow: "hidden",
                   }}
                 >
                   <h5

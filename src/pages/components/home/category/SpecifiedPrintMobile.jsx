@@ -1,5 +1,5 @@
 import React, { useEffect,useState } from "react";
-import "./Category.css";
+import './categoryMobile.css'
 import { styled, useTheme } from "@mui/material/styles";
 import Skeleton from "react-loading-skeleton";
 import "react-loading-skeleton/dist/skeleton.css";
@@ -61,7 +61,7 @@ import { CHANGE_VALUE_TOKEN } from "../../../store/slice/authSlice";
 import { CHANGE_VALUE, DELETE_ALL_VALUES } from "../../../store/slice/infoUser";
 import Cookies from "js-cookie";
 import warning from "../../live-stream/warning.png";
-function SpecifiedPrint({
+function SpecifiedPrintMobile({
   image = "https://down-vn.img.susercontent.com/file/a262ff1f44dab967e8e7d50c7bda514d",
   pro = true,
   price = 400000,
@@ -1899,4 +1899,4 @@ function SpecifiedPrint({
   );
 }
 
-export default SpecifiedPrint;
+export default SpecifiedPrintMobile;

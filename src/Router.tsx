@@ -58,8 +58,9 @@ import NewProduct from "./pages/components/home/Dashboard/NewProduct.jsx";
 import ComparePricing from "./pages/components/pricing-compare/ComparePricing.jsx";
 import DesignPrinted from "./views/DesignEditor/DesignPrinted.js";
 import Affiliate from "./views/affiliate/Affiliate.jsx";
-
+import SpecifiedPrintMobile from "./pages/components/home/category/SpecifiedPrintMobile.jsx";
 function Router() {
+  
   const location = useLocation();
   const previousLocation = location.state?.previousLocation;
 
@@ -70,11 +71,12 @@ function Router() {
         <Route path="/sign-up" element={<SignUp />} />
         {/* <Route path="/manage" element={<DesignEditor />} /> */}
         <Route path="/design" element={<DesignEditor />} />
-
+        
+        <Route path="/specified-print-mobile/:id" element={<SpecifiedPrintMobile />} />
         <Route path="/" element={<HomePage />}>
           <Route path="/pricing-compare" element={<ComparePricing />} />
 
-          <Route path="/printed-image" element={<DesignPrinted />} />
+          <Route path="/printed-image" element={<DesignPrinted /> } />
           <Route
             path="/affiliate"
             element={
@@ -127,7 +129,7 @@ function Router() {
           />
 
           <Route path="/category/:id" element={<Category />} />
-          <Route path="/specified-printed/:id" element={<SpecifiedPrint />} />
+          <Route path="/specified-printed/:id" element={ <SpecifiedPrint />} />
 
           <Route path="/collection-buying/:id" element={<CollectionBuying />} />
 

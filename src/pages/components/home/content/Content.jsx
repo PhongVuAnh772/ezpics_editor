@@ -77,12 +77,25 @@ import banknote from "./banknotes.png";
 import coin from "./coin.png";
 import downloadIcon from "./assets/direct-download (1).png";
 import discount from "./assets/discount-coupon.png";
-import emptyNotification from './notification.png'
+import emptyNotification from "./notification.png";
 // import "../../../../../src/pages/components/home/category/loadingFavorite.css";
 import SEO from "../../../../api/SEO";
 const drawerWidth = 250;
 
 export default function PersistentDrawerLeft() {
+  const [responseModal, setResponseModal] = useState(true);
+  const screenWidth = window.screen.width;
+  useEffect(() => {
+    function displayWindowSize() {
+      const isMobile = screenWidth <= 768;
+      if (isMobile) {
+        setResponseModal(false);
+        console.log('mở đt')
+      }
+    }
+    displayWindowSize()
+  }, []);
+
   useEffect(() => {
     SEO(
       "Ezpics - Công cụ thiết kế hình ảnh siêu tốc",
@@ -306,7 +319,7 @@ export default function PersistentDrawerLeft() {
   };
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
-    const [anchorElNotification, setAnchorElNotification] = React.useState(null);
+  const [anchorElNotification, setAnchorElNotification] = React.useState(null);
 
   const [loadingBuyingLostFunc, setLoadingBuyingLostFunc] =
     React.useState(false);
@@ -815,10 +828,17 @@ export default function PersistentDrawerLeft() {
                 Trang chủ
               </div>
 
-              <div style={textHeader} onClick={() => navigate('/new-product')}>Thiết kế mới</div>
-            <div style={textHeader} onClick={() => navigate('/pricing-compare')}>Bảng giá</div>
-            <div style={textHeader}>Hướng dẫn</div>
-            <div style={textHeader}>Nhà phát triển</div>
+              <div style={textHeader} onClick={() => navigate("/new-product")}>
+                Thiết kế mới
+              </div>
+              <div
+                style={textHeader}
+                onClick={() => navigate("/pricing-compare")}
+              >
+                Bảng giá
+              </div>
+              <div style={textHeader}>Hướng dẫn</div>
+              <div style={textHeader}>Nhà phát triển</div>
               <Box sx={{ flexGrow: 1 }} />
               <Box
                 sx={{
@@ -870,10 +890,10 @@ export default function PersistentDrawerLeft() {
                     color="inherit"
                     title="Thông báo"
                     onClick={(e) => {
-                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      window.scrollTo({ top: 0, behavior: "smooth" });
 
-                        handleOpenUserNotification(e);
-                      }}
+                      handleOpenUserNotification(e);
+                    }}
                   >
                     <Badge color="error">
                       <NotificationsActiveOutlinedIcon />
@@ -1230,10 +1250,12 @@ export default function PersistentDrawerLeft() {
                       Tải ứng dụng Ezpics
                     </Typography>
                   </MenuItem>
-                  <MenuItem onClick={() => {
-                    navigate("/affiliate")
-                    handleCloseUserMenu()
-                  }}>
+                  <MenuItem
+                    onClick={() => {
+                      navigate("/affiliate");
+                      handleCloseUserMenu();
+                    }}
+                  >
                     <Typography
                       textAlign="left"
                       style={{
@@ -1292,7 +1314,7 @@ export default function PersistentDrawerLeft() {
                     flexDirection: "column",
                     display: "flex",
                     minHeight: 200,
-                    minWidth: 200
+                    minWidth: 200,
                   }}
                   id="menu-appbar"
                   anchorEl={anchorElNotification}
@@ -1309,19 +1331,24 @@ export default function PersistentDrawerLeft() {
                   onClose={handleCloseUserNotification}
                   style={{ cursor: "pointer" }}
                 >
-                    <div
-                      style={{
-                        display: "flex",
-                        flexDirection: "column",
-                        alignItems: "center",
-                        paddingLeft: 80,paddingRight: 80,
-                        paddingTop: 30,paddingBottom: 30
-                      }}
-                    >
-                      <img src={emptyNotification} alt="" style={{width: 50,height: 50}}/>
-                      <p>Bạn không có thông báo</p>
-                    </div>
-                  
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      alignItems: "center",
+                      paddingLeft: 80,
+                      paddingRight: 80,
+                      paddingTop: 30,
+                      paddingBottom: 30,
+                    }}
+                  >
+                    <img
+                      src={emptyNotification}
+                      alt=""
+                      style={{ width: 50, height: 50 }}
+                    />
+                    <p>Bạn không có thông báo</p>
+                  </div>
                 </Menu>
               </Box>
             </Toolbar>
@@ -1359,7 +1386,7 @@ export default function PersistentDrawerLeft() {
             }}
             variant="persistent"
             anchor="left"
-            open={true}
+            open={responseModal}
           >
             <DrawerHeader></DrawerHeader>
             <List></List>

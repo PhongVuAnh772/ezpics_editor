@@ -322,7 +322,7 @@ function GraphicEditor() {
             sort: detail.sort,
             page: detail.content.page,
             srcBackground: data?.thumn,
-            idBackground: data?.id,
+            idBackground: data?.id
           },
         });
       }

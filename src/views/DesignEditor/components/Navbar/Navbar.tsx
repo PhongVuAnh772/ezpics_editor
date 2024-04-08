@@ -75,10 +75,9 @@ export default function () {
   const [modalBuyingFree, setModalBuyingFree] = React.useState(false);
   const generateToServer = (datas: any) => {
     // Remove the first two elements from the first sub-array
-    console.log(datas);
     datas.data[0].splice(0, 2);
 
-    console.log(datas.frame);
+    console.log(datas);
     // Remove elements with id 'background' from each sub-array
     datas.data.forEach((data: any) => {
       const indexToRemove = data.findIndex(
@@ -104,7 +103,10 @@ export default function () {
             text: "Layer 2",
             color: data?.fill,
             size:
-              ((data?.fontSize * 100) / datas?.frame?.width).toString() + "vw", //
+              `${
+              (data?.scaleX * 100 * data?.metadata?.naturalWidth) /
+              datas?.frame?.width
+            }vw`, //
             font: data?.fontFamily,
             status: 1,
             text_align: "left",
@@ -127,8 +129,8 @@ export default function () {
             width: `${
               (data?.scaleX * 100 * data?.metadata?.naturalWidth) /
               datas?.frame?.width
-            }vw`, //
-            height: data?.metadata?.initialHeight, //
+            }vw`, 
+            height: '100vh', //
             gradient: 0,
             gradient_color: [],
             variable: data?.metadata?.variable,
@@ -229,39 +231,39 @@ export default function () {
       frame: currentDesign.frame,
       data: allLayers,
     });
-    //  newDesign.forEach( async(item:any,index:any) => {
+     newDesign.forEach( async(item:any,index:any) => {
 
-    //   // Kiểm tra nếu id là chuỗi
-    //   if (typeof item.id === "string") {
-    //     console.log(item);
-    //     if (item.content.type === "image") {
-    //       const response = await axios.post(`${network}/addLayerImageUrlAPI`, {
-    //         idproduct: idProduct,
-    //         token: token,
-    //         imageUrl: item.content.banner,
-    //         page: 0
-    //       });
-    //       if (response && response.data) {
-    //                     item.id = response.data?.data?.id;
-    //         console.log(response.data)
-    //       }
-    //     } else if (item.content.type === "text") {
-    //       const response = await axios.post(`${network}/addLayerText`, {
-    //         idproduct: idProduct,
-    //         token: token,
-    //         text: "text",
-    //         color: "#ffffff",
-    //         size: '16px',
-    //         font: "MTD Matsury",
-    //         page: 0
-    //       });
-    //       if (response && response.data) {
-    //         item.id = response.data?.data?.id;
-    //         console.log(response.data)
-    //       }
-    //     }
-    //   }
-    // })
+      // Kiểm tra nếu id là chuỗi
+      if (typeof item.id === "string") {
+        console.log(item);
+        if (item.content.type === "image") {
+          const response = await axios.post(`${network}/addLayerImageUrlAPI`, {
+            idproduct: idProduct,
+            token: token,
+            imageUrl: item.content.banner,
+            page: 0
+          });
+          if (response && response.data) {
+                        item.id = response.data?.data?.id;
+            console.log(response.data)
+          }
+        } else if (item.content.type === "text") {
+          const response = await axios.post(`${network}/addLayerText`, {
+            idproduct: idProduct,
+            token: token,
+            text: "text",
+            color: "#ffffff",
+            size: '16px',
+            font: "MTD Matsury",
+            page: 0
+          });
+          if (response && response.data) {
+            item.id = response.data?.data?.id;
+            console.log(response.data)
+          }
+        }
+      }
+    })
     // console.log()
     return newDesign;
   };

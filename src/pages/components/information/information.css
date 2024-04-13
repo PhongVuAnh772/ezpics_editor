@@ -1,0 +1,94 @@
+.information-container {
+  flex: 1;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  padding-top: 2%;
+  padding-left: 10%;
+}
+
+.information-header__container {
+  width: 100%;
+  padding-bottom: 8px;
+}
+.loaderNew {
+  width: 6px;
+  height: 8px;
+  border-radius: 50%;
+  display: block;
+  margin: 15px auto;
+  position: relative;
+  color: white;
+  box-sizing: border-box;
+  animation: animloader 2s linear infinite;
+}
+
+.loaderNew2 {
+  width: 6px;
+  height: 8px;
+  border-radius: 50%;
+  display: block;
+  margin: 15px auto;
+  position: relative;
+  color: black;
+  box-sizing: border-box;
+  animation: animloader 2s linear infinite;
+}
+.information-header {
+  color: rgb(13, 18, 22);
+  font-family: Noto Sans Vietnamese, -apple-system, BlinkMacSystemFont, Segoe UI,
+    Helvetica, Arial, sans-serif;
+  font-weight: 700;
+  line-height: 24px;
+  font-size: 18px;
+}
+.information-content__container {
+  padding-top: 2%;
+  padding-bottom: 3%;
+  border-bottom: 1px solid rgba(57, 76, 96, 0.15);
+}
+
+.information-content__header {
+  color: rgb(13, 18, 22);
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, Segoe UI,
+    Helvetica, Arial, sans-serif;
+  font-weight: 600;
+  line-height: 22px;
+  font-size: 14px;
+}
+
+.information-content__satisfied {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.information-content__satisfied---image {
+  width: 80px;
+  height: 80px;
+  /* padding-left: 6px;
+    padding-right: 6px; */
+  border-radius: 50px;
+  object-fit: cover;
+}
+
+.information-content__satisfied----text {
+  font-size: 15px;
+  font-weight: 400;
+  font-size: rgb(13, 18, 22);
+  font-family: "Noto Sans", -apple-system, BlinkMacSystemFont, "Segoe UI",
+    Helvetica, Arial, sans-serif;
+}
+
+
+.information-content__satisfied---input:hover {
+    background-color: rgb(141, 147, 151);
+}
+
+.information-content__satisfied---input:active {
+    
+            background-color: rgb(255, 66, 78);
+        
+}
+

@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link
+      rel="icon"
+      type="image/svg+xml"
+      href="/src/views/DesignEditor/components/Navbar/avatar.png"
+    />
+    <link rel="stylesheet" href="./styleAuto.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ezpics - Công cụ thiết kế hình ảnh siêu tốc</title>
+
+    <meta name="generator" content="Ezpics" />
+    <meta name="application-name" content="Ezpics" />
+    <meta name="Publisher" content="Ezpics" />
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <meta
+      name="description"
+      content="EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến"
+      data-react-helmet="true"
+    />
+    <meta
+      name="keywords"
+      content="công cụ thiết kế hình ảnh"
+      data-react-helmet="true"
+    />
+
+    <!-- Google / Search Engine Tags -->
+    <meta
+      itemprop="name"
+      content="Ezpics - Công cụ thiết kế hình ảnh siêu tốc"
+      data-react-helmet="true"
+    />
+    <meta
+      itemprop="description"
+      content="EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến"
+      data-react-helmet="true"
+    />
+    <meta
+      itemprop="image"
+      content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+      data-react-helmet="true"
+    />
+
+    <!-- Facebook Meta Tags -->
+    <meta
+      property="og:title"
+      content="Ezpics - Công cụ thiết kế hình ảnh siêu tốc"
+      data-react-helmet="true"
+    />
+    <meta property="og:type" content="website" />
+    <meta
+      property="og:description"
+      content="EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến"
+      data-react-helmet="true"
+    />
+    <meta property="og:url" content="/" />
+    <meta
+      property="og:site_name"
+      content="Ezpics - Công cụ thiết kế hình ảnh siêu tốc"
+      data-react-helmet="true"
+    />
+    <meta
+      property="og:image"
+      content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+      data-react-helmet="true"
+    />
+    <meta
+      property="og:image:alt"
+      content="Hình ảnh Ezpics - Công cụ thiết kế hình ảnh siêu tốc"
+      data-react-helmet="true"
+    />
+    <meta property="fb:admins" content="" />
+    <meta property="fb:app_id" content="1695746487308818" />
+    <meta property="og:image:width" content="900" />
+    <meta property="og:image:height" content="603" />
+
+    <!-- Twitter Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="Ezpics - Công cụ thiết kế hình ảnh siêu tốc"
+      data-react-helmet="true"
+    />
+    <meta
+      name="twitter:description"
+      content="EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến"
+      data-react-helmet="true"
+    />
+    <meta
+      name="twitter:image"
+      content="https://admin.ezpics.vn/upload/admin/files/1587a9df872656780f37.jpg"
+      data-react-helmet="true"
+    />
+    <style>
+      /* CSS cho modal */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: white; /* Một màu nền đen mờ */
+        z-index: 100000;
+        overflow: auto;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+      }
+
+      /* CSS cho nội dung của modal */
+      .modal-content {
+        display: block;
+        margin: auto;
+        margin-top: 20px;
+        max-width: 80%; /* Chiều rộng tối đa của modal */
+      }
+
+      /* Định dạng hình ảnh trong modal */
+      .modal img {
+        width: 300px;
+        height: 300px;
+        display: block;
+        align-self: center;
+        margin-top: 20px;
+      }
+      .modal-content__text {
+        text-align: center;
+        margin-top: 10px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .modal-content__text---desc {
+        text-align: center;
+        font-size: 20px;
+        font-weight: bold;
+      }
+     .modalMobile {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  max-height: 100vh;
+  background-color: white;
+  z-index: 100000;
+  overflow: hidden;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+
+.modalMobile-container {
+  max-width: 80%;
+  padding: 20px;
+  border-radius: 10px;
+  max-height: 80vh;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.modalMobile-content__text,
+.modalMobile-content__text---desc {
+  text-align: center;
+  margin: 10px 0;
+  font-size: 16px;
+  font-weight: bold;
+}
+body.modal-open #root {
+  display: none;
+}
+
+    </style>
+
+    <script
+      type="text/javascript"
+      src="https://cdn.jsdelivr.net/npm/brython@3.10.1/www/src/brython.js"
+    ></script>
+
+    <script type="text/javascript">
+      if (location.port == 443) {
+      }
+    </script>
+    <script>
+      function displayWindowSize() {
+        // Get width and height of the window excluding scrollbars
+        
+
+        var modal = document.getElementById("myModal");
+        var path = window.location.pathname;
+
+        if (
+          window.innerWidth < window.screen.width * (4.3 / 5) &&
+          (path !== "/printed-image" || path !== "/specified-print-mobile") 
+        ) {
+          modal.style.display = "flex";
+        } else {
+          modal.style.display = "none";
+
+        }
+      }
+
+      window.addEventListener("resize", displayWindowSize);
+
+      displayWindowSize();
+    </script> <script>
+            function openModalMobile() {
+                var modalMobile = document.getElementById("modalMobile");
+              var body = document.querySelector("body");
+              var path = window.location.pathname;
+                if (modalMobile &&
+                (path !== "/printed-image" || path !== "/specified-print-mobile")) {
+                  // Lấy chiều rộng màn hình
+                  const screenWidth = window.screen.width;
+
+                  // Xác định nếu đó là điện thoại hay không dựa trên chiều rộng màn hình
+                  // Ở đây giả sử chiều rộng <= 768 pixel là điện thoại
+                  const isMobile = screenWidth <= 768;
+
+                  if (isMobile) {
+                    modalMobile.style.display = "flex";
+                    console.log("phát hiện đt");
+                    body.classList.add("modal-open");
+
+                  }
+                }
+              }
+
+              window.addEventListener("load", openModalMobile);
+              openModalMobile();
+    </script> 
+
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-PCQ02R5K9G");
+    </script>
+
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=AW-16458461093"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "AW-16458461093");
+    </script>
+  </head>
+  <body style="margin: 0; overflow-x: hidden">
+    <div id="root">
+      <center>
+        <img
+          width="100%"
+          src="https://i.pinimg.com/originals/ca/89/fb/ca89fbce5e5c68f46d5330946c58ddc6.gif"
+        />
+      </center>
+    </div>
+    <div id="modalMobile" class="modalMobile">
+      <div class="modalMobile-container">
+        <p class="modalMobile-content__text">
+          Ezpics Web chỉ hỗ trợ kích thước màn hình cho máy tính
+        </p>
+        <p class="modalMobile-content__text---desc">
+          Hiện tại Ezpics có bản cho điện thoại, mời bạn quét mã mở ứng dụng
+        </p>
+      </div>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

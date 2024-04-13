@@ -1,0 +1,32 @@
+.background-title__compare {
+    background: radial-gradient(95% 400% at 25% 400%, #00c4cc 0, rgba(0, 196, 204, 0) 100%), radial-gradient(95% 420% at 95% 440%, #8b3dff 0, rgba(139, 61, 255, 0) 100%);
+    width: 100%;
+    display:flex;
+    flex-direction: row;
+    justify-content: center;
+    min-height: 300px;
+    font-family: "Noto Sans Vietnamese",
+        -apple-system,
+        BlinkMacSystemFont,
+        "Segoe UI",
+        Helvetica,
+        Arial,
+        sans-serif;
+    font-size: 42px;
+    padding-top: 8%;
+    position: relative;
+}
+
+.title__compare--span {
+    background: linear-gradient(90deg, #229bd4, #7d2ae8);
+        color: transparent;
+    background-clip: text;
+    padding-left: 10px;
+        padding-right: 10px;
+}
+
+.background-title__compare---absolute___tabs {
+    position: absolute;
+    bottom: 0;
+    
+}   

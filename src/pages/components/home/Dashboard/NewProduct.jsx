@@ -1,0 +1,774 @@
+import React, { useRef, useState, useEffect } from "react";
+import { styled, useTheme } from "@mui/material/styles";
+import {
+  BrowserRouter as Router,
+  Route,
+  Link,
+  Routes,
+  useLocation,
+  Outlet,
+  useOutletContext,
+  useNavigate,
+  useParams,
+} from "react-router-dom";
+import { MuiColorInput } from "mui-color-input";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import filterIcon from "./filter.png";
+import Select from "@mui/material/Select";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import RadioGroup from "@mui/material/RadioGroup";
+import FormControlLabel from "@mui/material/FormControlLabel";
+import FormControl from "@mui/material/FormControl";
+import InputLabel from "@mui/material/InputLabel";
+import FormLabel from "@mui/material/FormLabel";
+import CssBaseline from "@mui/material/CssBaseline";
+import MuiAppBar from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import List from "@mui/material/List";
+import Typography from "@mui/material/Typography";
+import Divider from "@mui/material/Divider";
+import IconButton from "@mui/material/IconButton";
+import MenuIcon from "@mui/icons-material/Menu";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ListItem from "@mui/material/ListItem";
+import ListItemButton from "@mui/material/ListItemButton";
+import ListItemIcon from "@mui/material/ListItemIcon";
+import ListItemText from "@mui/material/ListItemText";
+import InboxIcon from "@mui/icons-material/MoveToInbox";
+import MailIcon from "@mui/icons-material/Mail";
+import InputBase from "@mui/material/InputBase";
+import Badge from "@mui/material/Badge";
+import MenuItem from "@mui/material/MenuItem";
+import Menu from "@mui/material/Menu";
+import SearchIcon from "@mui/icons-material/Search";
+import AccountCircle from "@mui/icons-material/AccountCircle";
+import NotificationsIcon from "@mui/icons-material/Notifications";
+import MoreIcon from "@mui/icons-material/MoreVert";
+import Button from "@mui/material/Button";
+import { ThemeProvider, createTheme } from "@mui/material/styles";
+import Tooltip from "@mui/material/Tooltip";
+import Avatar from "@mui/material/Avatar";
+import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
+import NotificationsActiveOutlinedIcon from "@mui/icons-material/NotificationsActiveOutlined";
+import MonitorOutlinedIcon from "@mui/icons-material/MonitorOutlined";
+import TextField from "@mui/material/TextField";
+import Paper from "@mui/material/Paper";
+import DirectionsIcon from "@mui/icons-material/Directions";
+import ForYouPage from "../ForYou/ForYouPage";
+import ForYouIcon from "../../../assets/ForYouIcon";
+import DosIcon from "../../../assets/DosIcon";
+import ContentIcon from "../../../assets/ContentIcon";
+import FormatIcon from "../../../assets/FormatIcon";
+import VideoIcon from "../../../assets/VideoIcon";
+import WebIcon from "../../../assets/WebIcon";
+import TemplateIcon from "../../../assets/TemplateIcon";
+import MoreIcons from "../../../assets/MoreIcon";
+import PageIcon from "../../../assets/PageIcon";
+import crownIcon from "../../../assets/crownIcon";
+import axios from "axios";
+import Skeleton from "react-loading-skeleton";
+import "react-loading-skeleton/dist/skeleton.css";
+import { useAppSelector, useAppDispatch } from "../../../../hooks/hook.ts";
+import Modal from "@mui/material/Modal";
+import { useSelector, useDispatch } from "react-redux";
+import close from "./close.png";
+import Radio from "@mui/material/Radio";
+
+function NewProduct() {
+  const [valueColor, setValueColor] = React.useState("");
+  const [limitNumber,setLimitNumber] = React.useState("");
+  const handleChangeColor = (event) => {
+    // Update the valueColor state without triggering drawer closure
+    // event.preventDefault();
+
+    setValueColor(event.target.value);
+    setState({ left: open });
+    console.log(valueColor);
+  };
+  const formatPrice = (price) => {
+    // Sử dụng Intl.NumberFormat để định dạng số thành chuỗi có dấu phân cách hàng nghìn
+    return new Intl.NumberFormat("vi-VN").format(price);
+  };
+  const [searchText, setSearchText] = React.useState("");
+  const [age, setAge] = React.useState("");
+  const [dataConvert, setDataConvert] = React.useState([]);
+  const itemsPerRow = 4;
+  const handleChange = async (event) => {
+    setAge(event.target.value);
+    try {
+      const response = await axios.post(`${network}/searchProductAPI`, {
+        limit: 20,
+        page: 1,
+        name: searchText,
+        price: selectedRadioPrice !== "" ? selectedRadioPrice : "",
+        orderBy: selectedRadioFilter !== "" ? selectedRadioFilter : "",
+        orderType: selectedRadio !== "" ? selectedRadio : "",
+        category_id: age !== "" ? age : "",
+        color: valueColor !== "" ? valueColor : "",
+      });
+      if (response.data.listData && response.data) {
+        console.log(response.data.listData);
+        // setDataWarehouse(response.data.data);
+        setState({ left: false });
+
+        setDataConvert(response.data.listData);
+      }
+    } catch (error) {
+      
+    }
+  };
+  const onChange = (event) => {
+    // console.log(event.target.value);
+    setSearchText(event.target.value);
+    setEnableButtonClear(true);
+    setLoadingSearch(true);
+    console.log(searchText === "");
+
+    if (event.target.value === "") {
+      setEnableButtonClear(false);
+      setLoadingSearch(false);
+    } else {
+      fetchProUser();
+      setEnableButtonClear(true);
+      setLoadingSearch(true);
+    }
+    setTimeout(() => {
+      setLoadingSearch(false);
+    }, 1500);
+  };
+
+  const [selectedRadio, setSelectedRadio] = useState("");
+  const [selectedRadioPrice, setSelectedRadioPrice] = useState("");
+  const [selectedRadioFilter, setSelectedRadioFilter] = useState("");
+
+  const [dataWarehouse, setDataWarehouse] = React.useState([]);
+  const [clickedOnDataWarehouse, setClickedOnDataWarehouse] =
+    React.useState(false);
+  const [listColor, dataListColor] = React.useState([]);
+  const { search } = useParams();
+
+  const navigate = useNavigate();
+
+  const [dataCategorySearch, setDataCategorySearch] = React.useState([]);
+  const infoUser = useSelector((state) => state.user.info);
+
+  const [state, setState] = React.useState({
+    left: false,
+  });
+    const [enableButtonClear, setEnableButtonClear] = React.useState(false);
+  const [loadingSearch, setLoadingSearch] = React.useState(false);
+
+  const toggleDrawer = (open) => (event) => {
+    const isColorInput = event.target.type === "color";
+
+    if (!isColorInput) {
+      setState({ left: open });
+    }
+  };
+  function BpRadio(props) {
+    return (
+      <Radio
+        disableRipple
+        color="default"
+        checkedIcon={<BpCheckedIcon />}
+        icon={<BpIcon />}
+        {...props}
+      />
+    );
+  }
+  
+  const BpIcon = styled("span")(({ theme }) => ({
+    borderRadius: "50%",
+    width: 16,
+    height: 16,
+    boxShadow:
+      theme.palette.mode === "dark"
+        ? "0 0 0 1px rgb(16 22 26 / 40%)"
+        : "inset 0 0 0 1px rgba(16,22,26,.2), inset 0 -1px 0 rgba(16,22,26,.1)",
+    backgroundColor: theme.palette.mode === "dark" ? "#394b59" : "#f5f8fa",
+    backgroundImage:
+      theme.palette.mode === "dark"
+        ? "linear-gradient(180deg,hsla(0,0%,100%,.05),hsla(0,0%,100%,0))"
+        : "linear-gradient(180deg,hsla(0,0%,100%,.8),hsla(0,0%,100%,0))",
+    ".Mui-focusVisible &": {
+      outline: "2px auto rgba(19,124,189,.6)",
+      outlineOffset: 2,
+    },
+    "input:hover ~ &": {
+      backgroundColor: theme.palette.mode === "dark" ? "#30404d" : "#ebf1f5",
+    },
+    "input:disabled ~ &": {
+      boxShadow: "none",
+      background:
+        theme.palette.mode === "dark"
+          ? "rgba(57,75,89,.5)"
+          : "rgba(206,217,224,.5)",
+    },
+  }));
+  const [loadingMore, setLoadingMore] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+
+ 
+//   useEffect(() => {
+//     setSearchText(search);
+//   }, []);
+//   useEffect(() => {
+//     window.addEventListener("scroll", handleScroll);
+//     return () => window.removeEventListener("scroll", handleScroll);
+//   }, [handleScroll]);
+//   useEffect(() => {
+//     const fetchMoreData = async () => {
+//       try {
+//         const response = await axios.post(`${network}/searchProductAPI`, {
+//           limit: dataConvert.length + 20,
+//           page: 1,
+//           name: search,
+//         });
+//         if (response.data.listData && response.data) {
+//           setDataConvert((prevData) => [...prevData, ...response.data.listData]);
+//           setLoadingMore(false);
+//           setHasMore(response.data.listData.length > 0);
+//         }
+//       } catch (error) {
+//         console.error("Error fetching more data:", error.message);
+//         setLoadingMore(false);
+//       }
+//     };
+
+//     if (loadingMore) {
+//       fetchMoreData();
+//     }
+//   }, [loadingMore]);
+  const BpCheckedIcon = styled(BpIcon)({
+    backgroundColor: "#137cbd",
+    backgroundImage:
+      "linear-gradient(180deg,hsla(0,0%,100%,.1),hsla(0,0%,100%,0))",
+    "&::before": {
+      display: "block",
+      width: 16,
+      height: 16,
+      backgroundImage: "radial-gradient(#fff,#fff 28%,transparent 32%)",
+      content: '""',
+    },
+    "input:hover ~ &": {
+      backgroundColor: "#106ba3",
+    },
+  });
+  const network = useAppSelector((state) => state.network.ipv4Address);
+  useEffect(() => {
+    const getDataCategory = async () => {
+      try {
+        const response = await axios.get(`${network}/getProductAllCategoryAPI`);
+        if (response && response.data && response.data.listData) {
+          setDataConvert(response.data.listData[0]?.listData);
+        } else {
+          console.error("Invalid response format");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    getDataCategory();
+  }, []);
+ useEffect(() => {
+    const getDataCategory = async () => {
+      try {
+        const response = await axios.get(`${network}/getProductCategoryAPI`);
+        if (response && response.data && response.data.listData) {
+          setDataCategorySearch(response.data.listData);
+        } else {
+          console.error("Invalid response format");
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error.message);
+      }
+    };
+
+    getDataCategory();
+  }, []);
+//   useEffect(() => {
+//     const fetchProUser = async () => {
+//       try {
+//         const response = await axios.post(`${network}/getProductAllCategoryAPI`, {
+//           limit: 20,
+//           page: 1,
+//         });
+//         if (response.data.listData && response.data) {
+//           setDataConvert(response.data.listData);
+//         }
+//       } catch (error) {
+        
+//       }
+//     };
+
+//     fetchProUser();
+//   }, []);
+// getProductAllCategoryAPI
+  const fetchDataWarehouse = async () => {
+    try {
+      const response = await axios.post(`${network}/getProductAllCategoryAPI`, {
+        limit: parseInt(limitNumber),
+        page: 1,
+        
+        orderBy: selectedRadioFilter !== "" ? selectedRadioFilter : "",
+        
+      });
+      if (response.data.listData && response.data) {
+        console.log(response.data.listData[0]?.listData);
+        
+        // setDataWarehouse(response.data.data);
+        setState({ left: false });
+
+        setDataConvert(response.data.listData[0]?.listData);
+      }
+    } catch (error) {
+      
+    }
+  };
+  const fetchProUser = async () => {
+    try {
+      const response = await axios.post(`${network}/searchProductAPI`, {
+        limit: 5,
+        page: 1,
+        name: searchText,
+      });
+      if (response.data.listData && response.data) {
+        console.log(response.data.listData);
+        // setDataWarehouse(response.data.data);
+        setDataWarehouse(response.data.listData);
+      }
+    } catch (error) {
+      
+    }
+  };
+  const [limit, setLimit] = useState(20); // Step 1: State to keep track of limit
+useEffect(() => {
+  const fetchMoreData = async () => {
+    try {
+      const response = await axios.post(`${network}/searchProductAPI`, {
+        limit: limit + 20, // Step 3: Increase limit by 20 when scrolling to bottom
+        page: 1, // Reset page to 1 when fetching more data
+        name: searchText,
+        // Other parameters as per your API call
+      });
+      if (response.data.listData && response.data) {
+        setDataConvert((prevData) => [...prevData, ...response.data.listData]); // Step 4: Append new data to existing data
+        setLoadingMore(false);
+        setHasMore(response.data.listData.length > 0);
+      }
+    } catch (error) {
+      console.error("Error fetching more data:", error.message);
+      setLoadingMore(false);
+    }
+  };
+
+  if (loadingMore) {
+    fetchMoreData();
+  }
+}, [loadingMore]);
+const handleScroll = () => {
+  const { scrollTop, clientHeight, scrollHeight } = document.documentElement;
+
+  if (scrollTop + clientHeight >= scrollHeight - 10 && !loadingMore && hasMore) {
+    setLoadingMore(true);
+  }
+};
+  useEffect(() => {
+  window.addEventListener("scroll", handleScroll);
+  return () => window.removeEventListener("scroll", handleScroll);
+}, []);
+  return (
+    <>
+      <div style={{ paddingTop: "6%", paddingRight: "2%", paddingLeft: "19%" }}>
+        <Box>
+          <h1 style={{fontSize: 25}}>Thiết kế mới trong tuần</h1>
+
+          <div
+            style={{ paddingTop: 20, display: "flex", flexDirection: "row" }}
+          >
+            <Button
+              onClick={toggleDrawer(true)}
+              style={{
+                color: "black",
+                textTransform: "none",
+                // border: "1px solid gray",
+                backgroundColor: "rgb(225, 228, 231)",
+                paddingTop: 10,
+                paddingBottom: 10,
+                paddingRight: 10,
+                paddingLeft: 10,
+                fontWeight: 600,
+              }}
+            >
+              <img src={filterIcon} alt="" style={{ width: 20, height: 20 }} />
+              &nbsp;Tìm kiếm nâng cao
+            </Button>
+            <FormControl style={{ minWidth: 120, marginLeft: 20 }}>
+              <InputLabel id="demo-simple-select-label">Danh mục</InputLabel>
+
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={age}
+                label="Danh mục"
+                onChange={handleChange}
+                style={{}}
+              >
+                {dataCategorySearch.length > 0 &&
+                  dataCategorySearch.map((data, index) => (
+                    <MenuItem value={data.id}>{data.name}</MenuItem>
+                  ))}
+              </Select>
+            </FormControl>
+          </div>
+
+          <div
+            style={{
+              marginTop: dataConvert.length > 0 ? "-7%" : 0,
+              display: "flex",
+              flexWrap: "wrap",
+            }}
+          >
+            {dataConvert.length > 0 ? (
+              dataConvert.map((item, index) => (
+                <div
+                  key={index}
+                  style={{
+                    flex: `0 0 calc(${100 / itemsPerRow}% - 16px)`, // Adjust the margin as needed
+
+                    marginBottom: "15px",
+                    boxSizing: "border-box",
+                    padding: "0 8px",
+                    position: "relative",
+                    maxWidth: 280,
+                    marginTop: "10%",
+                    marginRight: "1%",
+                  }}
+                >
+                  <div
+                    style={{
+                      position: "relative",
+                      width: "100%",
+                      background: "#f0f0f0",
+                      borderRadius: 10,
+                      overflow: "hidden",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => {
+                      navigate(`/category/${item.id}`);
+                      window.scrollTo({ top: 0, behavior: "smooth" });
+                    }}
+                  >
+                    <img
+                    
+                      src={item.image}
+                      alt=""
+                      style={{
+                        width: "100%",
+                        height: "180px",
+                        objectFit: "contain",
+                      }}
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      height: 70,
+                      maxWidth: "100%",
+                      color: "rgb(37, 38, 56)",
+                      fontFamily:
+                        "Canva Sans, Noto Sans Variable, Noto Sans, -apple-system, BlinkMacSystemFont, Segoe UI, Helvetica, Arial, sans-serif",
+                      fontWeight: 600,
+                      fontSize: "17px",
+                      margin: 0,
+                      marginTop: 10,
+                    }}
+                  >
+                    <div
+                      style={{
+                        maxWidth: "100%",
+                        color: "rgb(37, 38, 56)",
+                        fontFamily:
+                          "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                        fontWeight: 600,
+                        fontSize: "17px",
+                        margin: 0,
+                        marginBottom: 15,
+                        marginTop: 10,
+                        height: 70,
+                      }}
+                    >
+                      <h5
+                        style={{
+                          color: "rgb(37, 38, 56)",
+                          fontFamily:
+                            "Canva Sans,Noto Sans Variable,Noto Sans,-apple-system,BlinkMacSystemFont,Segoe UI,Helvetica,Arial,sans-serif",
+                          fontWeight: 600,
+                          fontSize: "17px",
+                          margin: 0,
+                          width: "80%",
+                        }}
+                      >
+                        {item.name}
+                      </h5>
+                    </div>
+                    <p style={{ margin: 0, color: "black", fontSize: 15 }}>
+                      Đã bán {item.sold}
+                    </p>
+                    <div
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        height: "2em",
+                      }}
+                    >
+                      <p
+                        style={{
+                          margin: 0,
+                          color: "rgb(238, 77, 45)",
+                          fontSize: 17,
+                        }}
+                      >
+                        {/* {item.free_pro
+                          ? "Miễn phí"
+                          : `${
+                              item.sale_price
+                                ? `${formatPrice(item.sale_price)} ₫`
+                                : "Miễn phí"
+                            }`} */}
+                            {item.sale_price === 0 ||
+                (item.free_pro && infoUser[0]?.member_pro)
+                  ? "Miễn phí"
+                  : `${formatPrice(item.sale_price)} ₫`}
+                      </p>
+                      <p
+                        style={{
+                          margin: 0,
+                          fontSize: 14,
+                          textDecoration: "line-through",
+                          paddingLeft: "5%",
+                          color: "gray",
+                          fontWeight: 300,
+                        }}
+                      >
+                        {formatPrice(item.price)}₫
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div
+                style={{ textAlign: "center", width: "100%", paddingTop: "3%" }}
+              >
+                <p style={{ textAlign: "center", fontWeight: "bold" }}>
+                  Không có mẫu thiết kế tương ứng
+                </p>
+                <Button
+                  variant="contained"
+                  size="medium"
+                  style={{
+                    marginLeft: "20px",
+                    height: 40,
+                    alignSelf: "center",
+                    textTransform: "none",
+                    color: "white",
+                    backgroundColor: "rgb(255, 66, 78)",
+                  }}
+                  onClick={() => {
+                    window.scrollTo({
+                      top: 70,
+                      behavior: "smooth", // This makes the scroll animation smooth
+                    });
+                    navigate("/");
+                  }}
+                >
+                  Về trang chủ
+                </Button>
+              </div>
+            )}
+          </div>
+        </Box>
+      </div>
+      <Drawer
+        anchor="left"
+        open={state.left}
+        onClose={toggleDrawer(false)}
+        style={{ zIndex: 1300, paddingLeft: 10, position: "relative" }}
+      >
+        {/* {list} */}
+        <Box sx={{ width: 250 }} role="presentation">
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "row",
+              justifyContent: "space-between",
+              paddingLeft: 10,
+              paddingRight: 10,
+              paddingTop: 15,
+              paddingBottom: 15,
+            }}
+          >
+            <p style={{ fontSize: 14, margin: 0 }}>Bộ lọc</p>
+            <img
+              src={close}
+              alt=""
+              style={{ width: 20, height: 20, cursor: "pointer" }}
+              onClick={() => {
+                              setState({ left: false });
+
+                    }}
+            />
+          </div>
+
+          <Divider />
+         
+            {/* <FormControl style={{ minWidth: 120, marginLeft: 20 }}>
+              <InputLabel id="demo-simple-select-label">Danh mục</InputLabel>
+
+              
+            </FormControl> */}
+
+            
+          <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
+            Sắp xếp theo :
+          </p>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            defaultValue=""
+            name="radio-buttons-group"
+            value={selectedRadio}
+            onChange={(event) => {
+              setSelectedRadio(event.target.value);
+              toggleDrawer(true)(event);
+            }}
+            style={{ paddingLeft: 10 }}
+          >
+            <FormControlLabel
+              value=""
+              control={<BpRadio />}
+              label="Không"
+            />
+            <FormControlLabel
+              value="desc"
+              control={<BpRadio />}
+              label="Giảm dần"
+            />
+            <FormControlLabel
+              value="asc"
+              control={<BpRadio />}
+              label="Tăng dần"
+            />
+          </RadioGroup>
+          <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
+            Số mẫu :
+          </p>
+          <div style={{width: '100%',paddingLeft: 10,paddingRight: 10}}><input type="number" onChange={(e) => {
+            setLimitNumber(e.target.value)
+            console.log(typeof e.target.value)
+          }}/></div>
+          <p style={{ fontSize: 15, fontWeight: 600, paddingLeft: 10 }}>
+            Lọc theo :
+          </p>
+          <RadioGroup
+            aria-labelledby="demo-radio-buttons-group-label"
+            defaultValue=""
+            name="radio-buttons-group"
+            value={selectedRadioFilter}
+            onChange={(event) => {
+              setSelectedRadioFilter(event.target.value);
+              toggleDrawer(true)(event);
+            }}
+            style={{ paddingLeft: 10 }}
+          >
+            <FormControlLabel
+              value=""
+              control={<BpRadio />}
+              label="Không"
+            />
+            <FormControlLabel
+              value="price"
+              control={<BpRadio />}
+              label="Sắp xếp theo giá"
+            />
+            <FormControlLabel
+              value="create"
+              control={<BpRadio />}
+              label="Sắp xếp theo thời gian tạo"
+            />
+            <FormControlLabel
+              value="view"
+              control={<BpRadio />}
+              label="Sắp xếp theo lượt xem"
+            />
+            <FormControlLabel
+              value="favorite"
+              control={<BpRadio />}
+              label="Sắp xếp theo lượt yêu thích"
+            />
+          </RadioGroup>
+
+          <div
+            style={{
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              height: 60,
+              display: "flex",
+              flexDirection: "row",
+              backgroundColor: "white",
+            }}
+          >
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                marginLeft: "20px",
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "gray",
+                position: "relative",
+              }}
+              onClick={() => {
+                setSelectedRadioPrice("");
+                setSelectedRadioFilter("");
+                setSelectedRadio("");
+                setAge("");
+                setValueColor("");
+              }}
+            >
+              Xóa tất cả
+            </Button>
+            <Button
+              variant="contained"
+              size="medium"
+              style={{
+                marginLeft: "20px",
+                height: 40,
+                alignSelf: "center",
+                textTransform: "none",
+                color: "white",
+                backgroundColor: "rgb(255, 66, 78)",
+                position: "relative",
+              }}
+              onClick={() => {
+                fetchDataWarehouse();
+              }}
+            >
+              Tìm kiếm
+            </Button>
+          </div>
+        </Box>
+      </Drawer>
+    </>
+  );
+}
+
+export default NewProduct;

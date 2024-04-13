@@ -536,9 +536,11 @@ export default function () {
                     />
                   </div>
                   <div className="input-group">
+                    
                     <p style={{ fontFamily: "Arial" }}>Tên biến chữ</p>
 
                     <input
+                    disabled
                       type="text"
                       onChange={(e) => setNameTextVariable(e.target.value)}
                       onBlur={(e) =>
@@ -554,6 +556,7 @@ export default function () {
                     <p style={{ fontFamily: "Arial" }}>Nội dung chữ</p>
 
                     <input
+                    disabled
                       type="text"
                       value={contentTextVariable}
                       onChange={(e) => setContentTextVariable(e.target.value)}
@@ -638,7 +641,7 @@ export default function () {
           </Block>
         </Scrollable>
         {loading && (
-                  <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000}}>
+                  <div style={{width: '100%',height: '100%',backgroundColor: 'rgba(0,0,0,0.7)',position: 'absolute',zIndex: 20000000000,display:'flex',alignItems:'center',justifyContent:'center'}}>
 
           <div className="loadingio-spinner-dual-ring-hz44svgc0ld2">
             <div className="ldio-4qpid53rus9">

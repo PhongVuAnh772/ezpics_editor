@@ -566,6 +566,7 @@ export default function () {
                   <p style={{ fontFamily: "Arial" }}>Nội dung chữ</p>
 
                   <input
+                  disabled
                     type="text"
                     value={contentTextVariable}
                     onChange={(e) => setContentTextVariable(e.target.value)}

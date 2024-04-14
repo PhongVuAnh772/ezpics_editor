@@ -645,21 +645,36 @@ const handleCloseModalDuplicate = () => {
           >
             {dataFilter &&
               dataFilter.map((data, index) => (
+<<<<<<< HEAD
                 <div key={index}>
+=======
+                <div key={index} style={{ width: "50%" }}>
+>>>>>>> 12004863aeb9dcd792c7bd784d5a7cf34cd08824
                   <p>{data.content.variableLabel}</p>
                   {data.content.type === "text" ? (
                     <input
                       value={inputValues[data.content.variableLabel] || ""}
                       onChange={(e) => handleInputChange(e, index)}
+<<<<<<< HEAD
                       style={{ width: "80%" }}
+=======
+                      style={{ width: "100%" }}
+>>>>>>> 12004863aeb9dcd792c7bd784d5a7cf34cd08824
                     />
                   ) : (
                     <div>
                       <input
                         type="file"
+<<<<<<< HEAD
                         style={{ display: "none" }}
                         id={`fileInput-${index}`}
                         onChange={(e) => handleFileInputChange(e, index)}
+=======
+                        style={{ display: "none",width: "50%"  }}
+                        id={`fileInput-${index}`}
+                        onChange={(e) => handleFileInputChange(e, index)}
+                        
+>>>>>>> 12004863aeb9dcd792c7bd784d5a7cf34cd08824
                       />
                       <label htmlFor={`fileInput-${index}`}>
                         <Button

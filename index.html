@@ -57,7 +57,6 @@
       content="EZPICS là công cụ thiết kế hình ảnh siêu tốc với hơn 10.000 mẫu thiết kế sẵn có, hỗ trợ công cụ xóa ảnh nền như Canva, phù hợp với dân marketing, bán hàng online, kinh doanh hệ thống, đào tạo trực tuyến"
       data-react-helmet="true"
     />
-    <meta property="og:url" content="/" />
     <meta
       property="og:site_name"
       content="Ezpics - Công cụ thiết kế hình ảnh siêu tốc"
@@ -96,7 +95,6 @@
       data-react-helmet="true"
     />
     <style>
-      /* CSS cho modal */
       .modal {
         display: none;
         position: fixed;
@@ -136,8 +134,9 @@
       }
       .modal-content__text---desc {
         text-align: center;
-        font-size: 20px;
+        font-size: 19px;
         font-weight: bold;
+
       }
      .modalMobile {
   display: none;
@@ -211,46 +210,8 @@ body.modal-open #root {
       window.addEventListener("resize", displayWindowSize);
 
       displayWindowSize();
-<<<<<<< HEAD
-    </script> <script>
-=======
     </script> 
-    <!-- <script>
->>>>>>> 12004863aeb9dcd792c7bd784d5a7cf34cd08824
-            function openModalMobile() {
-                var modalMobile = document.getElementById("modalMobile");
-              var body = document.querySelector("body");
-              var path = window.location.pathname;
-                if (modalMobile &&
-                (path !== "/printed-image" || path !== "/specified-print-mobile")) {
-                  // Lấy chiều rộng màn hình
-                  const screenWidth = window.screen.width;
-
-                  // Xác định nếu đó là điện thoại hay không dựa trên chiều rộng màn hình
-                  // Ở đây giả sử chiều rộng <= 768 pixel là điện thoại
-                  const isMobile = screenWidth <= 768;
-
-                  if (isMobile) {
-                    modalMobile.style.display = "flex";
-                    console.log("phát hiện đt");
-                    body.classList.add("modal-open");
-
-                  }
-                }
-              }
-
-              window.addEventListener("load", openModalMobile);
-              openModalMobile();
-<<<<<<< HEAD
-<<<<<<< HEAD
-    </script> 
-=======
-    </script>  -->
->>>>>>> 12004863aeb9dcd792c7bd784d5a7cf34cd08824
-=======
-    </script> 
-   -->
->>>>>>> 237a961cc0c1eac862333558508cdeda3f401a46
+   
 
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -262,7 +223,6 @@ body.modal-open #root {
       gtag("config", "G-PCQ02R5K9G");
     </script>
 
-    <!-- Google tag (gtag.js) -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=AW-16458461093"

@@ -1804,59 +1804,6 @@ function SpecifiedPrint({
           >
             Tạo ảnh hàng loạt
           </p>
-<<<<<<< HEAD
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "row",
-              flexWrap: "wrap",
-              justifyContent: "center",
-              alignItems: "center",
-              paddingLeft: 50,
-              paddingRight: 50,
-            }}
-          >
-            {dataFilter &&
-              dataFilter.map((data, index) => (
-                <div key={index}>
-                  <p>{data.content.variableLabel}</p>
-                  {data.content.type === "text" ? (
-                    <input
-                      value={inputValues[data.content.variableLabel] || ""}
-                      onChange={(e) => handleInputChange(e, index)}
-                      style={{ width: "80%" }}
-                    />
-                  ) : (
-                    <div>
-                      <input
-                        type="file"
-                        style={{ display: "none" }}
-                        id={`fileInput-${index}`}
-                        onChange={(e) => handleFileInputChange(e, index)}
-                      />
-                      <label htmlFor={`fileInput-${index}`}>
-                        <Button
-                          variant="contained"
-                          component="span"
-                          size="medium"
-                          style={{
-                            height: 40,
-                            textTransform: "none",
-                            color: "white",
-                            backgroundColor: "rgb(255, 66, 78)",
-                            marginRight: 20,
-                          }}
-                        >
-                          Chọn ảnh
-                        </Button>
-                      </label>
-                    </div>
-                  )}
-                </div>
-              ))}
-          </div>
-=======
          <div
   style={{
     width: "100%",
@@ -1913,7 +1860,6 @@ function SpecifiedPrint({
     ))}
 </div>
 
->>>>>>> 12004863aeb9dcd792c7bd784d5a7cf34cd08824
 
           <div style={{ display: "flex" }}>
             <Button

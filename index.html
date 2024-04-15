@@ -188,29 +188,7 @@ body.modal-open #root {
       if (location.port == 443) {
       }
     </script>
-    <script>
-      function displayWindowSize() {
-        // Get width and height of the window excluding scrollbars
-        
-
-        var modal = document.getElementById("myModal");
-        var path = window.location.pathname;
-
-        if (
-          window.innerWidth < window.screen.width * (4.3 / 5) &&
-          (path !== "/printed-image" || path !== "/specified-print-mobile") 
-        ) {
-          modal.style.display = "flex";
-        } else {
-          modal.style.display = "none";
-
-        }
-      }
-
-      window.addEventListener("resize", displayWindowSize);
-
-      displayWindowSize();
-    </script> 
+    
    
 
     <script>

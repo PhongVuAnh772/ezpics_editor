@@ -96,7 +96,6 @@
       data-react-helmet="true"
     />
     <style>
-      /* CSS cho modal */
       .modal {
         display: none;
         position: fixed;
@@ -212,33 +211,7 @@ body.modal-open #root {
 
       displayWindowSize();
     </script> 
-    <!-- <script>
-            function openModalMobile() {
-                var modalMobile = document.getElementById("modalMobile");
-              var body = document.querySelector("body");
-              var path = window.location.pathname;
-                if (modalMobile &&
-                (path !== "/printed-image" || path !== "/specified-print-mobile")) {
-                  // Lấy chiều rộng màn hình
-                  const screenWidth = window.screen.width;
-
-                  // Xác định nếu đó là điện thoại hay không dựa trên chiều rộng màn hình
-                  // Ở đây giả sử chiều rộng <= 768 pixel là điện thoại
-                  const isMobile = screenWidth <= 768;
-
-                  if (isMobile) {
-                    modalMobile.style.display = "flex";
-                    console.log("phát hiện đt");
-                    body.classList.add("modal-open");
-
-                  }
-                }
-              }
-
-              window.addEventListener("load", openModalMobile);
-              openModalMobile();
-    </script> 
-   -->
+   
 
     <script>
       window.dataLayer = window.dataLayer || [];
@@ -250,7 +223,6 @@ body.modal-open #root {
       gtag("config", "G-PCQ02R5K9G");
     </script>
 
-    <!-- Google tag (gtag.js) -->
     <script
       async
       src="https://www.googletagmanager.com/gtag/js?id=AW-16458461093"
